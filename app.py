@@ -74,11 +74,10 @@ def get_live_market_data():
     except: return None
 
 # ==========================================
-# 4. AUTHENTICATION MODULE (SAFE LAYOUT)
+# 4. AUTHENTICATION MODULE (WITH REAL ERROR LOGGING)
 # ==========================================
 def auth_ui():
     st.markdown("<br><br><br>", unsafe_allow_html=True)
-    # Using Streamlit columns to center the box safely without breaking the DOM
     col1, col2, col3 = st.columns([1, 1.5, 1])
     
     with col2:
@@ -94,13 +93,15 @@ def auth_ui():
                     st.session_state.user = res.user
                     st.rerun()
                 except Exception as e:
-                    st.error("Authentication Failed. Check credentials.")
+                    # NOW IT WILL SHOW THE EXACT REAL ERROR
+                    st.error(f"Login Error: {str(e)}")
             else:
                 try:
                     supabase.auth.sign_up({"email": email, "password": password})
-                    st.success("Account created successfully. You can now select 'Login' to enter.")
+                    st.success("Account created successfully. Switch to 'Login' to enter.")
                 except Exception as e:
-                    st.error("Creation Failed. Email might be in use.")
+                    # NOW IT WILL SHOW THE EXACT REAL ERROR
+                    st.error(f"Sign Up Error: {str(e)}")
 
 # ==========================================
 # 5. MAIN APPLICATION
