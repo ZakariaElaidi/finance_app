@@ -34,15 +34,57 @@ ADMIN_EMAIL = "zakariaelaidi2006@gmail.com"
 
 if "user" not in st.session_state:
     st.session_state.user = None
+if "lang" not in st.session_state:
+    st.session_state.lang = "English"
 
 # ==========================================
-# 2. PRO CSS STYLING
+# 2. TRANSLATION DICTIONARY (i18n)
+# ==========================================
+t = {
+    "English": {
+        "tab1": "📈 Corporate Analysis", "tab2": "🏗️ BTP Benchmark", "tab3": "💼 M&A Valuation",
+        "tab4": "💹 Live Charts", "tab5": "👤 About Creator", "tab6": "🗄️ My History",
+        "upload_msg": "Upload your company's financial Excel template.",
+        "dl_btn": "📥 Download Template", "logout": "🚪 Terminate Session",
+        "mna_title": "💼 M&A & Private Equity Deal Room", "history_title": "🗄️ Database Records",
+        "about_title": "👤 Administrator Profile"
+    },
+    "Français": {
+        "tab1": "📈 Analyse Financière", "tab2": "🏗️ Benchmark BTP", "tab3": "💼 Valorisation M&A",
+        "tab4": "💹 Graphiques en Direct", "tab5": "👤 À Propos", "tab6": "🗄️ Mon Historique",
+        "upload_msg": "Téléchargez votre modèle financier Excel.",
+        "dl_btn": "📥 Télécharger le Modèle", "logout": "🚪 Se Déconnecter",
+        "mna_title": "💼 Salle des Transactions M&A et Private Equity", "history_title": "🗄️ Enregistrements",
+        "about_title": "👤 Profil Administrateur"
+    },
+    "Español": {
+        "tab1": "📈 Análisis Corporativo", "tab2": "🏗️ Benchmark BTP", "tab3": "💼 Valoración M&A",
+        "tab4": "💹 Gráficos en Vivo", "tab5": "👤 Sobre el Creador", "tab6": "🗄️ Mi Historial",
+        "upload_msg": "Sube tu plantilla financiera en Excel.",
+        "dl_btn": "📥 Descargar Plantilla", "logout": "🚪 Cerrar Sesión",
+        "mna_title": "💼 Sala de Fusiones y Adquisiciones", "history_title": "🗄️ Registros de Base de Datos",
+        "about_title": "👤 Perfil del Administrador"
+    },
+    "Arabic": {
+        "tab1": "📈 التحليل المالي", "tab2": "🏗️ مقارنة قطاع البناء", "tab3": "💼 تقييم الاستحواذ",
+        "tab4": "💹 رسوم بيانية حية", "tab5": "👤 عن المطور", "tab6": "🗄️ سجلي",
+        "upload_msg": "قم بتحميل قالب الإكسيل المالي الخاص بشركتك.",
+        "dl_btn": "📥 تحميل القالب", "logout": "🚪 تسجيل الخروج",
+        "mna_title": "💼 غرفة صفقات الدمج والاستحواذ", "history_title": "🗄️ السجلات المحفوظة",
+        "about_title": "👤 الملف الشخصي للمسؤول"
+    }
+}
+lang_dict = t[st.session_state.lang]
+
+# ==========================================
+# 3. PRO CSS STYLING
 # ==========================================
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
-.admin-badge { background-color: #c1272d; color: white; padding: 5px 10px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 10px; }
+.admin-badge { background-color: #c1272d; color: white; padding: 3px 8px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; border-radius: 4px; display: inline-block; margin-left: 10px; }
+.sidebar-user { background-color: #161a22; padding: 15px; border-radius: 8px; border-left: 3px solid #1f77b4; margin-bottom: 20px; word-wrap: break-word;}
 .ma-card { background-color: #161a22; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-top: 15px; }
 .ma-card-title { color: #b3b3b3; font-size: 0.9rem; margin-bottom: 5px; }
 .ma-card-value { color: white; font-size: 1.5rem; font-weight: bold; margin: 0; }
@@ -55,7 +97,7 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. DATABASE, DATA HELPERS & PDF
+# 4. DATABASE, DATA HELPERS & PDF
 # ==========================================
 def save_history(user_id, email, data_dict):
     try:
@@ -97,10 +139,11 @@ def get_live_market_data():
         return df
     except: return None
 
-# Detailed PDF Generator
+# FIXED PDF GENERATOR (Safe Margins and Widths)
 def create_detailed_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_data):
     pdf = FPDF()
     pdf.add_page()
+    pdf.set_margins(10, 10, 10) # Prevent Horizontal Space Error
     
     # Header
     pdf.set_fill_color(193, 39, 45)
@@ -125,20 +168,21 @@ def create_detailed_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_tabl
     
     pdf.set_font("Arial", 'B', 10)
     pdf.set_fill_color(200, 200, 200)
-    pdf.cell(60, 8, "Line Item", border=1, align='C', fill=True)
+    # Reduced widths slightly to ensure they fit in 190mm
+    pdf.cell(55, 8, "Line Item", border=1, align='C', fill=True)
     pdf.cell(45, 8, "2024", border=1, align='C', fill=True)
     pdf.cell(45, 8, "2025", border=1, align='C', fill=True)
-    pdf.cell(40, 8, "YoY Growth (%)", border=1, ln=True, align='C', fill=True)
+    pdf.cell(45, 8, "YoY Growth (%)", border=1, ln=True, align='C', fill=True)
     
     pdf.set_font("Arial", '', 10)
     for index, row in df_table.iterrows():
-        pdf.cell(60, 8, str(index), border=1)
+        pdf.cell(55, 8, str(index), border=1)
         pdf.cell(45, 8, f"{row.iloc[0]:,.0f}", border=1, align='R')
         pdf.cell(45, 8, f"{row.iloc[1]:,.0f}", border=1, align='R')
         val = row['YoY Growth (%)']
         growth_str = f"{val:.2f}%" if pd.notna(val) else "N/A"
-        pdf.cell(40, 8, growth_str, border=1, ln=True, align='R')
-    pdf.ln(10)
+        pdf.cell(45, 8, growth_str, border=1, ln=True, align='R')
+    pdf.ln(8)
 
     # Section 2: Ratios
     pdf.set_font("Arial", 'B', 14)
@@ -147,11 +191,11 @@ def create_detailed_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_tabl
     pdf.ln(5)
     pdf.set_font("Arial", '', 12)
     for key, value in company_ratios.items():
-        pdf.cell(90, 8, f"{key}:", border=0)
+        pdf.cell(80, 8, f"{key}:", border=0)
         pdf.set_font("Arial", 'B', 12)
         pdf.cell(0, 8, f"{value}", border=0, ln=True)
         pdf.set_font("Arial", '', 12)
-    pdf.ln(10)
+    pdf.ln(8)
     
     # Section 3: Expert Diagnosis
     pdf.set_font("Arial", 'B', 14)
@@ -159,8 +203,9 @@ def create_detailed_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_tabl
     pdf.ln(5)
     pdf.set_font("Arial", '', 11)
     for note in expert_diagnosis:
-        pdf.multi_cell(0, 8, txt=f"> {note}")
-    pdf.ln(10)
+        # Safe multi_cell call
+        pdf.multi_cell(190, 8, txt=f"> {note}")
+    pdf.ln(8)
     
     # Section 4: Sensitivity & Market
     pdf.set_font("Arial", 'B', 14)
@@ -170,18 +215,12 @@ def create_detailed_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_tabl
     pdf.cell(0, 8, f"- Simulated Future Revenue: {sim_data['rev']:,.2f} MAD", ln=True)
     pdf.cell(0, 8, f"- Simulated Future Net Margin: {sim_data['margin']:.2f}%", ln=True)
     pdf.ln(5)
-    pdf.multi_cell(0, 8, txt=f"The company's performance was evaluated against the Casablanca Stock Exchange (CSE) BTP sector. The average sector P/E Ratio currently stands at {sector_avg_pe:.2f}.")
-    
-    # Footer
-    pdf.set_y(-25)
-    pdf.set_font("Arial", 'I', 9)
-    pdf.set_text_color(150, 150, 150)
-    pdf.cell(0, 10, "Report generated via Z.ELAIDI Automated Analytics Platform", align='C')
+    pdf.multi_cell(190, 8, txt=f"The company's performance was evaluated against the Casablanca Stock Exchange (CSE) BTP sector. The average sector P/E Ratio currently stands at {sector_avg_pe:.2f}.")
     
     return bytes(pdf.output())
 
 # ==========================================
-# 4. AUTHENTICATION MODULE
+# 5. AUTHENTICATION MODULE
 # ==========================================
 def auth_ui():
     st.markdown("<br><br><br>", unsafe_allow_html=True)
@@ -207,10 +246,37 @@ def auth_ui():
                 except Exception as e: st.error(f"Sign Up Error: {str(e)}")
 
 # ==========================================
-# 5. MAIN APPLICATION
+# 6. MAIN APPLICATION
 # ==========================================
 def main_app():
     is_admin = (st.session_state.user.email.lower() == ADMIN_EMAIL.lower())
+
+    # --- SIDEBAR REDESIGN ---
+    with st.sidebar:
+        st.markdown("## ⚙️ Control Panel")
+        
+        # Language Selector
+        new_lang = st.selectbox("🌐 Interface Language", ["English", "Français", "Español", "Arabic"], index=["English", "Français", "Español", "Arabic"].index(st.session_state.lang))
+        if new_lang != st.session_state.lang:
+            st.session_state.lang = new_lang
+            st.rerun()
+            
+        st.markdown("---")
+        
+        # User Profile Box
+        admin_tag = '<span class="admin-badge">ADMIN</span>' if is_admin else ''
+        st.markdown(f"""
+        <div class="sidebar-user">
+            <span style="color:#b3b3b3; font-size:12px;">LOGGED IN AS</span><br>
+            <b>{st.session_state.user.email}</b> {admin_tag}
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Logout
+        if st.button(lang_dict["logout"], use_container_width=True):
+            supabase.auth.sign_out()
+            st.session_state.user = None
+            st.rerun()
 
     st.markdown("""
     <div style="background: linear-gradient(to right, #0e1117, #1f77b4); padding: 30px; border-radius: 5px; border-left: 5px solid #c1272d; margin-bottom: 20px;">
@@ -219,35 +285,20 @@ def main_app():
     </div>
     """, unsafe_allow_html=True)
 
-    with st.sidebar:
-        if is_admin:
-            st.markdown('<div class="admin-badge">SYSTEM ADMIN</div>', unsafe_allow_html=True)
-            st.markdown(f"**{st.session_state.user.email}**")
-            st.success("Full Analytics Access Granted")
-        else:
-            st.markdown("### 👤 USER SESSION")
-            st.markdown(f"**{st.session_state.user.email}**")
-            
-        st.markdown("---")
-        if st.button("🚪 Terminate Session", use_container_width=True):
-            supabase.auth.sign_out()
-            st.session_state.user = None
-            st.rerun()
-
     tab1, tab2, tab3, tab4, tab6, tab5 = st.tabs([
-        "📈 Corporate Analysis", "🏗️ BTP Benchmark", "💼 M&A Valuation", 
-        "💹 Live Charts", "🗄️ My History", "👤 About Creator"
+        lang_dict["tab1"], lang_dict["tab2"], lang_dict["tab3"], 
+        lang_dict["tab4"], lang_dict["tab6"], lang_dict["tab5"]
     ])
-    df_live = get_live_market_data()
     
+    df_live = get_live_market_data()
     has_data = False
     rev_25 = net_25 = user_net_margin = user_roe = current_ratio = 0
 
     # --- TAB 1: UPLOAD & ANALYSIS ---
     with tab1:
         c1, c2 = st.columns([3, 1])
-        with c1: st.markdown("**Upload your company's financial Excel template.**")
-        with c2: st.download_button("📥 Download Template", data=generate_template(), file_name="Template.xlsx", use_container_width=True)
+        with c1: st.markdown(f"**{lang_dict['upload_msg']}**")
+        with c2: st.download_button(lang_dict["dl_btn"], data=generate_template(), file_name="Template.xlsx", use_container_width=True)
         
         uploaded_file = st.file_uploader("Upload Excel (.xlsx)", type=["xlsx"], label_visibility="collapsed")
         
@@ -261,7 +312,6 @@ def main_app():
                 col_24 = df_finance.columns[0]
                 col_25 = df_finance.columns[1]
                 
-                # Setup Variance Table Logic
                 df_display = df_finance.copy()
                 df_display[col_24] = pd.to_numeric(df_display[col_24], errors='coerce')
                 df_display[col_25] = pd.to_numeric(df_display[col_25], errors='coerce')
@@ -271,18 +321,15 @@ def main_app():
                     item = str(row.name).lower()
                     val = row['YoY Growth (%)']
                     if pd.isna(val): return [''] * len(row)
-                    # Red for liability/debt growth, Green for asset/revenue growth
                     color = '#d62728' if ('liability' in item or 'debt' in item) and val > 0 else '#2ca02c' if val > 0 else '#d62728'
                     return [f'color: {color}' if col == 'YoY Growth (%)' else '' for col in row.index]
 
-                # Top Row: Variance Table & Sensitivity
                 left_col, right_col = st.columns([1.5, 1], gap="large")
                 
                 with left_col:
-                    st.subheader("📋 Imported Variance Analysis")
+                    st.subheader("📋 Variance Analysis")
                     st.dataframe(df_display.style.apply(color_variance, axis=1).format({'YoY Growth (%)': "{:.2f}%"}), use_container_width=True)
 
-                    # Extract values for Ratios
                     rev_24, rev_25 = float(df_finance.loc["Revenue", col_24]), float(df_finance.loc["Revenue", col_25])
                     net_24, net_25 = float(df_finance.loc["Net Income", col_24]), float(df_finance.loc["Net Income", col_25])
                     ca_25 = float(df_finance.loc["Current Assets", col_25])
@@ -294,9 +341,7 @@ def main_app():
                     current_ratio = ca_25 / cl_25 if cl_25 > 0 else 0
 
                 with right_col:
-                    st.subheader("🎛️ Sensitivity Analysis (What-If)")
-                    
-                    # Sliders for Simulation
+                    st.subheader("🎛️ Sensitivity (What-If)")
                     sim_rev_exact = st.number_input("Revenue Growth (%)", -30, 30, 0, step=1)
                     sim_cost_exact = st.number_input("Cost Reduction (%)", 0, 30, 0, step=1)
                     
@@ -318,7 +363,6 @@ def main_app():
 
                 st.markdown("---")
                 
-                # Middle Row: Ratios & Charts
                 st.subheader("📊 Key Performance Ratios")
                 cr1, cr2, cr3 = st.columns(3)
                 cr1.plotly_chart(go.Figure(go.Indicator(mode="gauge+number", value=current_ratio, title={'text': "Current Ratio"}, gauge={'axis': {'range': [0, 3]}, 'bar': {'color': "#2ca02c"}})).update_layout(height=180, margin=dict(l=10, r=10, t=30, b=10), template="plotly_dark"), use_container_width=True)
@@ -327,17 +371,16 @@ def main_app():
 
                 st.markdown("---")
 
-                # Bottom Row: Expert Diagnosis & Financial Progression
                 col_diag, col_chart = st.columns([1, 1], gap="large")
                 
                 with col_diag:
-                    st.subheader("💡 Expert Financial Diagnosis")
+                    st.subheader("💡 Expert Diagnosis")
                     score_positif = sum([current_ratio >= 1.2, user_net_margin >= 8.0, user_roe >= 12.0])
                     if score_positif >= 2:
-                        color, status = "#2ca02c", "Favorable Financial Situation (Key Strengths)"
+                        color, status = "#2ca02c", "Favorable Financial Situation"
                         selected_nbs = ["Excellent liquidity management.", "Strong operational profitability confirmed.", "Optimal value creation for shareholders with attractive ROE."]
                     else:
-                        color, status = "#d62728", "Critical Financial Situation (Vulnerabilities)"
+                        color, status = "#d62728", "Critical Financial Situation"
                         selected_nbs = ["Potential liquidity drain: Monitor short-term solvency.", "Value destruction: Margins are below sector standards.", "High dependency on debt or low operational efficiency."]
                         
                     st.markdown(f"""
@@ -352,7 +395,7 @@ def main_app():
                     """, unsafe_allow_html=True)
 
                 with col_chart:
-                    st.subheader("📈 YoY Financial Progression")
+                    st.subheader("📈 YoY Progression")
                     fig_yoy = go.Figure()
                     fig_yoy.add_trace(go.Bar(x=['2024', '2025'], y=[rev_24, rev_25], name='Revenue', marker_color='#1f77b4'))
                     fig_yoy.add_trace(go.Bar(x=['2024', '2025'], y=[net_24, net_25], name='Net Income', marker_color='#2ca02c'))
@@ -361,7 +404,6 @@ def main_app():
 
                 st.markdown("---")
 
-                # Database & Reports Actions
                 st.subheader("💾 Actions & Reports")
                 c_action1, c_action2 = st.columns(2)
                 
@@ -376,14 +418,8 @@ def main_app():
                         else: st.error("⚠️ Failed to save.")
                         
                 with c_action2:
-                    # Generate the Full Detailed PDF
                     try:
-                        ratios_dict = {
-                            "Revenue": f"{rev_25:,.2f} MAD", 
-                            "Net Margin": f"{user_net_margin:.2f}%", 
-                            "ROE": f"{user_roe:.2f}%", 
-                            "Current Ratio": f"{current_ratio:.2f}"
-                        }
+                        ratios_dict = {"Revenue": f"{rev_25:,.2f} MAD", "Net Margin": f"{user_net_margin:.2f}%", "ROE": f"{user_roe:.2f}%", "Current Ratio": f"{current_ratio:.2f}"}
                         sector_pe = df_live['PE_Ratio'].mean() if df_live is not None else 15.0
                         pdf_bytes = create_detailed_pdf(ratios_dict, selected_nbs, sector_pe, df_display, {"rev": sim_rev, "margin": sim_margin})
                         b64_pdf = base64.b64encode(pdf_bytes).decode('latin-1')
@@ -409,7 +445,7 @@ def main_app():
 
     # --- TAB 3: M&A DEAL ROOM ---
     with tab3:
-        st.header("💼 M&A & Private Equity Deal Room")
+        st.header(lang_dict["mna_title"])
         
         with st.expander("ℹ️ Glossary & Definitions"):
             st.markdown("""
@@ -500,7 +536,7 @@ def main_app():
 
     # --- TAB 6: MY HISTORY ---
     with tab6:
-        st.header("🗄️ Database Records")
+        st.header(lang_dict["history_title"])
         hist = get_history(st.session_state.user.id)
         if len(hist) == 0:
             st.info("No records found in database.")
@@ -515,6 +551,7 @@ def main_app():
 
     # --- TAB 5: ABOUT ---
     with tab5:
+        st.header(lang_dict["about_title"])
         col_about1, col_about2 = st.columns([2, 1])
         with col_about1:
             st.markdown("""
