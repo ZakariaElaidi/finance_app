@@ -24,6 +24,7 @@ t = {
         "tab2": "🏗️ BTP Sector Equity Research",
         "tab3": "💹 Live Market Charts",
         "tab4": "👤 About the Creator",
+        "tab5": "💼 M&A & Valuation Deal Room",
         "upload_text": "**Upload your company's financial Excel template to unlock the dual-pane analysis dashboard.**",
         "dl_template": "📥 Download Required Template",
         "variance": "📋 Imported Variance Analysis",
@@ -41,6 +42,7 @@ t = {
         "tab2": "🏗️ Recherche Secteur BTP",
         "tab3": "💹 Graphiques de Marché",
         "tab4": "👤 À propos du Créateur",
+        "tab5": "💼 Salle M&A et Valorisation",
         "upload_text": "**Téléchargez votre modèle Excel financier pour débloquer le tableau de bord d'analyse.**",
         "dl_template": "📥 Télécharger le modèle requis",
         "variance": "📋 Analyse des Écarts Importée",
@@ -58,6 +60,7 @@ t = {
         "tab2": "🏗️ أبحاث قطاع البناء",
         "tab3": "💹 رسوم السوق الحية",
         "tab4": "👤 عن المطور",
+        "tab5": "💼 غرفة الدمج والاستحواذ والتقييم",
         "upload_text": "**قم بتحميل قالب الإكسيل المالي الخاص بشركتك لفتح لوحة التحليل.**",
         "dl_template": "📥 تحميل القالب المطلوب",
         "variance": "📋 تحليل التباين المستورد",
@@ -91,6 +94,7 @@ html, body, [class*="css"] { font-family: 'Montserrat', sans-serif !important; }
 .btn-animated-red:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(193, 39, 45, 0.7); color: white !important; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(193, 39, 45, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(193, 39, 45, 0); } 100% { box-shadow: 0 0 0 0 rgba(193, 39, 45, 0); } }
 .metric-card { background-color: #1e1e1e; padding: 15px; border-radius: 8px; border-top: 3px solid #1f77b4; margin-bottom: 15px; }
+.pe-card { background-color: #1e1e1e; padding: 15px; border-radius: 8px; border-top: 3px solid #9467bd; margin-bottom: 15px; }
 </style>
 
 <div class="full-width-banner">
@@ -137,29 +141,25 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
     pdf = FPDF()
     pdf.add_page()
     
-    # Red Corporate Header
-    pdf.set_fill_color(193, 39, 45) # Deep Red
+    pdf.set_fill_color(193, 39, 45)
     pdf.rect(0, 0, 210, 35, 'F')
     
     pdf.set_y(12)
     pdf.set_font("Arial", 'B', 22)
-    pdf.set_text_color(255, 255, 255) # White text
+    pdf.set_text_color(255, 255, 255)
     pdf.cell(0, 10, "FINANCIAL & EQUITY RESEARCH REPORT", ln=True, align='C')
     
-    # Reset colors for body
     pdf.set_text_color(0, 0, 0)
     pdf.set_y(45)
     pdf.set_font("Arial", 'I', 11)
     pdf.cell(0, 10, f"Generated automatically on: {datetime.now().strftime('%Y-%m-%d %H:%M')}", ln=True, align='R')
     pdf.ln(5)
     
-    # Section 1: Financial Table
     pdf.set_fill_color(230, 230, 230)
     pdf.set_font("Arial", 'B', 14)
     pdf.cell(0, 10, " 1. Financial Statement Variance Data", border=1, ln=True, fill=True)
     pdf.ln(5)
     
-    # Drawing the Table Header
     pdf.set_font("Arial", 'B', 10)
     pdf.set_fill_color(200, 200, 200)
     pdf.cell(60, 8, "Line Item", border=1, align='C', fill=True)
@@ -167,7 +167,6 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
     pdf.cell(45, 8, "2025", border=1, align='C', fill=True)
     pdf.cell(40, 8, "YoY Growth (%)", border=1, ln=True, align='C', fill=True)
     
-    # Drawing the Table Rows from DataFrame
     pdf.set_font("Arial", '', 10)
     for index, row in df_table.iterrows():
         pdf.cell(60, 8, str(index), border=1)
@@ -178,7 +177,6 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
         pdf.cell(40, 8, growth_str, border=1, ln=True, align='R')
     pdf.ln(10)
 
-    # Section 2: Key Ratios
     pdf.set_font("Arial", 'B', 14)
     pdf.set_fill_color(230, 230, 230)
     pdf.cell(0, 10, " 2. Key Performance Ratios", border=1, ln=True, fill=True)
@@ -191,7 +189,6 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
         pdf.set_font("Arial", '', 12)
     pdf.ln(10)
     
-    # Section 3: Expert Diagnosis
     pdf.set_font("Arial", 'B', 14)
     pdf.cell(0, 10, " 3. Expert Diagnosis & Vulnerabilities", border=1, ln=True, fill=True)
     pdf.ln(5)
@@ -200,7 +197,6 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
         pdf.multi_cell(0, 8, txt=f"> {note}")
     pdf.ln(10)
     
-    # Section 4: What-If & Benchmarking
     pdf.set_font("Arial", 'B', 14)
     pdf.cell(0, 10, " 4. Sensitivity Simulation & Market Benchmark", border=1, ln=True, fill=True)
     pdf.ln(5)
@@ -210,7 +206,6 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
     pdf.ln(5)
     pdf.multi_cell(0, 8, txt=f"The company's performance was evaluated against the Casablanca Stock Exchange (CSE) BTP sector. The average sector P/E Ratio currently stands at {sector_avg_pe:.2f}.")
     
-    # Footer
     pdf.set_y(-25)
     pdf.set_font("Arial", 'I', 9)
     pdf.set_text_color(150, 150, 150)
@@ -219,9 +214,9 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
     return pdf.output(dest='S').encode('latin-1')
 
 # ==========================================
-# MAIN TABS
+# MAIN TABS (5 TABS NOW)
 # ==========================================
-tab1, tab2, tab3, tab4 = st.tabs([lang_dict["tab1"], lang_dict["tab2"], lang_dict["tab3"], lang_dict["tab4"]])
+tab1, tab2, tab5, tab3, tab4 = st.tabs([lang_dict["tab1"], lang_dict["tab2"], lang_dict["tab5"], lang_dict["tab3"], lang_dict["tab4"]])
 
 # ==========================================
 # TAB 1: SPLIT SCREEN LAYOUT
@@ -290,8 +285,6 @@ with tab1:
             # RIGHT COLUMN
             with right_col:
                 st.subheader(lang_dict["whatif"])
-                
-                # SENSITIVITY SLIDERS WITH EXACT NUMBER INPUTS
                 col_sl1, col_num1 = st.columns([3, 1])
                 with col_sl1: sim_rev_slider = st.slider("Revenue Growth (%)", -30, 30, 0, step=1)
                 with col_num1: sim_rev_exact = st.number_input("Exact %", -30, 30, sim_rev_slider, step=1, label_visibility="collapsed")
@@ -328,7 +321,7 @@ with tab1:
         except Exception as e: st.error(f"⚠️ Format Error.")
 
 # ==========================================
-# TAB 2, 3, 4:
+# TAB 2
 # ==========================================
 with tab2:
     if df_live is not None:
@@ -337,6 +330,78 @@ with tab2:
         fig = px.bar(df_live, x="Company", y="Live_Price_MAD", color="Variation", title="Live Stock Prices (MAD) & Intraday Variation", color_continuous_scale="RdYlGn", template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
+# ==========================================
+# TAB 5: M&A & VALUATION DEAL ROOM (NEW)
+# ==========================================
+with tab5:
+    st.header("💼 M&A & Private Equity Deal Room")
+    st.markdown("Advanced Intrinsic Valuation (DCF) & Leveraged Buyout (LBO) Modeling.")
+
+    has_data = 'rev_25' in locals() and 'net_25' in locals()
+    if not has_data:
+        st.info("💡 Upload your Financial Template in Tab 1 to automatically populate these models with your company's data. Using standard proxy data for now.")
+    
+    base_rev = rev_25 if has_data else 5000000.0
+    base_ebitda = net_25 * 1.3 if has_data else 1200000.0 # Proxy EBITDA
+
+    col_dcf, col_lbo = st.columns(2, gap="large")
+
+    with col_dcf:
+        st.subheader("📊 DCF Valuation Engine")
+        wacc = st.slider("WACC (Discount Rate) %", 5.0, 20.0, 10.0, 0.5) / 100
+        tg = st.slider("Terminal Growth Rate %", 0.0, 5.0, 2.0, 0.1) / 100
+        proj_growth = st.slider("Projected Annual Growth %", -10.0, 30.0, 5.0, 1.0) / 100
+        margin = st.slider("Target Cash Flow Margin %", 1.0, 30.0, 15.0, 1.0) / 100
+
+        cfs = [base_rev * ((1 + proj_growth)**i) * margin for i in range(1, 6)]
+        pv_cfs = sum([cf / ((1 + wacc)**(i+1)) for i, cf in enumerate(cfs)])
+        tv = (cfs[-1] * (1 + tg)) / (wacc - tg) if wacc > tg else 0
+        pv_tv = tv / ((1 + wacc)**5)
+        ev = pv_cfs + pv_tv
+
+        st.markdown(f"""
+        <div class="metric-card">
+            <p style="margin:0; color:#b3b3b3; font-size:14px;">Implied Enterprise Value (EV)</p>
+            <h2 style="margin:0; color:#00ff00;">{ev:,.2f} MAD</h2>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_lbo:
+        st.subheader("💰 LBO Quick-Modeler")
+        
+        c_l1, c_l2 = st.columns(2)
+        with c_l1: entry_mult = st.number_input("Entry Multiple (x)", 3.0, 15.0, 6.0, 0.5)
+        with c_l2: exit_mult = st.number_input("Exit Multiple (x)", 3.0, 15.0, 6.0, 0.5)
+        
+        debt_pct = st.slider("Debt Funding %", 0.0, 90.0, 60.0, 5.0) / 100
+
+        entry_ev = base_ebitda * entry_mult
+        debt_amount = entry_ev * debt_pct
+        equity_amount = entry_ev - debt_amount
+
+        total_cf = sum(cfs)
+        debt_paydown = min(total_cf * 0.5, debt_amount) 
+        remaining_debt = debt_amount - debt_paydown
+
+        exit_ebitda = base_ebitda * ((1 + proj_growth)**5)
+        exit_ev = exit_ebitda * exit_mult
+        exit_equity = exit_ev - remaining_debt
+
+        moic = exit_equity / equity_amount if equity_amount > 0 else 0
+        irr = (moic**(1/5) - 1) * 100 if moic > 0 else 0
+        color_irr = "#00ff00" if irr >= 20 else ("#ffbb00" if irr >= 10 else "#ff0000")
+
+        st.markdown(f"""
+        <div class="pe-card">
+            <p style="margin:0; color:#b3b3b3; font-size:14px;">Private Equity IRR (5-Year)</p>
+            <h2 style="margin:0; color:{color_irr};">{irr:.2f}%</h2>
+            <p style="margin:0; color:#b3b3b3; font-size:14px;">MoIC (Multiple on Invested Capital): <b>{moic:.2f}x</b></p>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ==========================================
+# TAB 3
+# ==========================================
 with tab3:
     if df_live is not None:
         c_sel1, c_sel2, c_sel3 = st.columns(3)
@@ -361,6 +426,9 @@ with tab3:
         fig_m.update_layout(height=450, title=f"Price - {selected_company}", template="plotly_dark", xaxis_rangeslider_visible=False)
         st.plotly_chart(fig_m, use_container_width=True)
 
+# ==========================================
+# TAB 4
+# ==========================================
 with tab4:
     st.header("👤 About the Creator")
     col_about1, col_about2 = st.columns([2, 1])
