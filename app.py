@@ -78,7 +78,6 @@ st.markdown('<div class="content-wrapper">', unsafe_allow_html=True)
 st.title("📊 Financial Analytics & Equity Research Hub")
 st.markdown("---")
 
-# Fonction pour générer le template Excel
 def generate_template():
     df_template = pd.DataFrame({
         "Line_Item": ["Revenue", "Net Income", "Current Assets", "Current Liabilities", "Inventory", "Total Assets", "Total Equity", "Total Debt"],
@@ -121,7 +120,6 @@ with tab1:
     with col_text:
         st.markdown("**Upload your company's financial Excel template to automatically generate a visual performance analysis.**")
     with col_btn:
-        # Bouton pour télécharger le template officiel
         st.download_button(
             label="📥 Télécharger le Template Requis",
             data=generate_template(),
@@ -164,7 +162,6 @@ with tab1:
 
             st.dataframe(df_display.style.apply(color_variance, axis=1).format({'YoY Growth (%)': "{:.2f}%"}), use_container_width=True)
 
-            # Vérification stricte des lignes nécessaires
             required_rows = ["Revenue", "Net Income", "Current Assets", "Current Liabilities", "Total Equity"]
             missing_rows = [row for row in required_rows if row not in df_finance.index]
             
@@ -265,7 +262,7 @@ with tab1:
             st.error(f"⚠️ Erreur de lecture : Le fichier n'est pas structuré correctement. Veuillez télécharger et utiliser le template.")
 
 # ==========================================
-# TAB 2: EQUITY RESEARCH 
+# TAB 2: EQUITY RESEARCH (Chart Fixed)
 # ==========================================
 with tab2:
     st.header(f"🏗️ BTP Sector Live Dashboard")
@@ -284,10 +281,17 @@ with tab2:
         fig = px.bar(df_live, x="Company", y="Live_Price_MAD", color="Variation", 
                      title="Live Stock Prices (MAD) & Intraday Variation", 
                      color_continuous_scale="RdYlGn", template="plotly_dark")
-        st.plotly_chart(fig, use_container_width=True)
+        
+        # Disable Zoom/Pan on Bar Chart to prevent distortion
+        fig.update_layout(
+            dragmode=False,
+            xaxis=dict(fixedrange=True),
+            yaxis=dict(fixedrange=True)
+        )
+        st.plotly_chart(fig, use_container_width=True, config={'scrollZoom': False, 'displayModeBar': False})
 
 # ==========================================
-# TAB 3: LIVE MARKET CHARTS (Fixed & Locked)
+# TAB 3: LIVE MARKET CHARTS (Zoom Enabled)
 # ==========================================
 with tab3:
     st.header("💹 Technical Analysis & Historical Trends")
@@ -335,13 +339,12 @@ with tab3:
             yaxis_title="Price (MAD)", 
             template="plotly_dark", 
             xaxis_rangeslider_visible=False,
-            dragmode=False, # <-- HADI HIYA LI KAT-BLOCKI L'ZOOM W L'PAN
-            xaxis=dict(fixedrange=True, range=[dates[0], dates[-1] + timedelta(days=2)]), # Lock X axis
-            yaxis=dict(fixedrange=True), # Lock Y axis
-            margin=dict(l=20, r=20, t=50, b=20)
+            dragmode='zoom', # Enable zoom mode
+            margin=dict(l=20, r=20, t=50, b=20),
+            xaxis=dict(range=[dates[0], dates[-1] + timedelta(days=2)]) 
         )
         
-        st.plotly_chart(fig_market, use_container_width=True, config={'scrollZoom': False, 'displayModeBar': False})
+        st.plotly_chart(fig_market, use_container_width=True, config={'scrollZoom': True, 'displayModeBar': True})
 
 st.markdown('</div>', unsafe_allow_html=True)
 
