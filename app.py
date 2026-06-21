@@ -32,7 +32,8 @@ t = {
         "whatif": "🎛️ Sensitivity Analysis (What-If)",
         "sim_rev": "Simulated Revenue (MAD)",
         "sim_margin": "Simulated Net Margin",
-        "dl_pdf": "📄 Download Complete PDF Report"
+        "dl_pdf": "📄 Download Complete PDF Report",
+        "lang_sel": "Select Interface Language:"
     },
     "Français": {
         "maintitle": "Hub d'Analyse Financière et de Recherche en Actions",
@@ -48,7 +49,8 @@ t = {
         "whatif": "🎛️ Analyse de Sensibilité (Simulations)",
         "sim_rev": "Revenu Simulé (MAD)",
         "sim_margin": "Marge Nette Simulée",
-        "dl_pdf": "📄 Télécharger le Rapport PDF Complet"
+        "dl_pdf": "📄 Télécharger le Rapport PDF Complet",
+        "lang_sel": "Sélectionner la Langue de l'Interface :"
     },
     "Arabic": {
         "maintitle": "منصة التحليل المالي وأبحاث الأسهم",
@@ -64,22 +66,15 @@ t = {
         "whatif": "🎛️ تحليل الحساسية (ماذا لو)",
         "sim_rev": "الإيرادات المحاكية (درهم)",
         "sim_margin": "هامش الربح الصافي المحاكي",
-        "dl_pdf": "📄 تحميل تقرير PDF الكامل"
+        "dl_pdf": "📄 تحميل تقرير PDF الكامل",
+        "lang_sel": "اختر لغة الواجهة:"
     }
 }
 
 lang = st.session_state.lang
 lang_dict = t[lang]
 
-# 2. Sidebar Language Selector
-with st.sidebar:
-    st.markdown("### 🌐 Language / Langue / اللغة")
-    selected_lang = st.radio("Select Interface Language:", ["English", "Français", "Arabic"], index=["English", "Français", "Arabic"].index(st.session_state.lang))
-    if selected_lang != st.session_state.lang:
-        st.session_state.lang = selected_lang
-        st.rerun()
-
-# 3. Premium CSS & Full Width Banner & Animated Button
+# 2. Premium CSS & Full Width Banner & Animated Button
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
@@ -137,8 +132,8 @@ def get_live_market_data():
 
 df_live = get_live_market_data()
 
-# --- PREMIUM PDF GENERATOR LOGIC ---
-def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe):
+# --- PREMIUM PDF GENERATOR WITH TABLE ---
+def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_data):
     pdf = FPDF()
     pdf.add_page()
     
@@ -158,12 +153,36 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe):
     pdf.cell(0, 10, f"Generated automatically on: {datetime.now().strftime('%Y-%m-%d %H:%M')}", ln=True, align='R')
     pdf.ln(5)
     
-    # Section 1: Corporate Analysis
+    # Section 1: Financial Table
     pdf.set_fill_color(230, 230, 230)
     pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, " 1. Corporate Financial Analysis", border=1, ln=True, fill=True)
+    pdf.cell(0, 10, " 1. Financial Statement Variance Data", border=1, ln=True, fill=True)
     pdf.ln(5)
     
+    # Drawing the Table Header
+    pdf.set_font("Arial", 'B', 10)
+    pdf.set_fill_color(200, 200, 200)
+    pdf.cell(60, 8, "Line Item", border=1, align='C', fill=True)
+    pdf.cell(45, 8, "2024", border=1, align='C', fill=True)
+    pdf.cell(45, 8, "2025", border=1, align='C', fill=True)
+    pdf.cell(40, 8, "YoY Growth (%)", border=1, ln=True, align='C', fill=True)
+    
+    # Drawing the Table Rows from DataFrame
+    pdf.set_font("Arial", '', 10)
+    for index, row in df_table.iterrows():
+        pdf.cell(60, 8, str(index), border=1)
+        pdf.cell(45, 8, f"{row.iloc[0]:,.0f}", border=1, align='R')
+        pdf.cell(45, 8, f"{row.iloc[1]:,.0f}", border=1, align='R')
+        val = row['YoY Growth (%)']
+        growth_str = f"{val:.2f}%" if pd.notna(val) else "N/A"
+        pdf.cell(40, 8, growth_str, border=1, ln=True, align='R')
+    pdf.ln(10)
+
+    # Section 2: Key Ratios
+    pdf.set_font("Arial", 'B', 14)
+    pdf.set_fill_color(230, 230, 230)
+    pdf.cell(0, 10, " 2. Key Performance Ratios", border=1, ln=True, fill=True)
+    pdf.ln(5)
     pdf.set_font("Arial", '', 12)
     for key, value in company_ratios.items():
         pdf.cell(90, 8, f"{key}:", border=0)
@@ -172,21 +191,24 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe):
         pdf.set_font("Arial", '', 12)
     pdf.ln(10)
     
-    # Section 2: Expert Diagnosis
+    # Section 3: Expert Diagnosis
     pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, " 2. Expert Diagnosis & Vulnerabilities", border=1, ln=True, fill=True)
+    pdf.cell(0, 10, " 3. Expert Diagnosis & Vulnerabilities", border=1, ln=True, fill=True)
     pdf.ln(5)
     pdf.set_font("Arial", '', 11)
     for note in expert_diagnosis:
         pdf.multi_cell(0, 8, txt=f"> {note}")
     pdf.ln(10)
     
-    # Section 3: Sector Benchmarking
+    # Section 4: What-If & Benchmarking
     pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, " 3. Market Benchmarking Overview", border=1, ln=True, fill=True)
+    pdf.cell(0, 10, " 4. Sensitivity Simulation & Market Benchmark", border=1, ln=True, fill=True)
     pdf.ln(5)
     pdf.set_font("Arial", '', 12)
-    pdf.multi_cell(0, 8, txt=f"The company's performance was evaluated against the Casablanca Stock Exchange (CSE) BTP sector.\n\nThe average sector P/E Ratio currently stands at {sector_avg_pe:.2f}.")
+    pdf.cell(0, 8, f"- Simulated Future Revenue: {sim_data['rev']:,.2f} MAD", ln=True)
+    pdf.cell(0, 8, f"- Simulated Future Net Margin: {sim_data['margin']:.2f}%", ln=True)
+    pdf.ln(5)
+    pdf.multi_cell(0, 8, txt=f"The company's performance was evaluated against the Casablanca Stock Exchange (CSE) BTP sector. The average sector P/E Ratio currently stands at {sector_avg_pe:.2f}.")
     
     # Footer
     pdf.set_y(-25)
@@ -297,7 +319,7 @@ with tab1:
                 ratios_dict = {"Revenue": f"{rev_25:,.2f} MAD", "Net Margin": f"{net_margin_25:.2f}%", "ROE": f"{roe_25:.2f}%", "Current Ratio": f"{current_ratio_25:.2f}"}
                 
                 try:
-                    pdf_bytes = create_pdf(ratios_dict, selected_nbs, sector_pe)
+                    pdf_bytes = create_pdf(ratios_dict, selected_nbs, sector_pe, df_display, {"rev": sim_rev, "margin": sim_margin})
                     b64_pdf = base64.b64encode(pdf_bytes).decode('latin-1')
                     href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="Financial_Report_Z_ELAIDI.pdf" class="btn-animated-red">{lang_dict["dl_pdf"]}</a>'
                     st.markdown(href, unsafe_allow_html=True)
@@ -306,7 +328,7 @@ with tab1:
         except Exception as e: st.error(f"⚠️ Format Error.")
 
 # ==========================================
-# TAB 2, 3, 4: (Kept identical)
+# TAB 2, 3, 4:
 # ==========================================
 with tab2:
     if df_live is not None:
@@ -340,8 +362,34 @@ with tab3:
         st.plotly_chart(fig_m, use_container_width=True)
 
 with tab4:
-    c_abt1, c_abt2 = st.columns([2, 1])
-    with c_abt1:
-        st.markdown("### **Zakaria Elaidi** | *Financial Analyst*\n\nFinance and Management student at **ENCG El Jadida**. \n\nDelivered over **150 financial modeling and consulting projects** for a global client base.")
-    with c_abt2:
-        st.markdown('<div style="background-color: #1e1e1e; padding: 20px; border-radius: 10px; text-align: center; border-top: 4px solid #c1272d;"><a href="https://www.linkedin.com/in/zakaria-elaidi/" target="_blank" style="background-color: #0077b5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Connect on LinkedIn</a></div>', unsafe_allow_html=True)
+    st.header("👤 About the Creator")
+    col_about1, col_about2 = st.columns([2, 1])
+    with col_about1:
+        st.markdown("""
+        ### **Zakaria Elaidi** | *Financial Analyst*
+        
+        Zakaria is a dedicated financial analyst currently specializing in Finance at the prestigious **Ecole Nationale de Commerce et de Gestion (ENCG) in El Jadida**. 
+        
+        With a strong background in corporate finance and data analysis, Zakaria operates as a successful freelance financial consultant. He has a proven track record, having delivered over **150 financial modeling and consulting projects** for a global client base.
+        
+        **Platform Vision:**
+        This platform bridges the gap between traditional equity research and automated data visualization. By utilizing Python, this tool aims to transform manual financial assessments into rapid, data-driven insights.
+        """)
+        st.info("💡 **Core Expertise:** Equity Research, Corporate Finance, Data Automation, Financial Modeling.")
+    with col_about2:
+        st.markdown('<div style="background-color: #1e1e1e; padding: 20px; border-radius: 10px; text-align: center; border-top: 4px solid #c1272d;"><h3 style="margin-top:0;">Professional Network</h3><p>Open for financial consulting opportunities, equity research projects, and professional networking.</p><br><a href="https://www.linkedin.com/in/zakaria-elaidi/" target="_blank" style="background-color: #0077b5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Connect on LinkedIn</a></div>', unsafe_allow_html=True)
+
+# ==========================================
+# FOOTER & BOTTOM LANGUAGE SELECTOR
+# ==========================================
+st.markdown("---")
+
+col_foot1, col_foot2, col_foot3 = st.columns([1, 2, 1])
+with col_foot2:
+    st.markdown(f"<p style='text-align: center; color: #b3b3b3; margin-bottom: 5px;'>🌐 <b>{lang_dict['lang_sel']}</b></p>", unsafe_allow_html=True)
+    sel_lang = st.radio("Lang", ["English", "Français", "Arabic"], index=["English", "Français", "Arabic"].index(st.session_state.lang), horizontal=True, label_visibility="collapsed")
+    if sel_lang != st.session_state.lang:
+        st.session_state.lang = sel_lang
+        st.rerun()
+
+st.markdown("<div style='text-align: center; color: #a0a0a0; font-size: 15px; margin-top: 20px;'>© 2026 | Automated Financial Analytics Platform | <b>Designed & Built by ELAIDI ZAKARIA</b></div>", unsafe_allow_html=True)
