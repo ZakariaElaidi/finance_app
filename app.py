@@ -34,7 +34,23 @@ t = {
         "sim_rev": "Simulated Revenue (MAD)",
         "sim_margin": "Simulated Net Margin",
         "dl_pdf": "📄 Download Complete PDF Report",
-        "lang_sel": "Select Interface Language:"
+        "lang_sel": "Select Interface Language:",
+        "compare_title": "⚖️ Peer Comparison (Your Company vs Market)",
+        "select_peers": "Select BTP competitors to compare against:",
+        "ma_guide_title": "ℹ️ Guide & Glossary (How to use this tool)",
+        "ma_guide_text": """
+        **How to use:**
+        1. **DCF Valuation (Left):** Adjust the WACC and Growth rates to see how they impact your company's total intrinsic value (EV).
+        2. **LBO Modeler (Right):** Set the purchase multiples and debt percentage to simulate a Private Equity buyout and check if the IRR is attractive (>20%).
+        
+        **Glossary of Terms:**
+        * **WACC:** Weighted Average Cost of Capital (The minimum average return expected by investors).
+        * **Terminal Growth:** The expected constant growth rate forever.
+        * **EV (Enterprise Value):** The total theoretical value of the entire business.
+        * **LBO:** Leveraged Buyout (Acquiring a company using a significant amount of borrowed money).
+        * **IRR:** Internal Rate of Return (The annualized percentage profit for the fund).
+        * **MoIC:** Multiple on Invested Capital (How many times the initial cash investment was multiplied).
+        """
     },
     "Français": {
         "maintitle": "Hub d'Analyse Financière et de Recherche en Actions",
@@ -52,7 +68,23 @@ t = {
         "sim_rev": "Revenu Simulé (MAD)",
         "sim_margin": "Marge Nette Simulée",
         "dl_pdf": "📄 Télécharger le Rapport PDF Complet",
-        "lang_sel": "Sélectionner la Langue de l'Interface :"
+        "lang_sel": "Sélectionner la Langue :",
+        "compare_title": "⚖️ Comparaison avec les Pairs (Votre Entreprise vs Marché)",
+        "select_peers": "Sélectionnez des concurrents BTP pour comparer :",
+        "ma_guide_title": "ℹ️ Guide et Glossaire (Comment utiliser cet outil)",
+        "ma_guide_text": """
+        **Comment l'utiliser :**
+        1. **Valorisation DCF (Gauche) :** Ajustez le WACC et la croissance pour estimer l'impact sur la valeur intrinsèque (EV) de l'entreprise.
+        2. **Modèle LBO (Droite) :** Simulez un rachat par un fonds d'investissement en modifiant la dette et les multiples pour évaluer le TRI.
+        
+        **Glossaire des Termes :**
+        * **WACC :** Coût moyen pondéré du capital (Rendement minimum attendu par les investisseurs).
+        * **Croissance Terminale :** Taux de croissance perpétuelle estimé.
+        * **EV (Valeur d'Entreprise) :** La valeur théorique totale de l'entreprise.
+        * **LBO :** Rachat avec effet de levier (Acquisition d'une entreprise financée en grande partie par la dette).
+        * **IRR (TRI) :** Taux de Rentabilité Interne (Pourcentage de profit annualisé).
+        * **MoIC :** Multiple sur le Capital Investi (Combien de fois l'investissement initial a été multiplié).
+        """
     },
     "Arabic": {
         "maintitle": "منصة التحليل المالي وأبحاث الأسهم",
@@ -70,14 +102,30 @@ t = {
         "sim_rev": "الإيرادات المحاكية (درهم)",
         "sim_margin": "هامش الربح الصافي المحاكي",
         "dl_pdf": "📄 تحميل تقرير PDF الكامل",
-        "lang_sel": "اختر لغة الواجهة:"
+        "lang_sel": "اختر لغة الواجهة:",
+        "compare_title": "⚖️ مقارنة الأداء (شركتك مقابل السوق)",
+        "select_peers": "اختر الشركات المنافسة في قطاع البناء للمقارنة:",
+        "ma_guide_title": "ℹ️ دليل ومصطلحات (كيفية استخدام الأداة)",
+        "ma_guide_text": """
+        **كيفية الاستخدام:**
+        1. **التقييم (DCF - يسار):** قم بتعديل معدل الخصم (WACC) ومعدلات النمو لمعرفة تأثيرها على القيمة الإجمالية للشركة (EV).
+        2. **الاستحواذ (LBO - يمين):** قم بمحاكاة شراء الشركة عن طريق ضبط نسب الديون لمعرفة العائد المتوقع على الاستثمار (IRR).
+        
+        **مصطلحات هامة:**
+        * **WACC:** المتوسط المرجح لتكلفة رأس المال (الحد الأدنى للعائد المتوقع).
+        * **النمو النهائي:** معدل النمو الثابت المتوقع إلى الأبد بعد فترة التوقع.
+        * **EV:** قيمة المؤسسة (القيمة النظرية الإجمالية للشركة).
+        * **LBO:** الاستحواذ المدعوم بالقروض (شراء شركة باستخدام الكثير من الديون).
+        * **IRR:** معدل العائد الداخلي (نسبة الربح السنوية المتوقعة).
+        * **MoIC:** مضاعف رأس المال المستثمر (كم مرة تمت مضاعفة الاستثمار الأولي).
+        """
     }
 }
 
 lang = st.session_state.lang
 lang_dict = t[lang]
 
-# 2. Premium CSS & Full Width Banner & Animated Button
+# 2. Premium CSS & Full Width Banner
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
@@ -127,23 +175,27 @@ def get_live_market_data():
     try:
         df = pd.read_csv("btp_market_data.csv")
         df["Price_MAD"], df["PE_Ratio"] = pd.to_numeric(df["Price_MAD"], errors='coerce'), pd.to_numeric(df["PE_Ratio"], errors='coerce')
-        np.random.seed(int(time.time() / 60))
+        np.random.seed(42)
         fluctuation = np.random.uniform(-0.02, 0.02, len(df))
         df["Live_Price_MAD"] = (df["Price_MAD"] * (1 + fluctuation)).round(2)
         df["Variation"] = (fluctuation * 100).round(2)
+        
+        # Adding realistic simulated Margins and ROE for the comparison feature
+        df["Net_Margin_%"] = np.random.uniform(5, 18, len(df)).round(2)
+        df["ROE_%"] = np.random.uniform(10, 25, len(df)).round(2)
+        
         return df
     except: return None
 
 df_live = get_live_market_data()
 
-# --- PREMIUM PDF GENERATOR WITH TABLE ---
+# --- PREMIUM PDF GENERATOR ---
 def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_data):
     pdf = FPDF()
     pdf.add_page()
     
     pdf.set_fill_color(193, 39, 45)
     pdf.rect(0, 0, 210, 35, 'F')
-    
     pdf.set_y(12)
     pdf.set_font("Arial", 'B', 22)
     pdf.set_text_color(255, 255, 255)
@@ -214,9 +266,14 @@ def create_pdf(company_ratios, expert_diagnosis, sector_avg_pe, df_table, sim_da
     return pdf.output(dest='S').encode('latin-1')
 
 # ==========================================
-# MAIN TABS (5 TABS NOW)
+# MAIN TABS (5 TABS)
 # ==========================================
 tab1, tab2, tab5, tab3, tab4 = st.tabs([lang_dict["tab1"], lang_dict["tab2"], lang_dict["tab5"], lang_dict["tab3"], lang_dict["tab4"]])
+
+# Variables to store across tabs
+has_data = False
+user_net_margin = 0
+user_roe = 0
 
 # ==========================================
 # TAB 1: SPLIT SCREEN LAYOUT
@@ -231,6 +288,7 @@ with tab1:
     uploaded_file = st.file_uploader("Excel (.xlsx)", type=["xlsx"])
     
     if uploaded_file is not None:
+        has_data = True
         try:
             df_finance = pd.read_excel(uploaded_file)
             df_finance.columns = [str(c).strip() for c in df_finance.columns]
@@ -241,7 +299,6 @@ with tab1:
             # DUAL COLUMN
             left_col, right_col = st.columns([1.3, 1], gap="large")
             
-            # LEFT COLUMN
             with left_col:
                 st.subheader(lang_dict["variance"])
                 df_display = df_finance.copy()
@@ -257,7 +314,12 @@ with tab1:
                 st.dataframe(df_display.style.apply(color_variance, axis=1).format({'YoY Growth (%)': "{:.2f}%"}), use_container_width=True)
 
                 rev_25, net_25, ca_25, cl_25, eq_25 = float(df_finance.loc["Revenue", col_2025]), float(df_finance.loc["Net Income", col_2025]), float(df_finance.loc["Current Assets", col_2025]), float(df_finance.loc["Current Liabilities", col_2025]), float(df_finance.loc["Total Equity", col_2025])
-                current_ratio_25, net_margin_25, roe_25 = ca_25 / cl_25, (net_25 / rev_25) * 100, (net_25 / eq_25) * 100
+                current_ratio_25 = ca_25 / cl_25
+                net_margin_25 = (net_25 / rev_25) * 100
+                roe_25 = (net_25 / eq_25) * 100
+                
+                user_net_margin = net_margin_25
+                user_roe = roe_25
                 
                 st.subheader(lang_dict["ratios"])
                 c1, c2, c3 = st.columns(3)
@@ -282,7 +344,6 @@ with tab1:
                 <ul><li style="color: {color};"><b>N.B:</b> {selected_nbs[0]}</li><li style="color: {color};"><b>N.B:</b> {selected_nbs[1]}</li><li style="color: {color};"><b>N.B:</b> {selected_nbs[2]}</li></ul></div>
                 """, unsafe_allow_html=True)
 
-            # RIGHT COLUMN
             with right_col:
                 st.subheader(lang_dict["whatif"])
                 col_sl1, col_num1 = st.columns([3, 1])
@@ -292,8 +353,6 @@ with tab1:
                 col_sl2, col_num2 = st.columns([3, 1])
                 with col_sl2: sim_cost_slider = st.slider("Cost Reduction (%)", 0, 30, 0, step=1)
                 with col_num2: sim_cost_exact = st.number_input("Exact %", 0, 30, sim_cost_slider, step=1, key="cost_ex", label_visibility="collapsed")
-                
-                st.caption("💡 *Tip: Use the sliders or type exact numbers in the boxes on the right.*")
                 
                 sim_rev = rev_25 * (1 + (sim_rev_exact/100))
                 sim_costs = (rev_25 - net_25) * (1 - (sim_cost_exact/100))
@@ -307,7 +366,6 @@ with tab1:
                 
                 sector_pe = df_live['PE_Ratio'].mean() if df_live is not None else 15.0
 
-                # --- ANIMATED RED PDF DOWNLOAD BUTTON ---
                 st.markdown("<br><br>", unsafe_allow_html=True)
                 ratios_dict = {"Revenue": f"{rev_25:,.2f} MAD", "Net Margin": f"{net_margin_25:.2f}%", "ROE": f"{roe_25:.2f}%", "Current Ratio": f"{current_ratio_25:.2f}"}
                 
@@ -321,7 +379,7 @@ with tab1:
         except Exception as e: st.error(f"⚠️ Format Error.")
 
 # ==========================================
-# TAB 2
+# TAB 2: SECTOR BENCHMARKING & COMPARISON
 # ==========================================
 with tab2:
     if df_live is not None:
@@ -329,15 +387,43 @@ with tab2:
         st.dataframe(df_live[["Company", "Live_Price_MAD", "Variation", "Market_Cap_Billion", "PE_Ratio", "Dividend_Yield"]].style.map(color_variation, subset=['Variation']).highlight_max(axis=0, subset=["Market_Cap_Billion"], color="#1f77b4"), use_container_width=True)
         fig = px.bar(df_live, x="Company", y="Live_Price_MAD", color="Variation", title="Live Stock Prices (MAD) & Intraday Variation", color_continuous_scale="RdYlGn", template="plotly_dark")
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        
+        # --- NEW: PEER COMPARISON FEATURE ---
+        if has_data:
+            st.markdown("---")
+            st.subheader(lang_dict["compare_title"])
+            
+            # Let the user select companies
+            all_companies = df_live["Company"].tolist()
+            default_peers = all_companies[:2] if len(all_companies) >= 2 else all_companies
+            selected_peers = st.multiselect(lang_dict["select_peers"], all_companies, default=default_peers)
+            
+            if selected_peers:
+                # Build comparison dataframe
+                peer_data = df_live[df_live["Company"].isin(selected_peers)]
+                comp_df = pd.DataFrame({
+                    "Entity": ["Your Company"] + peer_data["Company"].tolist(),
+                    "Net Margin (%)": [user_net_margin] + peer_data["Net_Margin_%"].tolist(),
+                    "ROE (%)": [user_roe] + peer_data["ROE_%"].tolist()
+                })
+                
+                col_table, col_chart = st.columns([1, 1.5])
+                with col_table:
+                    st.dataframe(comp_df.style.highlight_max(subset=["Net Margin (%)", "ROE (%)"], color="#1f77b4"), use_container_width=True, hide_index=True)
+                with col_chart:
+                    fig_comp = px.bar(comp_df, x="Entity", y=["Net Margin (%)", "ROE (%)"], barmode="group", template="plotly_dark", title="Margins vs Market Peers")
+                    st.plotly_chart(fig_comp, use_container_width=True)
 
 # ==========================================
-# TAB 5: M&A & VALUATION DEAL ROOM (NEW)
+# TAB 5: M&A & VALUATION DEAL ROOM
 # ==========================================
 with tab5:
     st.header("💼 M&A & Private Equity Deal Room")
-    st.markdown("Advanced Intrinsic Valuation (DCF) & Leveraged Buyout (LBO) Modeling.")
+    
+    # --- NEW: GUIDE & GLOSSARY BUTTON ---
+    with st.expander(lang_dict["ma_guide_title"]):
+        st.markdown(lang_dict["ma_guide_text"])
 
-    has_data = 'rev_25' in locals() and 'net_25' in locals()
     if not has_data:
         st.info("💡 Upload your Financial Template in Tab 1 to automatically populate these models with your company's data. Using standard proxy data for now.")
     
