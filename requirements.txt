@@ -1,7 +1,8 @@
-streamlit
-pandas
-plotly
-numpy
-openpyxl
-fpdf
-supabase
+streamlit>=1.35.0
+pandas>=2.2.0
+plotly>=5.20.0
+numpy>=1.26.0
+openpyxl>=3.1.2
+fpdf2>=2.8.1
+supabase>=2.5.0
+httpx>=0.27.0
