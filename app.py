@@ -15,7 +15,7 @@ from supabase import create_client
 # ==========================================
 # 1. SUPABASE CONFIGURATION
 # ==========================================
-SUPABASE_URL = "https://jultknrcpxenpefpxeqh.supabase.co"
+SUPABASE_URL = "https://julktnrcpxenpefpxeqh.supabase.co"
 SUPABASE_KEY = "sb_publishable_uZMzGu6xCTr5DRFCJHM08g_DFHNC4Hv"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
