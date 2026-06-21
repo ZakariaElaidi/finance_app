@@ -15,25 +15,28 @@ import io
 import json
 import base64
 from fpdf import FPDF
-import streamlit as st
-from supabase import create_client
+
 
 # ==========================================
 # SUPABASE CONFIGURATION
 # ==========================================
+from supabase import create_client
+import streamlit as st
 
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+
+st.write("URL:", SUPABASE_URL)
 
 try:
     supabase = create_client(
         SUPABASE_URL,
         SUPABASE_KEY
     )
+    st.success("Supabase client created")
 except Exception as e:
-    st.error(f"Supabase initialization failed: {e}")
+    st.error(f"Client Error: {e}")
     st.stop()
-
 ADMIN_EMAIL = "zakariaelaidi2006@gmail.com"
 
 if "user" not in st.session_state:
