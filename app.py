@@ -17,8 +17,8 @@ from supabase import create_client
 # ==========================================
 # 1. SUPABASE CONFIGURATION
 # ==========================================
-SUPABASE_URL = "https://jultknrcpxenpefpxeqh.supabase.co"
-SUPABASE_KEY = "sb_publishable_uZMzGu6xCTr5DRFCJHM08g_DFHNC4Hv"
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 ADMIN_EMAIL = "zakariaelaidi2006@gmail.com"
