@@ -19,28 +19,28 @@ sym = syms[curr]
 # --- TRANSLATION DICTIONARY ---
 t = {
     "English": {
-        "title": "💹 Live Charts & Market Trends",
+        "banner_h": "💹 Live Charts & Market Trends", "banner_desc": "Track real-time market movements, volatility, and historical price trends.",
         "comp": "Company:", "time": "Timeframe:", "style": "Style:",
         "m1": "1 Month", "m3": "3 Months", "m6": "6 Months",
         "candle": "Candlesticks", "line": "Line Chart",
         "err": "Error loading CSV:", "chart_title": "Price Trend"
     },
     "Français": {
-        "title": "💹 Graphiques en Direct et Tendances",
+        "banner_h": "💹 Graphiques en Direct et Tendances", "banner_desc": "Suivez les mouvements du marché, la volatilité et les tendances historiques.",
         "comp": "Entreprise :", "time": "Période :", "style": "Style :",
         "m1": "1 Mois", "m3": "3 Mois", "m6": "6 Mois",
         "candle": "Bougies (Candlesticks)", "line": "Courbe (Line)",
         "err": "Erreur de chargement CSV :", "chart_title": "Tendance des Prix"
     },
     "Español": {
-        "title": "💹 Gráficos en Vivo y Tendencias",
+        "banner_h": "💹 Gráficos en Vivo y Tendencias", "banner_desc": "Rastrea los movimientos del mercado, la volatilidad y las tendencias históricas.",
         "comp": "Empresa:", "time": "Período:", "style": "Estilo:",
         "m1": "1 Mes", "m3": "3 Meses", "m6": "6 Meses",
         "candle": "Velas (Candlesticks)", "line": "Gráfico de Líneas",
         "err": "Error al cargar CSV:", "chart_title": "Tendencia de Precios"
     },
     "العربية": {
-        "title": "💹 رسوم بيانية حية واتجاهات السوق",
+        "banner_h": "💹 رسوم بيانية حية واتجاهات السوق", "banner_desc": "تتبع تحركات السوق في الوقت الفعلي، التقلبات، والاتجاهات التاريخية للأسعار.",
         "comp": "الشركة:", "time": "الإطار الزمني:", "style": "النمط:",
         "m1": "شهر واحد", "m3": "3 أشهر", "m6": "6 أشهر",
         "candle": "شموع يابانية", "line": "رسم خطي",
@@ -61,11 +61,38 @@ st.markdown(f"""
 <style>
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
+    
+    /* Live Charts Banner Styling (Gold/Bronze Theme) */
+    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #f5b041; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
+    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.6) 50%, rgba(245,176,65,0.2) 100%); }}
+    .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
+    
     {rtl_css}
+    
+    /* =========================================
+       📱 MOBILE RESPONSIVENESS (SMART SCREENS)
+       ========================================= */
+    @media (max-width: 768px) {{
+        .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
+        [data-testid="stDataFrame"] {{ overflow-x: auto !important; max-width: 100% !important; }}
+        .banner h1, .full-width-banner h1 {{ font-size: 1.6rem !important; }}
+        .banner p, .full-width-banner p {{ font-size: 0.9rem !important; }}
+        .js-plotly-plot, .plotly, .plot-container {{ max-width: 100% !important; }}
+        [data-testid="column"] {{ width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; margin-bottom: 15px !important; }}
+    }}
 </style>
 """, unsafe_allow_html=True)
 
-st.title(txt["title"])
+# --- BANNER (REPLACES st.title) ---
+st.markdown(f"""
+<div class="full-width-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content" {'dir="rtl"' if lang=="العربية" else ''}>
+        <h1 style="color: white; margin: 0; font-size: 2.5rem; letter-spacing: 1px;">{txt['banner_h']}</h1>
+        <p style="color:#e0e0e0; font-size:1.1rem; margin-top: 8px;">{txt['banner_desc']}</p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # --- DATA FETCHING ---
 @st.cache_data(ttl=60)
