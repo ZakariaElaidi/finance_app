@@ -297,15 +297,16 @@ if uploaded_file:
 
         st.markdown("---")
         
-        # 1. SENSITIVITY HEATMAP (COLOR CHANGED TO REDS)
+        # 1. SENSITIVITY HEATMAP (CUSTOM GRADIENT: RED -> ORANGE -> GREEN)
         st.subheader("📊 Sensitivity Heatmap (WACC vs Growth)")
         import numpy as np
         wacc_range = np.linspace(0.05, 0.15, 10)
         growth_range = np.linspace(0.01, 0.05, 10)
         z_data = [[(rev_25 * 0.15) / (w - g) for g in growth_range] for w in wacc_range]
         
-        # colorscale changed to 'Reds' for heat effect
-        fig_heat = go.Figure(data=go.Heatmap(z=z_data, x=growth_range*100, y=wacc_range*100, colorscale='Reds', colorbar=dict(title=sym)))
+        custom_colors = [[0.0, 'red'], [0.5, 'orange'], [1.0, 'green']]
+        
+        fig_heat = go.Figure(data=go.Heatmap(z=z_data, x=growth_range*100, y=wacc_range*100, colorscale=custom_colors, colorbar=dict(title=sym)))
         fig_heat.update_layout(title="Enterprise Value Sensitivity Matrix", xaxis_title="Terminal Growth %", yaxis_title="WACC %", template="plotly_dark", height=400)
         st.plotly_chart(fig_heat, use_container_width=True)
 
@@ -354,7 +355,6 @@ if uploaded_file:
         st.markdown("---")
         st.subheader(txt["act_title"])
         
-        # RESTORED 2 COLUMN LAYOUT SO BUTTONS DON'T TRUNCATE
         c_action1, c_action2 = st.columns(2)
         
         with c_action1:
@@ -388,14 +388,14 @@ if uploaded_file:
                 workbook = writer.book
                 worksheet = writer.sheets["Financial_Dashboard"]
                 
-                # Format headers (Made them Red to match the heatmap / app theme)
+                # Format headers
                 header_format = workbook.add_format({'bold': True, 'bg_color': '#c1272d', 'font_color': 'white', 'border': 1})
                 for col_num, value in enumerate(["Line Item"] + list(df_display.columns)):
                     worksheet.write(0, col_num, value, header_format)
-                    worksheet.set_column(col_num, col_num, 18)
+                    worksheet.set_column(col_num, col_num, 20)
                 
-                # Write KPIs below the table
-                kpi_start_row = len(df_display) + 3
+                # Add spacing before KPIs (kpi_start_row pushed down)
+                kpi_start_row = len(df_display) + 4
                 worksheet.write(kpi_start_row, 0, "Key Performance Indicators", header_format)
                 worksheet.write(kpi_start_row + 1, 0, txt["nm"])
                 worksheet.write(kpi_start_row + 1, 1, f"{user_net_margin:.2f}%")
@@ -404,8 +404,8 @@ if uploaded_file:
                 worksheet.write(kpi_start_row + 3, 0, txt["cr"])
                 worksheet.write(kpi_start_row + 3, 1, f"{current_ratio:.2f}x")
                 
-                # Write Diagnosis below KPIs
-                diag_start_row = kpi_start_row + 5
+                # Add spacing before Diagnosis
+                diag_start_row = kpi_start_row + 6
                 worksheet.write(diag_start_row, 0, "Expert Diagnosis", header_format)
                 for i, note in enumerate(selected_nbs):
                     worksheet.write(diag_start_row + 1 + i, 0, note)
@@ -427,8 +427,8 @@ if uploaded_file:
                 chart.set_title({'name': 'Revenue vs Net Income (YoY)'})
                 chart.set_y_axis({'name': f'Value ({sym})'})
                 
-                # Insert chart next to the table
-                worksheet.insert_chart('E2', chart)
+                # Insert chart with spacing (Moved from E2 to H2)
+                worksheet.insert_chart('H2', chart)
                 
             st.download_button(
                 label=txt["dl_xlsx"],
