@@ -6,6 +6,7 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 import yfinance as yf
+import json
 
 # --- SECURITY ---
 if "user" not in st.session_state or st.session_state.user is None:
@@ -96,7 +97,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- HYBRID LIVE MARKET DATA ENGINE ---
+# --- HYBRID LIVE MARKET DATA ENGINE (WITH STEALTH HACKS) ---
 @st.cache_data(ttl=900) # Cache for 15 mins
 def get_live_market_data():
     targets = {
@@ -110,15 +111,26 @@ def get_live_market_data():
         "Colorado": {"yf": "COL.CM", "gf": "COL:CMA"}
     }
     
-    # Modern User-Agent to prevent bot blocking
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'}
+    # 💡 THE TRICK: ULTIMATE STEALTH HEADERS (SPOOFING)
+    stealth_headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9,fr;q=0.8",
+        "Accept-Encoding": "gzip, deflate",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1"
+    }
+    
+    session = requests.Session()
+    session.headers.update(stealth_headers)
+    
     data_list = []
     
     for name, tkrs in targets.items():
         live_price = None
         source = "🔴 Fallback"
         
-        # 1. Try Yahoo Finance First
+        # Method 1: Yahoo Finance
         try:
             stock = yf.Ticker(tkrs["yf"])
             hist = stock.history(period="1d")
@@ -128,11 +140,11 @@ def get_live_market_data():
         except:
             pass
             
-        # 2. Try Google Finance Web Scraper if YF fails
+        # Method 2: Google Finance (with Stealth Session)
         if live_price is None:
             try:
                 url = f"https://www.google.com/finance/quote/{tkrs['gf']}"
-                res = requests.get(url, headers=headers, timeout=5)
+                res = session.get(url, timeout=5)
                 if res.status_code == 200:
                     soup = BeautifulSoup(res.text, 'html.parser')
                     price_div = soup.find("div", class_="YMlKec fxKbKc")
@@ -140,6 +152,22 @@ def get_live_market_data():
                         clean_price = price_div.text.replace("MAD", "").replace(",", "").replace(" ", "").strip()
                         live_price = float(clean_price)
                         source = "🟢 LIVE (GF)"
+            except:
+                pass
+                
+        # Method 3: THE PROXY BYPASS (If Streamlit IP is strictly blocked)
+        if live_price is None:
+            try:
+                proxy_url = f"https://api.allorigins.win/get?url=https://www.google.com/finance/quote/{tkrs['gf']}"
+                res = requests.get(proxy_url, timeout=8)
+                if res.status_code == 200:
+                    html_content = json.loads(res.text)['contents']
+                    soup = BeautifulSoup(html_content, 'html.parser')
+                    price_div = soup.find("div", class_="YMlKec fxKbKc")
+                    if price_div:
+                        clean_price = price_div.text.replace("MAD", "").replace(",", "").replace(" ", "").strip()
+                        live_price = float(clean_price)
+                        source = "🟢 LIVE (Proxy)"
             except:
                 pass
                 
