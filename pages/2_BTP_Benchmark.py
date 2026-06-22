@@ -21,7 +21,7 @@ sym = syms[curr]
 # --- TRANSLATION DICTIONARY ---
 t = {
     "English": {
-        "banner_h": "🏗️ BTP Sector Benchmark", "banner_p": "Compare your target company against Casablanca Stock Exchange peers.",
+        "banner_h": "🏗️ BTP Sector Benchmark", "banner_desc": "Compare your target company against Casablanca Stock Exchange peers.",
         "target_title": "🎯 Configure Target Data", "proj_name": "Project Name", "nm": "Net Margin (%)", "roe": "ROE (%)",
         "gearing": "Gearing (Debt/Equity %)", "pe": "Implied P/E Ratio", "help_gearing": "BTP average is ~80%.",
         "info_update": "💡 Charts and tables update automatically with LIVE Market Data.", "data_title": "📊 Live Market Data Overview",
@@ -31,7 +31,7 @@ t = {
         "col_price": f"Price ({sym})", "your_target": "Your Target", "market_peer": "Market Peer (Live)"
     },
     "Français": {
-        "banner_h": "🏗️ Benchmark du Secteur BTP", "banner_p": "Comparez votre entreprise cible avec ses pairs de la Bourse de Casablanca.",
+        "banner_h": "🏗️ Benchmark du Secteur BTP", "banner_desc": "Comparez votre entreprise cible avec ses pairs de la Bourse de Casablanca.",
         "target_title": "🎯 Configurer les Données Cibles", "proj_name": "Nom du Projet", "nm": "Marge Nette (%)", "roe": "ROE (%)",
         "gearing": "Gearing (Dette/Capitaux Propres %)", "pe": "Ratio P/E Implicite", "help_gearing": "La moyenne du BTP est d'environ 80%.",
         "info_update": "💡 Les graphiques se mettent à jour automatiquement (Données en temps réel).", "data_title": "📊 Données du Marché en Direct",
@@ -41,7 +41,7 @@ t = {
         "col_price": f"Prix ({sym})", "your_target": "Votre Cible", "market_peer": "Pair du Marché (Direct)"
     },
     "Español": {
-        "banner_h": "🏗️ Benchmark del Sector BTP", "banner_p": "Compara tu empresa objetivo con sus pares de la Bolsa de Casablanca.",
+        "banner_h": "🏗️ Benchmark del Sector BTP", "banner_desc": "Compara tu empresa objetivo con sus pares de la Bolsa de Casablanca.",
         "target_title": "🎯 Configurar Datos Objetivo", "proj_name": "Nombre del Proyecto", "nm": "Margen Neto (%)", "roe": "ROE (%)",
         "gearing": "Gearing (Deuda/Capital %)", "pe": "Ratio P/E Implícito", "help_gearing": "El promedio de BTP es ~80%.",
         "info_update": "💡 Los gráficos se actualizan automáticamente (Datos en tiempo real).", "data_title": "📊 Resumen de Datos del Mercado",
@@ -51,7 +51,7 @@ t = {
         "col_price": f"Precio ({sym})", "your_target": "Tu Objetivo", "market_peer": "Par del Mercado (Vivo)"
     },
     "العربية": {
-        "banner_h": "🏗️ مقارنة أداء قطاع البناء", "banner_p": "قارن شركتك المستهدفة مع نظيراتها في بورصة الدار البيضاء.",
+        "banner_h": "🏗️ مقارنة أداء قطاع البناء", "banner_desc": "قارن شركتك المستهدفة مع نظيراتها في بورصة الدار البيضاء.",
         "target_title": "🎯 إعداد بيانات الشركة المستهدفة", "proj_name": "اسم المشروع", "nm": "هامش الربح الصافي (%)", "roe": "العائد على حقوق المساهمين (%)",
         "gearing": "الرافعة المالية (الديون/حقوق الملكية %)", "pe": "مكرر الربحية الضمني", "help_gearing": "متوسط القطاع حوالي 80%.",
         "info_update": "💡 يتم تحديث الرسوم البيانية تلقائيًا (بيانات حية).", "data_title": "📊 بيانات السوق الحية",
@@ -75,29 +75,39 @@ st.markdown(f"""
 <style>
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
-    .banner {{ background: linear-gradient(90deg, #0e1621 0%, #1f77b4 100%); padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #2ca02c; }}
-    .banner h1 {{ color: white; margin: 0; font-size: 2rem; }}
-    .banner p {{ color: #e0e0e0; margin: 0; font-size: 1rem; }}
+    
+    /* BTP Banner Styling (Green Theme) */
+    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1541888086425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #2ca02c; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
+    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,1) 0%, rgba(14,17,23,0.8) 40%, rgba(44,160,44,0.2) 100%); }}
+    .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
+    
     {rtl_css}
 </style>
 """, unsafe_allow_html=True)
 
+# --- BANNER ---
 st.markdown(f"""
-<div class="banner" {'dir="rtl"' if lang=="العربية" else ''}>
-    <h1>{txt['banner_h']}</h1>
-    <p>{txt['banner_p']}</p>
+<div class="full-width-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content" {'dir="rtl"' if lang=="العربية" else ''}>
+        <h1 style="color: white; margin: 0; font-size: 2.5rem; letter-spacing: 1px;">{txt['banner_h']}</h1>
+        <p style="color:#e0e0e0; font-size:1.1rem; margin-top: 8px;">{txt['banner_desc']}</p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
 # --- FETCH LIVE MARKET DATA (YFINANCE + FALLBACK) ---
 @st.cache_data(ttl=3600) # Cache for 1 hour to prevent API limits
 def get_live_market_data():
-    # Base companies in CSE (Moroccan Tickers in Yahoo Finance usually end in .CM)
+    # Added Sonasid, Jet Contractors, and Colorado
     tickers = {
         "LafargeHolcim": "LHM.CM", 
         "Addoha": "ADH.CM", 
         "Alliances": "ADI.CM", 
-        "Ciments du Maroc": "CMA.CM"
+        "Ciments du Maroc": "CMA.CM",
+        "Sonasid": "SND.CM",
+        "Jet Contractors": "JET.CM",
+        "Colorado": "COL.CM"
     }
     
     data_list = []
@@ -122,13 +132,16 @@ def get_live_market_data():
         
     df_live = pd.DataFrame(data_list)
     
-    # 2. Fundamental Constants & Fallbacks (Since full fundamentals are hard to scrape reliably for CSE)
+    # 2. Fundamental Constants & Fallbacks
     fallbacks = {
         "LafargeHolcim": {"Price_MAD": 1800, "PE_Ratio": 18.2, "Net_Margin_%": 16.5, "ROE_%": 22.0, "Gearing_%": 45.0},
         "Addoha": {"Price_MAD": 25, "PE_Ratio": 12.0, "Net_Margin_%": 8.5, "ROE_%": 14.0, "Gearing_%": 120.0},
         "Alliances": {"Price_MAD": 120, "PE_Ratio": 10.5, "Net_Margin_%": 9.0, "ROE_%": 15.5, "Gearing_%": 135.0},
         "Ciments du Maroc": {"Price_MAD": 1500, "PE_Ratio": 16.8, "Net_Margin_%": 15.2, "ROE_%": 20.1, "Gearing_%": 40.0},
-        "TGCC": {"Price_MAD": 300, "PE_Ratio": 15.0, "Net_Margin_%": 12.5, "ROE_%": 18.5, "Gearing_%": 85.0} # TGCC added via fallback
+        "TGCC": {"Price_MAD": 300, "PE_Ratio": 15.0, "Net_Margin_%": 12.5, "ROE_%": 18.5, "Gearing_%": 85.0},
+        "Sonasid": {"Price_MAD": 850, "PE_Ratio": 14.5, "Net_Margin_%": 5.2, "ROE_%": 8.5, "Gearing_%": 20.0},
+        "Jet Contractors": {"Price_MAD": 350, "PE_Ratio": 18.0, "Net_Margin_%": 6.0, "ROE_%": 12.0, "Gearing_%": 110.0},
+        "Colorado": {"Price_MAD": 55, "PE_Ratio": 15.5, "Net_Margin_%": 8.5, "ROE_%": 11.0, "Gearing_%": 15.0}
     }
     
     # Merge live prices with fundamental data
@@ -214,12 +227,12 @@ st.markdown("---")
 
 # --- THE UI (CHARTS) ---
 st.subheader(txt["p1_title"])
-peers = st.multiselect(txt["select_peers"], df_live["Company"].tolist(), default=df_live["Company"].tolist()[:4])
+peers = st.multiselect(txt["select_peers"], df_live["Company"].tolist(), default=df_live["Company"].tolist()[:5])
 
 if peers:
     display_df = df_combined[(df_combined["Company"].isin(peers)) | (df_combined["Company"] == target_name)].copy()
     color_map = {target_name: "#f5b041"}
-    for peer in peers: color_map[peer] = "#1f77b4"
+    for peer in peers: color_map[peer] = "#2ca02c" # Changed peer color to green to match BTP theme
 
     col_bar1, col_bar2 = st.columns(2)
     with col_bar1:
@@ -243,7 +256,7 @@ with col_matrix:
     
     fig_scatter = px.scatter(
         df_combined, x="Gearing_%", y="ROE_%", color="Type", text="Company", size_max=60,
-        color_discrete_map={txt["your_target"]: "#f5b041", txt["market_peer"]: "#1f77b4"}
+        color_discrete_map={txt["your_target"]: "#f5b041", txt["market_peer"]: "#2ca02c"} # Updated peer color to green
     )
     fig_scatter.update_traces(textposition='top center', marker=dict(size=12, line=dict(width=2, color='DarkSlateGrey')))
     
@@ -269,7 +282,7 @@ with col_radar:
     
     fig_radar = go.Figure()
     fig_radar.add_trace(go.Scatterpolar(r=target_vals, theta=categories, fill='toself', name=txt["your_target"], line_color='#f5b041'))
-    fig_radar.add_trace(go.Scatterpolar(r=market_vals, theta=categories, fill='toself', name=txt["market_peer"], line_color='#1f77b4'))
+    fig_radar.add_trace(go.Scatterpolar(r=market_vals, theta=categories, fill='toself', name=txt["market_peer"], line_color='#2ca02c')) # Updated peer color to green
     
     fig_radar.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, max(max(target_vals), max(market_vals)) + 5])),
