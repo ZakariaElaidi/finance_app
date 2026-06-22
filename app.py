@@ -33,7 +33,15 @@ t = {
         "lc_title": "💹 Live Charts", "lc_desc": "Track real-time market trends, volatility, and historical pricing data.",
         "mh_title": "🗄️ My History", "mh_desc": "Access, manage, and download your previously saved analysis sessions.",
         "ac_title": "👤 About Creator", "ac_desc": "Professional profile, academic background, and networking links.",
-        "launch": "Launch Module"
+        "launch": "Launch Module",
+        # Docs Section
+        "doc_head": "📖 Financial Methodology & Engine Specs",
+        "doc_wacc": "#### ⚙️ 1. Cost of Capital (WACC & CAPM)",
+        "doc_wacc_desc": "The platform calculates the Cost of Equity using the Capital Asset Pricing Model (CAPM). For Moroccan targets, the Risk-Free Rate is typically benchmarked against the 10-Year Moroccan Treasury Bond. The resulting WACC is used as the standard discount rate.",
+        "doc_dcf": "#### 📊 2. Discounted Cash Flow (DCF)",
+        "doc_dcf_desc": "The DCF engine uses a 5-year explicit Free Cash Flow forecast. The Terminal Value is derived via the Gordon Growth Model, assuming a perpetual growth rate aligned with long-term inflation.",
+        "doc_lbo": "#### 💰 3. Leveraged Buyout (LBO)",
+        "doc_lbo_desc": "The LBO quick-modeler assumes a 5-year holding horizon. Entry and Exit Enterprise Values are driven by EBITDA multiples. Return metrics (IRR & MoIC) evaluate the equity value creation post-debt paydown."
     },
     "Français": {
         "login_title": "ACCÈS SYSTÈME", "email": "Email Professionnel", "pass": "Mot de passe", "auth": "S'authentifier", "sys": "**Système**",
@@ -48,7 +56,15 @@ t = {
         "lc_title": "💹 Graphiques en Direct", "lc_desc": "Suivez les tendances du marché, la volatilité et l'historique des prix.",
         "mh_title": "🗄️ Mon Historique", "mh_desc": "Accédez, gérez et téléchargez vos sessions d'analyse précédentes.",
         "ac_title": "👤 À propos du Créateur", "ac_desc": "Profil professionnel, parcours académique et liens de networking.",
-        "launch": "Lancer le Module"
+        "launch": "Lancer le Module",
+        # Docs Section
+        "doc_head": "📖 Méthodologie Financière et Spécifications",
+        "doc_wacc": "#### ⚙️ 1. Coût du Capital (CMPC & MEDAF)",
+        "doc_wacc_desc": "La plateforme calcule le coût des capitaux propres via le MEDAF. Pour les cibles marocaines, le taux sans risque est basé sur les bons du Trésor marocain à 10 ans. Le CMPC obtenu sert de taux d'actualisation.",
+        "doc_dcf": "#### 📊 2. Actualisation des Flux de Trésorerie (DCF)",
+        "doc_dcf_desc": "Le modèle DCF utilise une prévision explicite des FCF sur 5 ans. La valeur terminale est calculée via le modèle de Gordon Shapiro, supposant un taux de croissance perpétuelle.",
+        "doc_lbo": "#### 💰 3. LBO (Rachat par Effet de Levier)",
+        "doc_lbo_desc": "Le modèle LBO suppose un horizon de détention de 5 ans. Les valeurs d'entreprise d'entrée et de sortie dépendent des multiples d'EBITDA. Les rendements (TRI & MoIC) évaluent la création de valeur."
     },
     "Español": {
         "login_title": "ACCESO AL SISTEMA", "email": "Correo Corporativo", "pass": "Contraseña", "auth": "Autenticar", "sys": "**Sistema**",
@@ -63,7 +79,15 @@ t = {
         "lc_title": "💹 Gráficos en Vivo", "lc_desc": "Rastrea tendencias del mercado en tiempo real y datos históricos.",
         "mh_title": "🗄️ Mi Historial", "mh_desc": "Accede, gestiona y descarga tus sesiones de análisis guardadas.",
         "ac_title": "👤 Sobre el Creador", "ac_desc": "Perfil profesional, formación académica y enlaces de networking.",
-        "launch": "Iniciar Módulo"
+        "launch": "Iniciar Módulo",
+        # Docs Section
+        "doc_head": "📖 Metodología Financiera y Especificaciones",
+        "doc_wacc": "#### ⚙️ 1. Costo de Capital (WACC y CAPM)",
+        "doc_wacc_desc": "La plataforma calcula el Costo del Capital mediante el CAPM. Para objetivos marroquíes, la Tasa Libre de Riesgo se basa en los Bonos del Tesoro a 10 años. El WACC resultante se usa como tasa de descuento.",
+        "doc_dcf": "#### 📊 2. Flujo de Caja Descontado (DCF)",
+        "doc_dcf_desc": "El motor DCF proyecta flujos de caja libres a 5 años. El Valor Terminal se calcula con el Modelo de Crecimiento de Gordon, asumiendo una tasa de crecimiento perpetuo.",
+        "doc_lbo": "#### 💰 3. Compra Apalancada (LBO)",
+        "doc_lbo_desc": "El modelo LBO asume un horizonte de inversión de 5 años. Los Valores Empresariales de entrada y salida se basan en múltiplos de EBITDA."
     },
     "العربية": {
         "login_title": "تسجيل الدخول", "email": "البريد الإلكتروني للشركة", "pass": "كلمة المرور", "auth": "دخول", "sys": "**النظام**",
@@ -78,7 +102,15 @@ t = {
         "lc_title": "💹 رسوم بيانية حية", "lc_desc": "تتبع اتجاهات السوق في الوقت الفعلي والبيانات التاريخية للأسعار.",
         "mh_title": "🗄️ السجل الخاص بي", "mh_desc": "الوصول وإدارة وتنزيل جلسات التحليل المحفوظة مسبقًا.",
         "ac_title": "👤 عن المطور", "ac_desc": "الملف المهني والخلفية الأكاديمية وروابط التواصل.",
-        "launch": "تشغيل الوحدة"
+        "launch": "تشغيل الوحدة",
+        # Docs Section
+        "doc_head": "📖 المنهجية المالية ومواصفات النظام",
+        "doc_wacc": "#### ⚙️ 1. تكلفة رأس المال (WACC و CAPM)",
+        "doc_wacc_desc": "تحسب المنصة تكلفة حقوق الملكية باستخدام نموذج (CAPM). بالنسبة للشركات المغربية، يُستند المعدل الخالي من المخاطر عادةً إلى سندات الخزينة المغربية لأجل 10 سنوات. يُستخدم WACC كنسبة خصم لتحديد القيمة الحالية.",
+        "doc_dcf": "#### 📊 2. خصم التدفقات النقدية (DCF)",
+        "doc_dcf_desc": "يستخدم محرك DCF توقعات التدفقات النقدية الحرة لمدة 5 سنوات. يتم حساب القيمة النهائية (Terminal Value) باستخدام نموذج جوردون للنمو، بافتراض معدل نمو دائم يتماشى مع التضخم طويل الأجل.",
+        "doc_lbo": "#### 💰 3. الاستحواذ المدعوم بالقروض (LBO)",
+        "doc_lbo_desc": "يفترض نموذج LBO فترة احتفاظ تبلغ 5 سنوات. يتم تحديد قيم الدخول والخروج للشركة بناءً على مضاعفات EBITDA. تقيس العوائد (IRR و MoIC) القيمة الناتجة بعد سداد الديون."
     }
 }
 lang = st.session_state.lang
@@ -100,8 +132,25 @@ except Exception as e:
 if "user" not in st.session_state: st.session_state.user = None
 
 # ==========================================
-# 3. DYNAMIC CSS & UI HACKS (FIXED FOR ARABIC)
+# 3. MODALS & UI COMPONENTS
 # ==========================================
+
+@st.dialog(txt["doc_head"], width="large")
+def show_docs_modal():
+    st.markdown(txt["doc_wacc"])
+    st.write(txt["doc_wacc_desc"])
+    st.latex(r"K_e = R_f + \beta \times (R_m - R_f)")
+    
+    st.markdown("---")
+    st.markdown(txt["doc_dcf"])
+    st.write(txt["doc_dcf_desc"])
+    st.latex(r"TV = \frac{FCF_5 \times (1 + g)}{WACC - g}")
+    
+    st.markdown("---")
+    st.markdown(txt["doc_lbo"])
+    st.write(txt["doc_lbo_desc"])
+    st.latex(r"MoIC = \frac{\text{Exit Equity}}{\text{Entry Equity}}")
+
 # Explicitly protect the sidebar and header from RTL flipping
 if lang == "العربية":
     rtl_css = """
@@ -204,7 +253,11 @@ else:
                 
             st.divider()
             st.markdown(txt['sys'])
-            if st.button(txt['docs'], use_container_width=True): st.info("Coming soon.")
+            
+            # TRIGGER MODAL INSTEAD OF COMING SOON
+            if st.button(txt['docs'], use_container_width=True): 
+                show_docs_modal()
+                
             if st.button(txt['logout'], type="primary", use_container_width=True):
                 supabase.auth.sign_out()
                 st.session_state.user = None
