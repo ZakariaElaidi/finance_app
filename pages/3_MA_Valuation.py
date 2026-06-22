@@ -134,19 +134,35 @@ st.markdown(f"""
     .ma-card-title {{ color: #b3b3b3; font-size: 0.9rem; margin-bottom: 5px; }}
     .ma-card-value {{ color: white; font-size: 1.5rem; font-weight: bold; margin: 0; }}
     
-    /* M&A Banner Styling */
-    .banner {{ background: linear-gradient(90deg, #0e1117 0%, #3a1c71 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #9467bd; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }}
-    .banner h1 {{ color: white; margin: 0; font-size: 2.2rem; font-weight: 700; }}
-    .banner p {{ color: #e0e0e0; margin: 0; font-size: 1.1rem; margin-top: 8px; }}
+    /* M&A Banner Styling (Purple Theme with Deal Room Image) */
+    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #9467bd; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
+    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.6) 50%, rgba(148,103,189,0.3) 100%); }}
+    .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
+    
     {rtl_css}
+    
+    /* =========================================
+       📱 MOBILE RESPONSIVENESS (SMART SCREENS)
+       ========================================= */
+    @media (max-width: 768px) {{
+        .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
+        [data-testid="stDataFrame"] {{ overflow-x: auto !important; max-width: 100% !important; }}
+        .banner h1, .full-width-banner h1 {{ font-size: 1.6rem !important; }}
+        .banner p, .full-width-banner p {{ font-size: 0.9rem !important; }}
+        .js-plotly-plot, .plotly, .plot-container {{ max-width: 100% !important; }}
+        [data-testid="column"] {{ width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; margin-bottom: 15px !important; }}
+    }}
 </style>
 """, unsafe_allow_html=True)
 
 # --- BANNER (REPLACES st.title) ---
 st.markdown(f"""
-<div class="banner" {'dir="rtl"' if lang=="العربية" else ''}>
-    <h1>{txt['title']}</h1>
-    <p>{txt['banner_desc']}</p>
+<div class="full-width-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content" {'dir="rtl"' if lang=="العربية" else ''}>
+        <h1 style="color: white; margin: 0; font-size: 2.5rem; letter-spacing: 1px;">{txt['title']}</h1>
+        <p style="color:#e0e0e0; font-size:1.1rem; margin-top: 8px;">{txt['banner_desc']}</p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
