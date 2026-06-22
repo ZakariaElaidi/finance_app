@@ -79,9 +79,9 @@ st.markdown(f"""
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
     
-    /* BTP Banner Styling (Green Theme - Adjusted for visibility) */
-    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1504307651254-35680f356f27?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #2ca02c; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
-    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.4) 50%, rgba(44,160,44,0.3) 100%); }}
+    /* BTP Banner Styling (Bright Image, Same Gradient Logic as Corporate) */
+    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?q=80&w=2074&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #2ca02c; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
+    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,1) 0%, rgba(14,17,23,0.8) 40%, rgba(44,160,44,0.3) 100%); }}
     .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
     
     {rtl_css}
