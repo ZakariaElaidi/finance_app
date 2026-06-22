@@ -83,6 +83,18 @@ st.markdown(f"""
     .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,1) 0%, rgba(14,17,23,0.8) 40%, rgba(44,160,44,0.2) 100%); }}
     .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
     {rtl_css}
+    
+    /* =========================================
+       📱 MOBILE RESPONSIVENESS (SMART SCREENS)
+       ========================================= */
+    @media (max-width: 768px) {{
+        .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
+        [data-testid="stDataFrame"] {{ overflow-x: auto !important; max-width: 100% !important; }}
+        .banner h1, .full-width-banner h1 {{ font-size: 1.6rem !important; }}
+        .banner p, .full-width-banner p {{ font-size: 0.9rem !important; }}
+        .js-plotly-plot, .plotly, .plot-container {{ max-width: 100% !important; }}
+        [data-testid="column"] {{ width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; margin-bottom: 15px !important; }}
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -104,9 +116,9 @@ with col_clear2:
         st.cache_data.clear()
         st.rerun()
 
-# --- HYBRID LIVE MARKET DATA ENGINE V2 (RENAMED TO BUST CACHE) ---
-@st.cache_data(ttl=300, show_spinner=False) # Changed TTL to 5 mins and renamed func
-def fetch_live_market_data_v2():
+# --- BULLETPROOF LIVE MARKET ENGINE ---
+@st.cache_data(ttl=300, show_spinner=False)
+def fetch_live_market_data_v3():
     targets = {
         "LafargeHolcim": {"yf": "LHM.CM", "gf": "LHM:CMA"},
         "Addoha": {"yf": "ADH.CM", "gf": "ADH:CMA"},
@@ -119,47 +131,45 @@ def fetch_live_market_data_v2():
     }
     
     stealth_headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Accept-Language": "en-US,en;q=0.9"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
     }
 
     def fetch_price(name, tkrs):
-        # 1. Try Google Finance Proxy First (Most reliable bypass)
+        # Layer 1: Direct Yahoo API (Fastest, skips HTML scraping)
         try:
-            # ?hl=en forces English number formatting so 1,800.50 can be easily parsed to 1800.50
-            proxy_url = f"https://api.allorigins.win/raw?url=https://www.google.com/finance/quote/{tkrs['gf']}?hl=en"
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{tkrs['yf']}?region=US&lang=en-US&interval=1d&range=1d"
+            res = requests.get(url, headers=stealth_headers, timeout=4)
+            if res.status_code == 200:
+                data = res.json()
+                price = data['chart']['result'][0]['meta']['regularMarketPrice']
+                if price:
+                    return {"Company": name, "Price_MAD": float(price), "Data_Status": "🟢 LIVE (API)"}
+        except: pass
+
+        # Layer 2: Alternative Proxy for Google Finance
+        try:
+            proxy_url = f"https://api.codetabs.com/v1/proxy?quest=https://www.google.com/finance/quote/{tkrs['gf']}?hl=en"
             res = requests.get(proxy_url, timeout=5)
             if res.status_code == 200:
                 soup = BeautifulSoup(res.text, 'html.parser')
                 price_div = soup.find("div", class_="YMlKec fxKbKc")
                 if price_div:
                     clean_price = price_div.text.replace("MAD", "").replace(",", "").replace(" ", "").strip()
-                    return {"Company": name, "Price_MAD": float(clean_price), "Data_Status": "🟢 LIVE (GF-Proxy)"}
+                    return {"Company": name, "Price_MAD": float(clean_price), "Data_Status": "🟢 LIVE (Proxy)"}
         except: pass
 
-        # 2. Try Yahoo Finance
+        # Layer 3: Yfinance Library
         try:
             stock = yf.Ticker(tkrs["yf"])
             hist = stock.history(period="1d")
             if not hist.empty:
                 return {"Company": name, "Price_MAD": float(hist['Close'].iloc[-1]), "Data_Status": "🟢 LIVE (YF)"}
         except: pass
-        
-        # 3. Try Google Finance Direct (Might get blocked by Captcha)
-        try:
-            url = f"https://www.google.com/finance/quote/{tkrs['gf']}?hl=en"
-            res = requests.get(url, headers=stealth_headers, timeout=3)
-            if res.status_code == 200:
-                soup = BeautifulSoup(res.text, 'html.parser')
-                price_div = soup.find("div", class_="YMlKec fxKbKc")
-                if price_div:
-                    clean_price = price_div.text.replace("MAD", "").replace(",", "").replace(" ", "").strip()
-                    return {"Company": name, "Price_MAD": float(clean_price), "Data_Status": "🟢 LIVE (GF-Direct)"}
-        except: pass
 
         return {"Company": name, "Price_MAD": None, "Data_Status": "🔴 Fallback"}
 
-    # Run simultaneously
+    # Run simultaneously for speed
     data_list = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         futures = [executor.submit(fetch_price, name, tkrs) for name, tkrs in targets.items()]
@@ -168,7 +178,7 @@ def fetch_live_market_data_v2():
             
     df_live = pd.DataFrame(data_list)
     
-    # Fundamental Constants (Updated closer to recent reality just in case)
+    # Fundamental Constants
     fallbacks = {
         "LafargeHolcim": {"Price_MAD": 1780, "PE_Ratio": 18.2, "Net_Margin_%": 16.5, "ROE_%": 22.0, "Gearing_%": 45.0},
         "Addoha": {"Price_MAD": 33, "PE_Ratio": 12.0, "Net_Margin_%": 8.5, "ROE_%": 14.0, "Gearing_%": 120.0},
@@ -204,8 +214,8 @@ def fetch_live_market_data_v2():
         
     return pd.DataFrame(final_data)
 
-with st.spinner("🔄 Scraping Real-Time Market Data..."):
-    df_live = fetch_live_market_data_v2().copy()
+with st.spinner("🔄 Fetching Live Data (Bypassing Server Restrictions)..."):
+    df_live = fetch_live_market_data_v3().copy()
     df_live["Type"] = txt["market_peer"]
     # Apply currency rate
     df_live["Price_Converted"] = df_live["Price_MAD"] * rate
