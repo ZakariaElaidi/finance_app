@@ -139,13 +139,18 @@ t = {
 lang = st.session_state.lang
 txt = t[lang]
 
-# --- QUOTES LIST ---
+# --- EXPANDED QUOTES LIST ---
 quotes = [
+    "“Rule No. 1: Never lose money. Rule No. 2: Never forget rule No. 1.” – Warren Buffett",
     "“Price is what you pay. Value is what you get.” – Warren Buffett",
+    "“The stock market is a device for transferring money from the impatient to the patient.” – Warren Buffett",
     "“In investing, what is comfortable is rarely profitable.” – Robert Arnott",
+    "“The individual investor should act consistently as an investor and not as a speculator.” – Benjamin Graham",
+    "“Know what you own, and know why you own it.” – Peter Lynch",
+    "“Compound interest is the eighth wonder of the world. He who understands it, earns it.” – Albert Einstein",
     "“The four most dangerous words in investing are: 'this time it's different.'” – Sir John Templeton",
-    "“Risk comes from not knowing what you're doing.” – Warren Buffett",
-    "“Behind every stock is a company. Find out what it's doing.” – Peter Lynch"
+    "“Behind every stock is a company. Find out what it's doing.” – Peter Lynch",
+    "“Courage taught me no matter how bad a crisis gets... any sound investment will eventually pay off.” – Carlos Slim"
 ]
 todays_quote = quotes[datetime.today().day % len(quotes)]
 
@@ -199,12 +204,17 @@ else:
 
 st.markdown(f"""
 <style>
+    /* PREVENT HORIZONTAL SCROLL (TSWIPA FIX) */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {{
+        overflow-x: hidden !important;
+    }}
+
     /* Global Fade-in Animation */
     @keyframes fadeIn {{
         from {{ opacity: 0; transform: translateY(15px); }}
         to {{ opacity: 1; transform: translateY(0); }}
     }}
-    .block-container {{ animation: fadeIn 0.6s ease-out; }}
+    .block-container {{ animation: fadeIn 0.6s ease-out; overflow-x: hidden !important; }}
 
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
@@ -215,7 +225,7 @@ st.markdown(f"""
     .banner-content {{ position: absolute; top: 50%; left: 40px; transform: translateY(-50%); z-index: 2; }}
     .moroccan-badge {{ display: inline-block; background: rgba(193,39,45,0.25); border: 1px solid #c1272d; padding: 6px 18px; border-radius: 25px; color: white; font-size: 0.9rem; margin-top: 15px; font-weight: bold; backdrop-filter: blur(4px); }}
     
-    /* NEW: Macro Badges */
+    /* Macro Badges */
     .macro-card {{ background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 8px; padding: 12px 20px; border-left: 4px solid #1f77b4; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }}
     .macro-card:hover {{ transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); border-left-color: #2ca02c; }}
     .macro-name {{ color: #a0aab5; font-size: 14px; margin: 0; font-weight: bold; text-transform: uppercase; }}
@@ -223,10 +233,10 @@ st.markdown(f"""
     .macro-pos {{ color: #2ca02c; font-size: 14px; font-weight: bold; }}
     .macro-neg {{ color: #d62728; font-size: 14px; font-weight: bold; }}
     
-    /* 📈 Ticker Tape CSS */
-    .ticker-wrap {{ width: 100%; overflow: hidden; background-color: #0e1117; padding-left: 100%; box-sizing: content-box; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }}
+    /* Safe Ticker Tape CSS to prevent horizontal scroll */
+    .ticker-wrap {{ width: 100%; overflow: hidden; background-color: #0e1117; white-space: nowrap; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; box-sizing: border-box; }}
+    .ticker {{ display: inline-block; animation: ticker 35s linear infinite; padding-left: 100%; }}
     @keyframes ticker {{ 0% {{ transform: translate3d(0, 0, 0); }} 100% {{ transform: translate3d(-100%, 0, 0); }} }}
-    .ticker {{ display: inline-block; white-space: nowrap; padding-right: 100%; box-sizing: content-box; animation-iteration-count: infinite; animation-timing-function: linear; animation-name: ticker; animation-duration: 30s; }}
     .ticker__item {{ display: inline-block; padding: 10px 2rem; font-size: 14px; color: #b3b3b3; font-weight: bold; }}
     .ticker__val {{ color: #2ca02c; margin-left: 5px; }}
 
@@ -237,10 +247,10 @@ st.markdown(f"""
     .overview-label {{ margin: 0; color: #a0aab5; font-size: 15px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }}
     .overview-value {{ margin: 0; color: white; font-size: 26px; font-weight: 800; text-shadow: 0 0 15px rgba(255,255,255,0.15); }}
     
-    /* NEW: Quote Box */
+    /* Quote Box */
     .quote-box {{ background: linear-gradient(145deg, rgba(22,26,34,0.6), rgba(30,34,43,0.8)); border-left: 4px solid #f5b041; border-radius: 8px; padding: 15px 20px; font-style: italic; color: #e0e0e0; margin-bottom: 25px; display: flex; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }}
     
-    /* NEW: CTA Banner */
+    /* CTA Banner */
     .cta-banner {{ background: linear-gradient(135deg, #161a22, #1f2937); border-radius: 12px; padding: 30px; text-align: center; border: 1px solid #1f77b4; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 35px; margin-bottom: 20px; }}
     @keyframes pulse {{ 0% {{ box-shadow: 0 0 0 0 rgba(31, 119, 180, 0.7); }} 70% {{ box-shadow: 0 0 0 15px rgba(31, 119, 180, 0); }} 100% {{ box-shadow: 0 0 0 0 rgba(31, 119, 180, 0); }} }}
     .cta-btn {{ background-color: #1f77b4; color: white !important; font-weight: bold; padding: 12px 30px; border-radius: 30px; text-decoration: none; display: inline-block; margin-top: 15px; transition: all 0.3s ease; animation: pulse 2s infinite; }}
@@ -385,7 +395,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
     
-    # --- NEW: MACRO-ECONOMIC BADGES ---
+    # --- MACRO-ECONOMIC BADGES ---
     mac_col1, mac_col2, mac_col3 = st.columns(3)
     with mac_col1:
         st.markdown(f"""<div class="macro-card"><div><p class="macro-name">{txt['masi']}</p><p class="macro-val">13,245.80</p></div><div class="macro-pos">+0.42% ▲</div></div>""", unsafe_allow_html=True)
@@ -429,11 +439,12 @@ else:
         </div>
         """, unsafe_allow_html=True)
         
-        # --- NEW: MINI MARKET CHART ---
+        # --- MINI MARKET CHART ---
         st.markdown(f"#### {txt['chart_title']}")
         df_dash['Converted_Price'] = df_dash['Price_MAD'] * rate
         fig_mini = px.bar(df_dash, x="Company", y="Converted_Price", color="Converted_Price", color_continuous_scale="Viridis")
-        fig_mini.update_layout(template="plotly_dark", height=280, margin=dict(l=0, r=0, t=10, b=0), coloraxis_showscale=False, xaxis_title="", yaxis_title=f"Price ({symbol})")
+        # Added xaxis_tickangle to keep text readable and fixed margin to prevent scroll
+        fig_mini.update_layout(template="plotly_dark", height=300, margin=dict(l=0, r=0, t=10, b=0), coloraxis_showscale=False, xaxis_title="", yaxis_title=f"Price ({symbol})", xaxis_tickangle=-45)
         st.plotly_chart(fig_mini, use_container_width=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -459,7 +470,7 @@ else:
                 if st.button(txt['view_hist'], use_container_width=True): st.switch_page("pages/6_My_History.py")
             st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- NEW: DAILY QUOTE ---
+    # --- DAILY QUOTE ---
     st.markdown(f"""
     <div class="quote-box" {'dir="rtl"' if lang=="العربية" else ''}>
         <div style="font-size: 24px; margin-right: 15px;">{txt['quote_title'].split()[0]}</div>
@@ -509,7 +520,7 @@ else:
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['ac_desc']}</p>", unsafe_allow_html=True)
             if st.button(txt['launch'], key="b6", use_container_width=True): st.switch_page("pages/5_About_Creator.py")
 
-    # --- NEW: CTA BANNER FOR RECRUITERS ---
+    # --- CTA BANNER FOR RECRUITERS ---
     st.markdown(f"""
     <div class="cta-banner" {'dir="rtl"' if lang=="العربية" else ''}>
         <h2 style="color: white; margin-bottom: 5px;">{txt['cta_title']}</h2>
