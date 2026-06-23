@@ -6,7 +6,7 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 import yfinance as yf
-import concurrent.futures
+import time  # Added for the anti-ban delay
 
 # --- SECURITY ---
 if "user" not in st.session_state or st.session_state.user is None:
@@ -118,7 +118,7 @@ with col_clear2:
         st.cache_data.clear()
         st.rerun()
 
-# --- BULLETPROOF LIVE MARKET ENGINE ---
+# --- BULLETPROOF LIVE MARKET ENGINE (Anti-Ban Sequential Fetch) ---
 @st.cache_data(ttl=300, show_spinner=False)
 def fetch_live_market_data_v3():
     targets = {
@@ -134,50 +134,39 @@ def fetch_live_market_data_v3():
     
     stealth_headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
     }
 
     def fetch_price(name, tkrs):
-        # Layer 1: Direct Yahoo API (Fastest, skips HTML scraping)
+        # Layer 1: Direct Google Finance Scraping (Most reliable for CMA)
         try:
-            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{tkrs['yf']}?region=US&lang=en-US&interval=1d&range=1d"
-            res = requests.get(url, headers=stealth_headers, timeout=4)
-            if res.status_code == 200:
-                data = res.json()
-                price = data['chart']['result'][0]['meta']['regularMarketPrice']
-                if price:
-                    return {"Company": name, "Price_MAD": float(price), "Data_Status": "🟢 LIVE (API)"}
-        except: pass
-
-        # Layer 2: Alternative Proxy for Google Finance
-        try:
-            proxy_url = f"https://api.codetabs.com/v1/proxy?quest=https://www.google.com/finance/quote/{tkrs['gf']}?hl=en"
-            res = requests.get(proxy_url, timeout=5)
+            url = f"https://www.google.com/finance/quote/{tkrs['gf']}?hl=en"
+            res = requests.get(url, headers=stealth_headers, timeout=5)
             if res.status_code == 200:
                 soup = BeautifulSoup(res.text, 'html.parser')
                 price_div = soup.find("div", class_="YMlKec fxKbKc")
                 if price_div:
                     clean_price = price_div.text.replace("MAD", "").replace(",", "").replace(" ", "").strip()
-                    return {"Company": name, "Price_MAD": float(clean_price), "Data_Status": "🟢 LIVE (Proxy)"}
+                    return {"Company": name, "Price_MAD": float(clean_price), "Data_Status": "🟢 LIVE (GF)"}
         except: pass
 
-        # Layer 3: Yfinance Library
+        # Layer 2: Yfinance Library using fast_info (Bypasses some recent YF blocks)
         try:
             stock = yf.Ticker(tkrs["yf"])
-            hist = stock.history(period="1d")
-            if not hist.empty:
-                return {"Company": name, "Price_MAD": float(hist['Close'].iloc[-1]), "Data_Status": "🟢 LIVE (YF)"}
+            price = stock.fast_info.get('lastPrice')
+            if price is not None and price > 0:
+                return {"Company": name, "Price_MAD": float(price), "Data_Status": "🟢 LIVE (YF)"}
         except: pass
 
         return {"Company": name, "Price_MAD": None, "Data_Status": "🔴 Fallback"}
 
-    # Run simultaneously for speed
+    # Process sequentially with a tiny sleep to avoid Google 429 Too Many Requests
     data_list = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-        futures = [executor.submit(fetch_price, name, tkrs) for name, tkrs in targets.items()]
-        for future in concurrent.futures.as_completed(futures):
-            data_list.append(future.result())
-            
+    for name, tkrs in targets.items():
+        data_list.append(fetch_price(name, tkrs))
+        time.sleep(0.3)  # Anti-bot delay
+        
     df_live = pd.DataFrame(data_list)
     
     # Fundamental Constants
@@ -216,7 +205,7 @@ def fetch_live_market_data_v3():
         
     return pd.DataFrame(final_data)
 
-with st.spinner("🔄 Fetching Live Data (Bypassing Server Restrictions)..."):
+with st.spinner("🔄 Fetching Live Market Data (Anti-Bot Bypass)..."):
     df_live = fetch_live_market_data_v3().copy()
     df_live["Type"] = txt["market_peer"]
     # Apply currency rate
@@ -259,7 +248,6 @@ def highlight_target(row):
     if row['Type'] == txt["your_target"]: return ['background-color: rgba(245, 176, 65, 0.15)'] * len(row)
     return [''] * len(row)
 
-# Show Data_Status so the user can verify if data is Live or Cached
 display_table = df_combined[["Company", "Type", "Data_Status", "Price_Converted", "PE_Ratio", "Net_Margin_%", "ROE_%", "Gearing_%"]].rename(
     columns={"Price_Converted": txt["col_price"], "Data_Status": "Feed Status"}
 )
