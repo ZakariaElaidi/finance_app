@@ -3,6 +3,7 @@ import numpy as np
 import plotly.graph_objects as go
 import pandas as pd
 import io
+import random
 
 # --- SECURITY ---
 if "user" not in st.session_state or st.session_state.user is None:
@@ -20,8 +21,7 @@ sym = syms[curr]
 # --- TRANSLATION DICTIONARY ---
 t = {
     "English": {
-        "title": "💼 M&A & Private Equity Deal Room",
-        "banner_desc": "Advanced Valuation, LBO Modeling & Risk Analysis",
+        "title": "💼 M&A & Private Equity Deal Room", "banner_desc": "Advanced Valuation, LBO Modeling & Risk Analysis",
         "glos_title": "ℹ️ Glossary & Advanced Definitions",
         "glos_mc": "- **Monte Carlo Simulation:** A computational algorithm that relies on repeated random sampling to understand the impact of risk and uncertainty in the valuation.",
         "glos_moic": "- **MoIC (Multiple on Invested Capital):** Shows how much value an investment has generated (Exit Equity / Entry Equity).",
@@ -29,27 +29,37 @@ t = {
         "b_rev": "Base Revenue (MAD)", "b_ebitda": "Base EBITDA (MAD)",
         "capm_title": "⚙️ Advanced WACC Calculator",
         "capm_def": "**Capital Asset Pricing Model (CAPM):** The CAPM is a financial model used to calculate the expected Return on Equity ($K_e$). It establishes a linear relationship between the required return of an investment and its systematic risk ($\\beta$).\n\n**Formula:** $K_e = R_f + \\beta \\times (R_m - R_f)$",
-        "rf": "Risk-Free Rate (%)", "rm": "Market Return (%)", "beta": "Beta (β)", "tax": "Tax Rate (%)",
-        "kd": "Cost of Debt (%)", "w_debt": "Debt Weighting (%)",
+        "rf": "Risk-Free Rate (%)", "rm": "Market Return (%)", "beta": "Beta (β)", "tax": "Tax Rate (%)", "kd": "Cost of Debt (%)", "w_debt": "Debt Weighting (%)",
         "ke_res": "Cost of Equity (Ke)", "kd_res": "Cost of Debt post-tax (Kd)", "wacc_res": "Implied WACC",
         "capm_toggle": "Enable CAPM Calculation Mode", "wacc_slider": "WACC %",
         "dcf_title": "📊 Standard DCF Engine",
-        "tg": "Terminal Growth %", "pg": "Projected Growth %", "fcfm": "FCF Margin %",
-        "ev": "Implied Enterprise Value (EV)",
+        "tg": "Terminal Growth %", "pg": "Projected Growth %", "fcfm": "FCF Margin %", "ev": "Implied Enterprise Value (EV)",
         "mc_btn": "🎲 Run Monte Carlo Simulation (10k Iterations)", "mc_run": "Running 10,000 simulations...",
         "mc_chart": "Enterprise Value Probability Distribution", "freq": "Frequency", "ci": "75% Confidence Interval",
         "lbo_title": "💰 LBO Quick-Modeler",
         "entry_m": "Entry Multiple (x)", "exit_m": "Exit Multiple (x)", "debt_f": "Debt Funding %",
         "pe_metrics": "Private Equity Metrics (5-Year)", "irr": "IRR", "moic": "MoIC",
         "sens_hm": "📊 EV Sensitivity (WACC vs Terminal Growth)", "dl_val_xlsx": "📥 Export Valuation Model (Excel + Charts)",
-        # Sidebar Tools
         "sb_tools": "🛠️ Analyst Tools", "fx_title": "🌍 FX Rates (Base MAD)", "calc_title": "🧮 Quick CAGR Calc",
         "pv": "Present Value", "fv": "Future Value", "yrs": "Years", "cagr_res": "CAGR:", 
-        "scratch_title": "📝 Scratchpad", "scratch_ph": "Jot down your deal notes here..."
+        "scratch_title": "📝 Scratchpad", "scratch_ph": "Jot down your deal notes here...",
+        "insight": "Insight",
+        # Dynamic Conclusions (English)
+        "capm_good_1": "Optimal financing structure! The target benefits from a low cost of capital, making future cash flows highly valuable.",
+        "capm_good_2": "Strong investment profile: The required return is easily beatable, signaling a green light for acquisitions.",
+        "capm_good_3": "Low systematic risk detected. The cheap debt structure significantly enhances the company's valuation upside.",
+        "capm_bad_1": "High cost of capital detected. The target's risk profile (Beta) heavily discounts its future value.",
+        "capm_bad_2": "Caution: Expensive funding structure. Aggressive operational growth is needed to justify this high required return.",
+        "capm_bad_3": "Elevated systematic risk limits valuation upside. Consider restructuring the debt to lower the overall WACC.",
+        "lbo_good_1": "Highly lucrative deal! The investor is projected to yield an outstanding return, comfortably exceeding PE hurdles.",
+        "lbo_good_2": "Top-tier buyout opportunity. Rapid debt paydown and strong EBITDA growth guarantee premium exit returns.",
+        "lbo_good_3": "Exceptional value creation detected. The investor will effortlessly multiply their initial equity stake.",
+        "lbo_bad_1": "Suboptimal returns. The projected IRR falls short of the 20% benchmark; the deal structure requires renegotiation.",
+        "lbo_bad_2": "Value trap warning: A high entry multiple and heavy debt burden are crushing the investor's equity returns.",
+        "lbo_bad_3": "The investor is going to yield weak returns. Consider lowering the entry price or boosting operational margins."
     },
     "Français": {
-        "title": "💼 Salle des Marchés M&A & Private Equity",
-        "banner_desc": "Valorisation Avancée, Modélisation LBO & Analyse des Risques",
+        "title": "💼 Salle des Marchés M&A & Private Equity", "banner_desc": "Valorisation Avancée, Modélisation LBO & Analyse des Risques",
         "glos_title": "ℹ️ Glossaire et Définitions",
         "glos_mc": "- **Simulation Monte Carlo :** Algorithme informatique basé sur un échantillonnage aléatoire répété pour évaluer l'impact du risque et de l'incertitude.",
         "glos_moic": "- **MoIC (Multiple sur le Capital Investi) :** Indique la valeur générée par un investissement (Capitaux Propres de Sortie / Entrée).",
@@ -57,27 +67,37 @@ t = {
         "b_rev": "Revenus de Base (MAD)", "b_ebitda": "EBITDA de Base (MAD)",
         "capm_title": "⚙️ Calculateur WACC Avancé (MEDAF)",
         "capm_def": "**Modèle d'Évaluation des Actifs Financiers (MEDAF) :** Modèle financier utilisé pour calculer la rentabilité attendue des capitaux propres ($K_e$). Il établit une relation linéaire entre la rentabilité requise et le risque systématique ($\\beta$).\n\n**Formule :** $K_e = R_f + \\beta \\times (R_m - R_f)$",
-        "rf": "Taux Sans Risque (%)", "rm": "Rendement du Marché (%)", "beta": "Bêta (β)", "tax": "Taux d'Imposition (%)",
-        "kd": "Coût de la Dette (%)", "w_debt": "Pondération de la Dette (%)",
+        "rf": "Taux Sans Risque (%)", "rm": "Rendement du Marché (%)", "beta": "Bêta (β)", "tax": "Taux d'Imposition (%)", "kd": "Coût de la Dette (%)", "w_debt": "Pondération de la Dette (%)",
         "ke_res": "Coût des Capitaux Propres (Ke)", "kd_res": "Coût de la Dette après impôts (Kd)", "wacc_res": "CMPC Implicite (WACC)",
         "capm_toggle": "Activer le Mode de Calcul MEDAF", "wacc_slider": "CMPC (WACC) %",
         "dcf_title": "📊 Moteur DCF Standard",
-        "tg": "Croissance Terminale %", "pg": "Croissance Projetée %", "fcfm": "Marge FCF %",
-        "ev": "Valeur d'Entreprise Implicite (VE)",
+        "tg": "Croissance Terminale %", "pg": "Croissance Projetée %", "fcfm": "Marge FCF %", "ev": "Valeur d'Entreprise Implicite (VE)",
         "mc_btn": "🎲 Lancer Simulation Monte Carlo (10k Itérations)", "mc_run": "Exécution de 10 000 simulations...",
         "mc_chart": "Distribution de Probabilité de la Valeur d'Entreprise", "freq": "Fréquence", "ci": "Intervalle de Confiance à 75 %",
         "lbo_title": "💰 Modélisateur LBO Rapide",
         "entry_m": "Multiple d'Entrée (x)", "exit_m": "Multiple de Sortie (x)", "debt_f": "Financement par Dette %",
         "pe_metrics": "Métriques Private Equity (Horizon 5 ans)", "irr": "TRI (IRR)", "moic": "Multiple (MoIC)",
         "sens_hm": "📊 Sensibilité de la VE (WACC vs Croissance)", "dl_val_xlsx": "📥 Exporter le Modèle de Valorisation",
-        # Sidebar Tools
         "sb_tools": "🛠️ Outils de l'Analyste", "fx_title": "🌍 Taux de Change", "calc_title": "🧮 Calculateur CAGR",
         "pv": "Valeur Actuelle", "fv": "Valeur Future", "yrs": "Années", "cagr_res": "TCAM :", 
-        "scratch_title": "📝 Bloc-notes", "scratch_ph": "Prenez vos notes ici..."
+        "scratch_title": "📝 Bloc-notes", "scratch_ph": "Prenez vos notes ici...",
+        "insight": "Analyse",
+        # Dynamic Conclusions (French)
+        "capm_good_1": "Structure de financement optimale ! Le faible coût du capital valorise fortement les flux de trésorerie futurs.",
+        "capm_good_2": "Profil d'investissement solide : Le rendement exigé est facilement atteignable, feu vert pour l'acquisition.",
+        "capm_good_3": "Faible risque systématique détecté. La dette bon marché améliore considérablement le potentiel de valorisation.",
+        "capm_bad_1": "Coût du capital élevé détecté. Le profil de risque (Bêta) réduit fortement la valeur future.",
+        "capm_bad_2": "Attention : Structure de financement coûteuse. Une croissance agressive est nécessaire pour justifier ce risque.",
+        "capm_bad_3": "Le risque systématique élevé limite la valorisation. Envisagez de restructurer la dette pour baisser le CMPC.",
+        "lbo_good_1": "Opération très lucrative ! L'investisseur devrait obtenir un rendement exceptionnel dépassant les standards PE.",
+        "lbo_good_2": "Opportunité de rachat de premier plan. Le désendettement rapide garantit des rendements de sortie premium.",
+        "lbo_good_3": "Création de valeur exceptionnelle. L'investisseur multipliera facilement sa mise de fonds initiale.",
+        "lbo_bad_1": "Rendements suboptimaux. Le TRI projeté n'atteint pas les 20 % ; la structure de l'opération doit être renégociée.",
+        "lbo_bad_2": "Alerte piège de valeur : Un multiple d'entrée élevé et une dette lourde écrasent les rendements de l'investisseur.",
+        "lbo_bad_3": "L'investisseur obtiendra de faibles rendements. Baissez le prix d'entrée ou améliorez les marges opérationnelles."
     },
     "Español": {
-        "title": "💼 Sala de Fusiones y Capital Privado (M&A)",
-        "banner_desc": "Valoración Avanzada, Modelado LBO y Análisis de Riesgos",
+        "title": "💼 Sala de Fusiones y Capital Privado (M&A)", "banner_desc": "Valoración Avanzada, Modelado LBO y Análisis de Riesgos",
         "glos_title": "ℹ️ Glosario y Definiciones Avanzadas",
         "glos_mc": "- **Simulación Monte Carlo:** Algoritmo computacional basado en muestreo aleatorio repetido para comprender el impacto del riesgo.",
         "glos_moic": "- **MoIC (Múltiplo sobre Capital Invertido):** Muestra cuánto valor ha generado una inversión.",
@@ -85,27 +105,37 @@ t = {
         "b_rev": "Ingresos Base (MAD)", "b_ebitda": "EBITDA Base (MAD)",
         "capm_title": "⚙️ Calculadora WACC Avanzada",
         "capm_def": "**Modelo de Valoración de Activos de Capital (CAPM):** El CAPM es un modelo financiero utilizado para calcular la rentabilidad esperada del capital ($K_e$). Establece una relación lineal entre la rentabilidad y el riesgo sistemático ($\\beta$).\n\n**Fórmula:** $K_e = R_f + \\beta \\times (R_m - R_f)$",
-        "rf": "Tasa Libre de Riesgo (%)", "rm": "Retorno del Mercado (%)", "beta": "Beta (β)", "tax": "Tasa Impositiva (%)",
-        "kd": "Costo de la Deuda (%)", "w_debt": "Ponderación de Deuda (%)",
+        "rf": "Tasa Libre de Riesgo (%)", "rm": "Retorno del Mercado (%)", "beta": "Beta (β)", "tax": "Tasa Impositiva (%)", "kd": "Costo de la Deuda (%)", "w_debt": "Ponderación de Deuda (%)",
         "ke_res": "Costo del Capital (Ke)", "kd_res": "Costo de Deuda después de impuestos (Kd)", "wacc_res": "WACC Implícito",
         "capm_toggle": "Habilitar Modo de Cálculo CAPM", "wacc_slider": "WACC %",
         "dcf_title": "📊 Motor DCF Estándar",
-        "tg": "Crecimiento Terminal %", "pg": "Crecimiento Proyectado %", "fcfm": "Margen FCF %",
-        "ev": "Valor Empresarial Implícito (EV)",
+        "tg": "Crecimiento Terminal %", "pg": "Crecimiento Proyectado %", "fcfm": "Margen FCF %", "ev": "Valor Empresarial Implícito (EV)",
         "mc_btn": "🎲 Ejecutar Simulación Monte Carlo", "mc_run": "Ejecutando 10,000 simulaciones...",
         "mc_chart": "Distribución de Probabilidad del Valor Empresarial", "freq": "Frecuencia", "ci": "Intervalo de Confianza del 75%",
         "lbo_title": "💰 Modelador LBO Rápido",
         "entry_m": "Múltiplo de Entrada (x)", "exit_m": "Múltiplo de Salida (x)", "debt_f": "Financiamiento de Deuda %",
         "pe_metrics": "Métricas PE (Horizonte 5 años)", "irr": "TIR (IRR)", "moic": "Múltiplo (MoIC)",
         "sens_hm": "📊 Sensibilidad del EV (WACC vs Crecimiento)", "dl_val_xlsx": "📥 Exportar Modelo de Valoración",
-        # Sidebar Tools
         "sb_tools": "🛠️ Herramientas de Análisis", "fx_title": "🌍 Tipos de Cambio", "calc_title": "🧮 Calculadora CAGR",
         "pv": "Valor Presente", "fv": "Valor Futuro", "yrs": "Años", "cagr_res": "CAGR:", 
-        "scratch_title": "📝 Bloc de Notas", "scratch_ph": "Tome sus notas aquí..."
+        "scratch_title": "📝 Bloc de Notas", "scratch_ph": "Tome sus notas aquí...",
+        "insight": "Análisis",
+        # Dynamic Conclusions (Spanish)
+        "capm_good_1": "¡Estructura de financiación óptima! El bajo costo de capital hace que los flujos futuros sean muy valiosos.",
+        "capm_good_2": "Fuerte perfil de inversión: El retorno requerido es fácilmente superable, luz verde para la adquisición.",
+        "capm_good_3": "Bajo riesgo sistemático detectado. La deuda barata mejora significativamente el potencial de valoración.",
+        "capm_bad_1": "Alto costo de capital detectado. El perfil de riesgo (Beta) descuenta fuertemente su valor futuro.",
+        "capm_bad_2": "Precaución: Estructura de financiación costosa. Se necesita un crecimiento agresivo para justificar esto.",
+        "capm_bad_3": "El alto riesgo sistemático limita el potencial de valoración. Considere reestructurar la deuda para bajar el WACC.",
+        "lbo_good_1": "¡Trato muy lucrativo! Se proyecta que el inversor obtenga un rendimiento sobresaliente.",
+        "lbo_good_2": "Oportunidad de compra de primer nivel. El rápido pago de la deuda garantiza retornos de salida premium.",
+        "lbo_good_3": "Creación de valor excepcional. El inversor multiplicará fácilmente su participación de capital inicial.",
+        "lbo_bad_1": "Rendimientos subóptimos. La TIR proyectada no alcanza el 20%; la estructura requiere renegociación.",
+        "lbo_bad_2": "Advertencia de trampa de valor: Un alto múltiplo de entrada y una pesada carga de deuda aplastan los retornos.",
+        "lbo_bad_3": "El inversor obtendrá rendimientos débiles. Considere reducir el precio de entrada o mejorar los márgenes."
     },
     "العربية": {
-        "title": "💼 غرفة صفقات الاندماج والاستحواذ (M&A)",
-        "banner_desc": "التقييم المتقدم، النمذجة المالية وتحليل المخاطر",
+        "title": "💼 غرفة صفقات الاندماج والاستحواذ (M&A)", "banner_desc": "التقييم المتقدم، النمذجة المالية وتحليل المخاطر",
         "glos_title": "ℹ️ مسرد المصطلحات والتعاريف المتقدمة",
         "glos_mc": "- **محاكاة مونت كارلو:** خوارزمية حسابية تعتمد على أخذ عينات عشوائية متكررة لفهم تأثير المخاطر وعدم اليقين في التقييم.",
         "glos_moic": "- **مضاعف رأس المال المستثمر (MoIC):** يوضح مقدار القيمة التي حققها الاستثمار (حقوق الملكية عند التخارج / الدخول).",
@@ -113,23 +143,34 @@ t = {
         "b_rev": "الإيرادات الأساسية (MAD)", "b_ebitda": "الأرباح التشغيلية EBITDA (MAD)",
         "capm_title": "⚙️ حاسبة WACC المتقدمة (CAPM)",
         "capm_def": "**نموذج تسعير الأصول الرأسمالية (CAPM):** هو نموذج مالي يُستخدم لحساب العائد المتوقع على حقوق الملكية ($K_e$). ويقيم علاقة خطية بين العائد المطلوب للاستثمار والمخاطر المنهجية ($\\beta$).\n\n**المعادلة:** $K_e = R_f + \\beta \\times (R_m - R_f)$",
-        "rf": "المعدل الخالي من المخاطر (%)", "rm": "عائد السوق (%)", "beta": "بيتا (β)", "tax": "نسبة الضريبة (%)",
-        "kd": "تكلفة الدين (%)", "w_debt": "وزن الدين (%)",
+        "rf": "المعدل الخالي من المخاطر (%)", "rm": "عائد السوق (%)", "beta": "بيتا (β)", "tax": "نسبة الضريبة (%)", "kd": "تكلفة الدين (%)", "w_debt": "وزن الدين (%)",
         "ke_res": "تكلفة حقوق الملكية (Ke)", "kd_res": "تكلفة الدين بعد الضريبة (Kd)", "wacc_res": "المتوسط المرجح لتكلفة رأس المال (WACC)",
         "capm_toggle": "تمكين وضع حساب CAPM", "wacc_slider": "المتوسط المرجح لتكلفة رأس المال (WACC) %",
         "dcf_title": "📊 محرك خصم التدفقات النقدية (DCF)",
-        "tg": "النمو النهائي (Terminal Growth) %", "pg": "النمو المتوقع %", "fcfm": "هامش التدفق النقدي الحر (FCF) %",
-        "ev": "القيمة المؤسسية الضمنية (EV)",
+        "tg": "النمو النهائي (Terminal Growth) %", "pg": "النمو المتوقع %", "fcfm": "هامش التدفق النقدي الحر (FCF) %", "ev": "القيمة المؤسسية الضمنية (EV)",
         "mc_btn": "🎲 تشغيل محاكاة مونت كارلو", "mc_run": "يتم الآن تشغيل 10,000 محاكاة...",
         "mc_chart": "التوزيع الاحتمالي للقيمة المؤسسية", "freq": "التردد", "ci": "فترة ثقة 75%",
         "lbo_title": "💰 نموذج الاستحواذ المدعوم بالقروض (LBO)",
         "entry_m": "مضاعف الدخول (x)", "exit_m": "مضاعف التخارج (x)", "debt_f": "نسبة تمويل الديون %",
         "pe_metrics": "مقاييس الأسهم الخاصة (أفق 5 سنوات)", "irr": "معدل العائد الداخلي (IRR)", "moic": "مضاعف رأس المال (MoIC)",
         "sens_hm": "📊 تحليل الحساسية (WACC مقابل النمو)", "dl_val_xlsx": "📥 تصدير نموذج التقييم المتقدم (Excel)",
-        # Sidebar Tools
         "sb_tools": "🛠️ أدوات المحلل السريعة", "fx_title": "🌍 أسعار الصرف", "calc_title": "🧮 حاسبة النمو (CAGR)",
         "pv": "القيمة الحالية", "fv": "القيمة المستقبلية", "yrs": "السنوات", "cagr_res": "معدل النمو (CAGR):", 
-        "scratch_title": "📝 مذكرة الملاحظات", "scratch_ph": "دون ملاحظاتك السريعة هنا..."
+        "scratch_title": "📝 مذكرة الملاحظات", "scratch_ph": "دون ملاحظاتك السريعة هنا...",
+        "insight": "قراءة تحليلية",
+        # Dynamic Conclusions (Arabic)
+        "capm_good_1": "هيكل تمويل مثالي! المستهدف يستفيد من تكلفة رأس مال منخفضة، مما يجعل التدفقات النقدية المستقبلية ذات قيمة عالية جداً.",
+        "capm_good_2": "ملف استثماري قوي: العائد المطلوب يسهل تحقيقه، مما يعطي الضوء الأخضر للمضي قدماً في الاستحواذ.",
+        "capm_good_3": "مخاطر منهجية منخفضة. هيكل الديون الرخيص يعزز بشكل كبير من إمكانات التقييم للشركة.",
+        "capm_bad_1": "تم رصد تكلفة عالية لرأس المال. ملف المخاطر (بيتا) يقلص بشكل كبير من القيمة المستقبلية للشركة.",
+        "capm_bad_2": "تحذير: تمويل باهظ التكلفة. هناك حاجة لنمو تشغيلي قوي جداً لتبرير هذا العائد المطلوب المرتفع.",
+        "capm_bad_3": "المخاطر المنهجية المرتفعة تحد من التقييم. فكر في إعادة هيكلة الديون لخفض الـ WACC الإجمالي.",
+        "lbo_good_1": "صفقة مربحة للغاية! من المتوقع أن يحقق المستثمر عائداً استثنائياً يتجاوز معايير الأسهم الخاصة بسهولة.",
+        "lbo_good_2": "فرصة استحواذ من الدرجة الأولى. السداد السريع للديون ونمو الأرباح يضمنان عوائد تخارج ممتازة.",
+        "lbo_good_3": "خلق قيمة استثنائية. المستثمر سيتمكن بسهولة من مضاعفة حصته الأولية من رأس المال.",
+        "lbo_bad_1": "عوائد دون المستوى. معدل العائد الداخلي (IRR) أقل من معيار 20٪؛ هيكل الصفقة يتطلب إعادة تفاوض.",
+        "lbo_bad_2": "تحذير من فخ القيمة: مضاعف الدخول المرتفع وعبء الديون الثقيل يسحقان عوائد المستثمر.",
+        "lbo_bad_3": "المستثمر سيحقق عوائد ضعيفة جداً. فكر في خفض سعر الدخول أو زيادة هوامش الربح التشغيلية."
     }
 }
 txt = t[lang]
@@ -153,12 +194,15 @@ st.markdown(f"""
     .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
     
     /* Premium Glassmorphism Stat Cards */
-    .stat-card-ma {{ background: rgba(22, 26, 34, 0.7); backdrop-filter: blur(12px); border-radius: 10px; padding: 25px; text-align: center; border-top: 4px solid #1f77b4; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease; }}
+    .stat-card-ma {{ background: rgba(22, 26, 34, 0.7); backdrop-filter: blur(12px); border-radius: 10px; padding: 25px; text-align: center; border-top: 4px solid #1f77b4; margin-top: 20px; margin-bottom: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease; }}
     .stat-card-ma:hover {{ transform: translateY(-5px); }}
     .stat-card-ma.lbo-card {{ border-top: 4px solid #9467bd; }}
     .ma-card-title {{ color: #a0aab5; font-size: 15px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }}
     .ma-card-value {{ color: white; font-size: 30px; font-weight: 800; margin: 0; text-shadow: 0 0 15px rgba(255,255,255,0.15); }}
     .ma-highlight {{ color: #2ca02c; }}
+    
+    /* Highlighted Box for Inputs */
+    .highlight-box {{ background-color: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }}
     
     {rtl_css}
     
@@ -177,14 +221,12 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(f"<h3 style='color: #9467bd;'>{txt['sb_tools']}</h3>", unsafe_allow_html=True)
     
-    # Tool 1: Live FX Rates
     with st.expander(txt['fx_title'], expanded=True):
         usd_mad = 1 / st.session_state.rates.get("USD", 0.10)
         eur_mad = 1 / st.session_state.rates.get("EUR", 0.09)
         st.markdown(f"🇺🇸 **1 USD** = `{usd_mad:.2f} MAD`")
         st.markdown(f"🇪🇺 **1 EUR** = `{eur_mad:.2f} MAD`")
         
-    # Tool 2: CAGR Calculator
     with st.expander(txt['calc_title'], expanded=False):
         pv = st.number_input(txt['pv'], value=1000.0, step=100.0)
         fv = st.number_input(txt['fv'], value=1500.0, step=100.0)
@@ -193,7 +235,6 @@ with st.sidebar:
             cagr = ((fv / pv) ** (1 / yrs) - 1) * 100
             st.success(f"**{txt['cagr_res']}** {cagr:.2f}%")
             
-    # Tool 3: Scratchpad
     with st.expander(txt['scratch_title'], expanded=False):
         st.text_area("", placeholder=txt['scratch_ph'], height=150, label_visibility="collapsed")
 
@@ -251,6 +292,20 @@ with st.container(border=True):
         st.markdown(f"<h3 style='text-align:center; color:#2ca02c;'>🎯 {txt['wacc_res']}: {wacc*100:.2f}%</h3>", unsafe_allow_html=True)
     else:
         wacc = st.slider(txt["wacc_slider"], 5.0, 20.0, 10.0, 0.5) / 100
+        
+    # --- DYNAMIC CAPM CONCLUSION ---
+    if wacc < 0.10:
+        c_color, c_bg = "#2ca02c", "44, 160, 44"
+        c_text = random.choice([txt['capm_good_1'], txt['capm_good_2'], txt['capm_good_3']])
+    else:
+        c_color, c_bg = "#d62728", "214, 39, 40"
+        c_text = random.choice([txt['capm_bad_1'], txt['capm_bad_2'], txt['capm_bad_3']])
+        
+    st.markdown(f"""
+    <div style="padding: 12px; border-radius: 8px; background-color: rgba({c_bg}, 0.1); border-left: 4px solid {c_color}; margin-top: 15px;">
+        <p style="color: {c_color}; margin: 0; font-size: 0.95rem;"><b>💡 {txt['insight']}:</b> {c_text}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -324,6 +379,20 @@ with col_lbo:
             <p class="ma-card-value" style="font-size: 22px; margin-top: 5px;">{txt['moic']}: <span class="ma-highlight">{moic:.2f}x</span></p>
         </div>
         """, unsafe_allow_html=True)
+        
+        # --- DYNAMIC LBO CONCLUSION ---
+        if irr >= 20.0:
+            l_color, l_bg = "#2ca02c", "44, 160, 44"
+            l_text = random.choice([txt['lbo_good_1'], txt['lbo_good_2'], txt['lbo_good_3']])
+        else:
+            l_color, l_bg = "#d62728", "214, 39, 40"
+            l_text = random.choice([txt['lbo_bad_1'], txt['lbo_bad_2'], txt['lbo_bad_3']])
+            
+        st.markdown(f"""
+        <div style="padding: 12px; border-radius: 8px; background-color: rgba({l_bg}, 0.1); border-left: 4px solid {l_color}; margin-top: 15px;">
+            <p style="color: {l_color}; margin: 0; font-size: 0.95rem;"><b>💡 {txt['insight']}:</b> {l_text}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -363,7 +432,6 @@ output_val = io.BytesIO()
 with pd.ExcelWriter(output_val, engine='xlsxwriter') as writer:
     workbook = writer.book
     
-    # SUMMARY SHEET
     worksheet = workbook.add_worksheet('Valuation_Summary')
     header_format = workbook.add_format({'bold': True, 'bg_color': '#1f77b4', 'font_color': 'white', 'border': 1})
     cell_format = workbook.add_format({'border': 1})
@@ -406,7 +474,6 @@ with pd.ExcelWriter(output_val, engine='xlsxwriter') as writer:
     chart.set_title({'name': '5-Year Projected FCF'})
     worksheet.insert_chart('G2', chart)
     
-    # HEATMAP SHEET
     worksheet_hm = workbook.add_worksheet('Sensitivity_Heatmap')
     worksheet_hm.write(0, 0, 'WACC \\ Growth', header_format)
     
