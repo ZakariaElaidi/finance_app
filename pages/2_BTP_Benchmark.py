@@ -118,7 +118,7 @@ with col_clear2:
         st.cache_data.clear()
         st.rerun()
 
-# --- NEW: ULTRA-FAST BATCH MARKET ENGINE (NO LOOPS, NO SLEEP) ---
+# --- NEW: ULTRA-FAST BATCH MARKET ENGINE (Fixed TV Prefix from BVC to CAS) ---
 @st.cache_data(ttl=300, show_spinner=False)
 def fetch_live_market_data_v5():
     fallbacks = {
@@ -134,16 +134,22 @@ def fetch_live_market_data_v5():
 
     live_prices = {}
 
-    # LAYER 1: TradingView Scanner API (Lightning Fast, 1 Single JSON Request)
+    # LAYER 1: TradingView Scanner API (Fixed CAS prefix + Proper Headers)
     try:
         tv_url = "https://scanner.tradingview.com/morocco/scan"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Content-Type": "application/json",
+            "Origin": "https://www.tradingview.com",
+            "Referer": "https://www.tradingview.com/"
+        }
         tv_payload = {
             "symbols": {
-                "tickers": ["BVC:LHM", "BVC:ADH", "BVC:ADI", "BVC:CMA", "BVC:TGC", "BVC:SND", "BVC:JET", "BVC:COL"]
+                "tickers": ["CAS:LHM", "CAS:ADH", "CAS:ADI", "CAS:CMA", "CAS:TGC", "CAS:SND", "CAS:JET", "CAS:COL"]
             },
             "columns": ["name", "close"]
         }
-        res = requests.post(tv_url, json=tv_payload, timeout=3)
+        res = requests.post(tv_url, json=tv_payload, headers=headers, timeout=5)
         if res.status_code == 200:
             data = res.json().get("data", [])
             tv_mapping = {
@@ -152,14 +158,15 @@ def fetch_live_market_data_v5():
                 "JET": "Jet Contractors", "COL": "Colorado"
             }
             for item in data:
-                tkr = item["d"][0]
+                tkr_raw = str(item["d"][0])
+                tkr = tkr_raw.replace("CAS:", "")  # Clean the prefix just in case
                 price = item["d"][1]
-                if tkr in tv_mapping and price:
+                if tkr in tv_mapping and price is not None:
                     live_prices[tv_mapping[tkr]] = {"Price_MAD": float(price), "Data_Status": "🟢 LIVE (TV)"}
     except Exception:
         pass
 
-    # LAYER 2: Yahoo Finance Batch API (Only if TV fails completely)
+    # LAYER 2: Yahoo Finance Batch API (If TV fails)
     if len(live_prices) < 8:
         try:
             yf_mapping = {
@@ -169,8 +176,8 @@ def fetch_live_market_data_v5():
             }
             symbols = ",".join(yf_mapping.keys())
             yf_url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={symbols}"
-            headers = {"User-Agent": "Mozilla/5.0"}
-            res = requests.get(yf_url, headers=headers, timeout=3)
+            headers_yf = {"User-Agent": "Mozilla/5.0"}
+            res = requests.get(yf_url, headers=headers_yf, timeout=4)
             if res.status_code == 200:
                 results = res.json().get("quoteResponse", {}).get("result", [])
                 for item in results:
