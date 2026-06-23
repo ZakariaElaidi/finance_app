@@ -328,18 +328,33 @@ if uploaded_file:
 
         st.markdown("---")
         
-        # 1. SENSITIVITY HEATMAP (RED -> ORANGE -> GREEN)
+        # 1. SENSITIVITY HEATMAP (FIXED MATH & COLOR SCALE)
         st.subheader("📊 Sensitivity Heatmap (WACC vs Growth)")
         import numpy as np
-        wacc_range = np.linspace(0.05, 0.15, 10)
-        growth_range = np.linspace(0.01, 0.05, 10)
+        
+        # Ranges adjusted so WACC is ALWAYS strictly greater than Terminal Growth
+        wacc_range = np.linspace(0.06, 0.15, 10)  # 6% to 15%
+        growth_range = np.linspace(0.01, 0.05, 10) # 1% to 5%
+        
         z_data = [[(rev_25 * 0.15) / (w - g) for g in growth_range] for w in wacc_range]
         
-        # Explicit gradient: 0.0 (lowest value) is Red, 0.5 is Orange, 1.0 (highest value) is Green
-        custom_colors = [[0.0, 'red'], [0.5, 'orange'], [1.0, 'green']]
+        # Native smooth color scale 'RdYlGn' (Red to Yellow to Green)
+        fig_heat = go.Figure(data=go.Heatmap(
+            z=z_data, 
+            x=np.round(growth_range*100, 1), 
+            y=np.round(wacc_range*100, 1), 
+            colorscale='RdYlGn', 
+            colorbar=dict(title=f"EV ({sym})"),
+            hovertemplate="Growth: %{x}%<br>WACC: %{y}%<br>EV: %{z:,.0f} " + sym + "<extra></extra>"
+        ))
         
-        fig_heat = go.Figure(data=go.Heatmap(z=z_data, x=growth_range*100, y=wacc_range*100, colorscale=custom_colors, colorbar=dict(title=sym)))
-        fig_heat.update_layout(title="Enterprise Value Sensitivity Matrix", xaxis_title="Terminal Growth %", yaxis_title="WACC %", template="plotly_dark", height=400)
+        fig_heat.update_layout(
+            title="Enterprise Value Sensitivity Matrix", 
+            xaxis_title="Terminal Growth %", 
+            yaxis_title="WACC %", 
+            template="plotly_dark", 
+            height=450
+        )
         st.plotly_chart(fig_heat, use_container_width=True)
 
         st.markdown("---")
