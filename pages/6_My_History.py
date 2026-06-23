@@ -27,7 +27,8 @@ t = {
         "stats_ttl": "Total Sessions", "stats_rev": "Total Analyzed Revenue",
         "export_btn": "📥 Export All to CSV", "clear_btn": "🚨 Clear All History",
         "clear_warn": "Are you sure you want to delete all your history? This cannot be undone.",
-        "clear_succ": "All history cleared."
+        "clear_succ": "All history cleared.",
+        "guest_lock": "🔒 Guest mode does not support history tracking. Create a free account to save and manage your analysis sessions."
     },
     "Français": {
         "banner_h": "🗄️ Base de données & Archives", "banner_desc": "Consultez, gérez et exportez vos sessions d'analyse financière précédemment sauvegardées.",
@@ -38,7 +39,8 @@ t = {
         "stats_ttl": "Total des Sessions", "stats_rev": "Revenus Totaux Analysés",
         "export_btn": "📥 Tout exporter en CSV", "clear_btn": "🚨 Effacer tout l'historique",
         "clear_warn": "Êtes-vous sûr de vouloir supprimer tout votre historique ? Cette action est irréversible.",
-        "clear_succ": "Historique effacé."
+        "clear_succ": "Historique effacé.",
+        "guest_lock": "🔒 Le mode invité ne prend pas en charge l'historique. Créez un compte gratuit pour sauvegarder et gérer vos sessions."
     },
     "Español": {
         "banner_h": "🗄️ Base de Datos y Archivo", "banner_desc": "Revisa, gestiona y exporta tus sesiones de análisis financiero guardadas previamente.",
@@ -49,7 +51,8 @@ t = {
         "stats_ttl": "Sesiones Totales", "stats_rev": "Ingresos Totales Analizados",
         "export_btn": "📥 Exportar todo a CSV", "clear_btn": "🚨 Borrar todo el historial",
         "clear_warn": "¿Estás seguro de que deseas eliminar todo tu historial? Esto no se puede deshacer.",
-        "clear_succ": "Historial borrado."
+        "clear_succ": "Historial borrado.",
+        "guest_lock": "🔒 El modo invitado no soporta el historial. Crea una cuenta gratis para guardar y gestionar tus sesiones de análisis."
     },
     "العربية": {
         "banner_h": "🗄️ قاعدة البيانات والأرشيف", "banner_desc": "مراجعة وإدارة وتصدير جلسات التحليل المالي المحفوظة مسبقًا.",
@@ -60,7 +63,8 @@ t = {
         "stats_ttl": "إجمالي الجلسات", "stats_rev": "إجمالي الإيرادات المحللة",
         "export_btn": "📥 تصدير الكل إلى CSV", "clear_btn": "🚨 مسح كل السجل",
         "clear_warn": "هل أنت متأكد أنك تريد حذف كل السجل الخاص بك؟ لا يمكن التراجع عن هذا الإجراء.",
-        "clear_succ": "تم مسح السجل."
+        "clear_succ": "تم مسح السجل.",
+        "guest_lock": "🔒 وضع الضيف لا يدعم حفظ السجلات. قم بإنشاء حساب مجاني لحفظ وإدارة جلسات التحليل الخاصة بك."
     }
 }
 txt = t[lang]
@@ -75,11 +79,18 @@ if lang == "العربية":
 
 st.markdown(f"""
 <style>
+    /* Global Fade-in Animation */
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: translateY(15px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
+    }}
+    .block-container {{ animation: fadeIn 0.6s ease-out; }}
+
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
     
     /* Archive Banner Styling */
-    .full-width-banner {{ position: relative; width: 100%; height: 220px; background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32d7?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #8B4513; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
+    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32d7?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #8B4513; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
     .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.8) 50%, rgba(139,69,19,0.4) 100%); }}
     .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
     
@@ -103,11 +114,16 @@ st.markdown(f"""
 <div class="full-width-banner">
     <div class="banner-overlay"></div>
     <div class="banner-content" {'dir="rtl"' if lang=="العربية" else ''}>
-        <h1 style="color: white; margin: 0; font-size: 2.2rem; letter-spacing: 1px;">{txt['banner_h']}</h1>
+        <h1 style="color: white; margin: 0; font-size: 2.5rem; letter-spacing: 1px;">{txt['banner_h']}</h1>
         <p style="color:#e0e0e0; font-size:1.1rem; margin-top: 8px;">{txt['banner_desc']}</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# --- GUEST MODE LOCK ---
+if hasattr(st.session_state.user, 'email') and st.session_state.user.email == 'guest@portfolio.com':
+    st.warning(txt["guest_lock"])
+    st.stop() # Stops execution here so guest doesn't query the database
 
 # --- SUPABASE INIT & FUNCTIONS ---
 try:
