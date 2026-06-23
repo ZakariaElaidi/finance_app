@@ -131,36 +131,32 @@ st.markdown(f"""
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
     
-    /* M&A Banner Styling (Purple Theme with Deal Room Image) */
+    /* M&A Banner Styling */
     .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #9467bd; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
     .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.6) 50%, rgba(148,103,189,0.3) 100%); }}
     .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
     
-    /* Glassmorphism Stat Cards */
-    .stat-card-ma {{ background: rgba(22, 26, 34, 0.6); backdrop-filter: blur(10px); border-radius: 8px; padding: 20px; text-align: center; border-top: 3px solid #1f77b4; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease; }}
-    .stat-card-ma:hover {{ transform: translateY(-3px); }}
-    .stat-card-ma.lbo-card {{ border-top: 3px solid #9467bd; }}
-    .ma-card-title {{ color: #b3b3b3; font-size: 14px; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px; }}
-    .ma-card-value {{ color: white; font-size: 26px; font-weight: bold; margin: 0; text-shadow: 0 0 10px rgba(255,255,255,0.1); }}
-    
-    /* Highlighted Box for Inputs */
-    .highlight-box {{ background-color: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }}
+    /* Premium Glassmorphism Stat Cards */
+    .stat-card-ma {{ background: rgba(22, 26, 34, 0.7); backdrop-filter: blur(12px); border-radius: 10px; padding: 25px; text-align: center; border-top: 4px solid #1f77b4; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease; }}
+    .stat-card-ma:hover {{ transform: translateY(-5px); }}
+    .stat-card-ma.lbo-card {{ border-top: 4px solid #9467bd; }}
+    .ma-card-title {{ color: #a0aab5; font-size: 15px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }}
+    .ma-card-value {{ color: white; font-size: 30px; font-weight: 800; margin: 0; text-shadow: 0 0 15px rgba(255,255,255,0.15); }}
+    .ma-highlight {{ color: #2ca02c; }}
     
     {rtl_css}
     
     /* Mobile Responsiveness */
     @media (max-width: 768px) {{
         .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
-        [data-testid="stDataFrame"] {{ overflow-x: auto !important; max-width: 100% !important; }}
         .banner h1, .full-width-banner h1 {{ font-size: 1.6rem !important; }}
         .banner p, .full-width-banner p {{ font-size: 0.9rem !important; }}
-        .js-plotly-plot, .plotly, .plot-container {{ max-width: 100% !important; }}
         [data-testid="column"] {{ width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; margin-bottom: 15px !important; }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- BANNER (REPLACES st.title) ---
+# --- BANNER ---
 st.markdown(f"""
 <div class="full-width-banner">
     <div class="banner-overlay"></div>
@@ -175,23 +171,24 @@ with st.expander(txt["glos_title"]):
     st.markdown(txt["glos_mc"])
     st.markdown(txt["glos_moic"])
 
-# --- MAIN PAGE INPUTS (Moved from Sidebar) ---
-st.markdown(f"### {txt['sb_title']}")
-st.info(txt["sb_info"])
-with st.container():
-    st.markdown('<div class="highlight-box">', unsafe_allow_html=True)
+# --- 1. MAIN PAGE INPUTS (Native Streamlit Container - Fixes the HTML Bug) ---
+with st.container(border=True):
+    st.markdown(f"### {txt['sb_title']}")
+    st.info(txt["sb_info"])
     c_b1, c_b2 = st.columns(2)
     with c_b1: base_rev = st.number_input(txt["b_rev"], value=5000000.0, step=100000.0)
     with c_b2: base_ebitda = st.number_input(txt["b_ebitda"], value=1200000.0, step=50000.0)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# --- ADVANCED WACC CALCULATOR (CAPM) ---
-st.subheader(txt["capm_title"])
-st.info(txt["capm_def"])
-use_capm = st.toggle(txt["capm_toggle"])
+st.markdown("<br>", unsafe_allow_html=True)
 
-if use_capm:
-    with st.container(border=True):
+# --- 2. ADVANCED WACC CALCULATOR (CAPM) ---
+with st.container(border=True):
+    st.markdown(f"### {txt['capm_title']}")
+    st.info(txt["capm_def"])
+    use_capm = st.toggle(txt["capm_toggle"])
+
+    if use_capm:
+        st.markdown("<br>", unsafe_allow_html=True)
         c1, c2, c3, c4 = st.columns(4)
         rf = c1.number_input(txt["rf"], value=4.0) / 100
         rm = c2.number_input(txt["rm"], value=10.0) / 100
@@ -211,85 +208,88 @@ if use_capm:
         
         st.success(f"**{txt['ke_res']}:** {ke*100:.2f}% &nbsp; | &nbsp; **{txt['kd_res']}:** {kd*100:.2f}%")
         st.markdown(f"<h3 style='text-align:center; color:#2ca02c;'>🎯 {txt['wacc_res']}: {wacc*100:.2f}%</h3>", unsafe_allow_html=True)
-else:
-    wacc = st.slider(txt["wacc_slider"], 5.0, 20.0, 10.0, 0.5) / 100
+    else:
+        wacc = st.slider(txt["wacc_slider"], 5.0, 20.0, 10.0, 0.5) / 100
 
 st.markdown("---")
 
-# --- VALUATION ENGINES ---
+# --- 3. VALUATION ENGINES ---
 col_dcf, col_lbo = st.columns(2, gap="large")
 
 with col_dcf:
-    st.subheader(txt["dcf_title"])
-    tg = st.slider(txt["tg"], 0.0, 5.0, 2.0, 0.1) / 100
-    proj_growth = st.slider(txt["pg"], -10.0, 30.0, 5.0, 1.0) / 100
-    margin = st.slider(txt["fcfm"], 1.0, 30.0, 15.0, 1.0) / 100
+    with st.container(border=True):
+        st.markdown(f"<h3 style='color:#1f77b4;'>{txt['dcf_title']}</h3>", unsafe_allow_html=True)
+        tg = st.slider(txt["tg"], 0.0, 5.0, 2.0, 0.1) / 100
+        proj_growth = st.slider(txt["pg"], -10.0, 30.0, 5.0, 1.0) / 100
+        margin = st.slider(txt["fcfm"], 1.0, 30.0, 15.0, 1.0) / 100
 
-    # DCF Math
-    cfs = [base_rev * ((1 + proj_growth)**i) * margin for i in range(1, 6)]
-    terminal_value = ((cfs[-1] * (1 + tg)) / (wacc - tg)) if wacc > tg else 0
-    ev = sum([cf / ((1 + wacc)**(i+1)) for i, cf in enumerate(cfs)]) + (terminal_value / ((1 + wacc)**5))
-    
-    ev_converted = ev * rate
-    
-    st.markdown(f"""
-    <div class="stat-card-ma">
-        <p class="ma-card-title">{txt['ev']}</p>
-        <p class="ma-card-value" style="color: #1f77b4;">{ev_converted:,.2f} {sym}</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # 🎲 MONTE CARLO SIMULATION
-    if st.button(txt["mc_btn"], use_container_width=True, type="primary"):
-        with st.spinner(txt["mc_run"]):
-            np.random.seed(42)
-            sim_growths = np.random.normal(proj_growth, 0.02, 10000) 
-            sim_margins = np.random.normal(margin, 0.02, 10000) 
-            
-            sim_evs = []
-            for g, m in zip(sim_growths, sim_margins):
-                s_cfs = [base_rev * ((1 + g)**i) * m for i in range(1, 6)]
-                s_tv = ((s_cfs[-1] * (1 + tg)) / (wacc - tg)) if wacc > tg else 0
-                s_ev = sum([cf / ((1 + wacc)**(i+1)) for i, cf in enumerate(s_cfs)]) + (s_tv / ((1 + wacc)**5))
-                sim_evs.append(s_ev * rate)
-            
-            fig_mc = go.Figure(data=[go.Histogram(x=sim_evs, nbinsx=50, marker_color='#c1272d')])
-            fig_mc.update_layout(title=txt["mc_chart"], template="plotly_dark", xaxis_title=f"EV ({sym})", yaxis_title=txt["freq"], height=350)
-            st.plotly_chart(fig_mc, use_container_width=True)
-            
-            perc_25, perc_75 = np.percentile(sim_evs, 25), np.percentile(sim_evs, 75)
-            st.caption(f"**{txt['ci']}:** {perc_25:,.0f} {sym} - {perc_75:,.0f} {sym}")
+        # DCF Math
+        cfs = [base_rev * ((1 + proj_growth)**i) * margin for i in range(1, 6)]
+        terminal_value = ((cfs[-1] * (1 + tg)) / (wacc - tg)) if wacc > tg else 0
+        ev = sum([cf / ((1 + wacc)**(i+1)) for i, cf in enumerate(cfs)]) + (terminal_value / ((1 + wacc)**5))
+        
+        ev_converted = ev * rate
+        
+        st.markdown(f"""
+        <div class="stat-card-ma">
+            <p class="ma-card-title">{txt['ev']}</p>
+            <p class="ma-card-value" style="color: #4da8da;">{ev_converted:,.2f} {sym}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # 🎲 MONTE CARLO SIMULATION
+        if st.button(txt["mc_btn"], use_container_width=True, type="primary"):
+            with st.spinner(txt["mc_run"]):
+                np.random.seed(42)
+                sim_growths = np.random.normal(proj_growth, 0.02, 10000) 
+                sim_margins = np.random.normal(margin, 0.02, 10000) 
+                
+                sim_evs = []
+                for g, m in zip(sim_growths, sim_margins):
+                    s_cfs = [base_rev * ((1 + g)**i) * m for i in range(1, 6)]
+                    s_tv = ((s_cfs[-1] * (1 + tg)) / (wacc - tg)) if wacc > tg else 0
+                    s_ev = sum([cf / ((1 + wacc)**(i+1)) for i, cf in enumerate(s_cfs)]) + (s_tv / ((1 + wacc)**5))
+                    sim_evs.append(s_ev * rate)
+                
+                fig_mc = go.Figure(data=[go.Histogram(x=sim_evs, nbinsx=50, marker_color='#c1272d')])
+                fig_mc.update_layout(title=txt["mc_chart"], template="plotly_dark", xaxis_title=f"EV ({sym})", yaxis_title=txt["freq"], height=350)
+                st.plotly_chart(fig_mc, use_container_width=True)
+                
+                perc_25, perc_75 = np.percentile(sim_evs, 25), np.percentile(sim_evs, 75)
+                st.caption(f"**{txt['ci']}:** {perc_25:,.0f} {sym} - {perc_75:,.0f} {sym}")
 
 with col_lbo:
-    st.subheader(txt["lbo_title"])
-    c_l1, c_l2 = st.columns(2)
-    with c_l1: entry_mult = st.number_input(txt["entry_m"], 3.0, 15.0, 6.0, 0.5)
-    with c_l2: exit_mult = st.number_input(txt["exit_m"], 3.0, 15.0, 6.0, 0.5)
-    debt_pct = st.slider(txt["debt_f"], 0.0, 90.0, 60.0, 5.0) / 100
+    with st.container(border=True):
+        st.markdown(f"<h3 style='color:#9467bd;'>{txt['lbo_title']}</h3>", unsafe_allow_html=True)
+        c_l1, c_l2 = st.columns(2)
+        with c_l1: entry_mult = st.number_input(txt["entry_m"], 3.0, 15.0, 6.0, 0.5)
+        with c_l2: exit_mult = st.number_input(txt["exit_m"], 3.0, 15.0, 6.0, 0.5)
+        debt_pct = st.slider(txt["debt_f"], 0.0, 90.0, 60.0, 5.0) / 100
 
-    # LBO Math
-    entry_ev = base_ebitda * entry_mult
-    debt = entry_ev * debt_pct
-    equity = entry_ev - debt
-    exit_ev = (base_ebitda * ((1 + proj_growth)**5)) * exit_mult
-    exit_equity = exit_ev - max(0, debt - sum(cfs)*0.5)
+        # LBO Math
+        entry_ev = base_ebitda * entry_mult
+        debt = entry_ev * debt_pct
+        equity = entry_ev - debt
+        exit_ev = (base_ebitda * ((1 + proj_growth)**5)) * exit_mult
+        exit_equity = exit_ev - max(0, debt - sum(cfs)*0.5)
 
-    moic = exit_equity / equity if equity > 0 else 0
-    irr = ((moic**(1/5) - 1) * 100) if moic > 0 else 0
-    
-    st.markdown(f"""
-    <div class="stat-card-ma lbo-card">
-        <p class="ma-card-title">{txt['pe_metrics']}</p>
-        <p class="ma-card-value" style="font-size: 22px;">{txt['irr']}: <span style="color:#2ca02c;">{irr:.2f}%</span> &nbsp;|&nbsp; {txt['moic']}: <span style="color:#2ca02c;">{moic:.2f}x</span></p>
-    </div>
-    """, unsafe_allow_html=True)
+        moic = exit_equity / equity if equity > 0 else 0
+        irr = ((moic**(1/5) - 1) * 100) if moic > 0 else 0
+        
+        st.markdown(f"""
+        <div class="stat-card-ma lbo-card">
+            <p class="ma-card-title">{txt['pe_metrics']}</p>
+            <p class="ma-card-value">{txt['irr']}: <span class="ma-highlight">{irr:.2f}%</span></p>
+            <p class="ma-card-value" style="font-size: 22px; margin-top: 5px;">{txt['moic']}: <span class="ma-highlight">{moic:.2f}x</span></p>
+        </div>
+        """, unsafe_allow_html=True)
 
 st.markdown("---")
 
-# --- DCF SENSITIVITY HEATMAP (FIXED RANGES) ---
+# --- 4. DCF SENSITIVITY HEATMAP ---
 st.subheader(txt["sens_hm"])
 
-# Ranges adjusted so WACC is ALWAYS strictly greater than Terminal Growth to avoid division by zero
+# Ranges adjusted so WACC is ALWAYS strictly greater than Terminal Growth
 wacc_range_dcf = np.linspace(max(0.06, wacc - 0.02), max(0.10, wacc + 0.02), 7)
 tg_range_dcf = np.linspace(max(0.01, tg - 0.01), min(0.05, tg + 0.01), 7)
 
@@ -319,12 +319,12 @@ st.plotly_chart(fig_heat_dcf, use_container_width=True)
 
 st.markdown("---")
 
-# --- EXPORT TO EXCEL (WITH CHART & NATIVE HEATMAP) ---
+# --- 5. EXPORT TO EXCEL ---
 output_val = io.BytesIO()
 with pd.ExcelWriter(output_val, engine='xlsxwriter') as writer:
     workbook = writer.book
     
-    # 1. SUMMARY SHEET
+    # SUMMARY SHEET
     worksheet = workbook.add_worksheet('Valuation_Summary')
     header_format = workbook.add_format({'bold': True, 'bg_color': '#1f77b4', 'font_color': 'white', 'border': 1})
     cell_format = workbook.add_format({'border': 1})
@@ -350,7 +350,6 @@ with pd.ExcelWriter(output_val, engine='xlsxwriter') as writer:
         worksheet.write(row_num, 0, metric, cell_format)
         worksheet.write(row_num, 1, val, cell_format)
         
-    # Add DCF Cash Flows to Sheet 1 for Charting
     worksheet.write('D1', 'Year', header_format)
     worksheet.write('E1', f'Projected FCF ({sym})', header_format)
     worksheet.set_column('D:E', 20)
@@ -358,7 +357,6 @@ with pd.ExcelWriter(output_val, engine='xlsxwriter') as writer:
         worksheet.write(i, 3, f"Year {i}", cell_format)
         worksheet.write(i, 4, cf * rate, cell_format)
         
-    # Insert Native Excel Chart for FCF
     chart = workbook.add_chart({'type': 'column'})
     chart.add_series({
         'name': 'Free Cash Flow',
@@ -369,29 +367,25 @@ with pd.ExcelWriter(output_val, engine='xlsxwriter') as writer:
     chart.set_title({'name': '5-Year Projected FCF'})
     worksheet.insert_chart('G2', chart)
     
-    # 2. SENSITIVITY HEATMAP SHEET (Native Excel Conditional Formatting)
+    # HEATMAP SHEET
     worksheet_hm = workbook.add_worksheet('Sensitivity_Heatmap')
     worksheet_hm.write(0, 0, 'WACC \\ Growth', header_format)
     
-    # Write Column Headers (Growth)
     for col_idx, t_g in enumerate(tg_range_dcf, start=1):
         worksheet_hm.write(0, col_idx, f"{t_g*100:.2f}%", header_format)
         worksheet_hm.set_column(col_idx, col_idx, 15)
         
-    # Write Row Headers (WACC) and Data Matrix
     for row_idx, (w, row_data) in enumerate(zip(wacc_range_dcf, z_data_dcf), start=1):
         worksheet_hm.write(row_idx, 0, f"{w*100:.2f}%", header_format)
         for col_idx, val in enumerate(row_data, start=1):
             worksheet_hm.write(row_idx, col_idx, val, cell_format)
             
     worksheet_hm.set_column(0, 0, 18)
-    
-    # Apply 3-Color Scale Conditional Formatting (Red -> Yellow -> Green) to mimic Heatmap
     worksheet_hm.conditional_format(1, 1, len(wacc_range_dcf), len(tg_range_dcf), {
         'type': '3_color_scale',
-        'min_color': '#f8696b', # Light Red
-        'mid_color': '#ffeb84', # Yellow/Orange
-        'max_color': '#63be7b'  # Light Green
+        'min_color': '#f8696b',
+        'mid_color': '#ffeb84',
+        'max_color': '#63be7b'
     })
 
 st.download_button(
