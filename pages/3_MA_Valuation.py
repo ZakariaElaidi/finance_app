@@ -40,7 +40,7 @@ t = {
         "mc_chart": "Enterprise Value Probability Distribution", "freq": "Frequency", "ci": "75% Confidence Interval",
         "lbo_title": "💰 LBO Quick-Modeler",
         "entry_m": "Entry Multiple (x)", "exit_m": "Exit Multiple (x)", "debt_f": "Debt Funding %",
-        "pe_metrics": "Private Equity Metrics (5-Year Horizon)", "irr": "IRR", "moic": "MoIC",
+        "pe_metrics": "Private Equity Metrics (5-Year)", "irr": "IRR", "moic": "MoIC",
         "sens_hm": "📊 EV Sensitivity (WACC vs Terminal Growth)", "dl_val_xlsx": "📥 Export Valuation Model (Excel + Charts)"
     },
     "Français": {
@@ -88,7 +88,7 @@ t = {
         "mc_chart": "Distribución de Probabilidad del Valor Empresarial", "freq": "Frecuencia", "ci": "Intervalo de Confianza del 75%",
         "lbo_title": "💰 Modelador LBO Rápido",
         "entry_m": "Múltiplo de Entrada (x)", "exit_m": "Múltiplo de Salida (x)", "debt_f": "Financiamiento de Deuda %",
-        "pe_metrics": "Métricas de Capital Privado (Horizonte 5 años)", "irr": "TIR (IRR)", "moic": "Múltiplo (MoIC)",
+        "pe_metrics": "Métricas PE (Horizonte 5 años)", "irr": "TIR (IRR)", "moic": "Múltiplo (MoIC)",
         "sens_hm": "📊 Sensibilidad del EV (WACC vs Crecimiento)", "dl_val_xlsx": "📥 Exportar Modelo de Valoración"
     },
     "العربية": {
@@ -130,20 +130,25 @@ st.markdown(f"""
 <style>
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
-    .ma-card {{ background-color: #161a22; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-top: 15px; margin-bottom: 20px;}}
-    .ma-card-title {{ color: #b3b3b3; font-size: 0.9rem; margin-bottom: 5px; }}
-    .ma-card-value {{ color: white; font-size: 1.5rem; font-weight: bold; margin: 0; }}
     
     /* M&A Banner Styling (Purple Theme with Deal Room Image) */
     .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #9467bd; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
     .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.6) 50%, rgba(148,103,189,0.3) 100%); }}
     .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
     
+    /* Glassmorphism Stat Cards */
+    .stat-card-ma {{ background: rgba(22, 26, 34, 0.6); backdrop-filter: blur(10px); border-radius: 8px; padding: 20px; text-align: center; border-top: 3px solid #1f77b4; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease; }}
+    .stat-card-ma:hover {{ transform: translateY(-3px); }}
+    .stat-card-ma.lbo-card {{ border-top: 3px solid #9467bd; }}
+    .ma-card-title {{ color: #b3b3b3; font-size: 14px; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px; }}
+    .ma-card-value {{ color: white; font-size: 26px; font-weight: bold; margin: 0; text-shadow: 0 0 10px rgba(255,255,255,0.1); }}
+    
+    /* Highlighted Box for Inputs */
+    .highlight-box {{ background-color: rgba(255, 255, 255, 0.03); padding: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }}
+    
     {rtl_css}
     
-    /* =========================================
-       📱 MOBILE RESPONSIVENESS (SMART SCREENS)
-       ========================================= */
+    /* Mobile Responsiveness */
     @media (max-width: 768px) {{
         .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
         [data-testid="stDataFrame"] {{ overflow-x: auto !important; max-width: 100% !important; }}
@@ -170,11 +175,15 @@ with st.expander(txt["glos_title"]):
     st.markdown(txt["glos_mc"])
     st.markdown(txt["glos_moic"])
 
-# --- SIDEBAR INPUTS ---
-st.sidebar.markdown(f"### {txt['sb_title']}")
-st.sidebar.info(txt["sb_info"])
-base_rev = st.sidebar.number_input(txt["b_rev"], value=5000000.0, step=100000.0)
-base_ebitda = st.sidebar.number_input(txt["b_ebitda"], value=1200000.0, step=50000.0)
+# --- MAIN PAGE INPUTS (Moved from Sidebar) ---
+st.markdown(f"### {txt['sb_title']}")
+st.info(txt["sb_info"])
+with st.container():
+    st.markdown('<div class="highlight-box">', unsafe_allow_html=True)
+    c_b1, c_b2 = st.columns(2)
+    with c_b1: base_rev = st.number_input(txt["b_rev"], value=5000000.0, step=100000.0)
+    with c_b2: base_ebitda = st.number_input(txt["b_ebitda"], value=1200000.0, step=50000.0)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # --- ADVANCED WACC CALCULATOR (CAPM) ---
 st.subheader(txt["capm_title"])
@@ -224,9 +233,9 @@ with col_dcf:
     ev_converted = ev * rate
     
     st.markdown(f"""
-    <div class="ma-card" style="border-left: 4px solid #1f77b4;">
-        <div class="ma-card-title">{txt['ev']}</div>
-        <div class="ma-card-value">{ev_converted:,.2f} {sym}</div>
+    <div class="stat-card-ma">
+        <p class="ma-card-title">{txt['ev']}</p>
+        <p class="ma-card-value" style="color: #1f77b4;">{ev_converted:,.2f} {sym}</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -269,19 +278,20 @@ with col_lbo:
     irr = ((moic**(1/5) - 1) * 100) if moic > 0 else 0
     
     st.markdown(f"""
-    <div class="ma-card" style="border-left: 4px solid #9467bd;">
-        <div class="ma-card-title">{txt['pe_metrics']}</div>
-        <div class="ma-card-value" style="font-size: 1.2rem;">{txt['irr']}: {irr:.2f}% &nbsp; | &nbsp; {txt['moic']}: {moic:.2f}x</div>
+    <div class="stat-card-ma lbo-card">
+        <p class="ma-card-title">{txt['pe_metrics']}</p>
+        <p class="ma-card-value" style="font-size: 22px;">{txt['irr']}: <span style="color:#2ca02c;">{irr:.2f}%</span> &nbsp;|&nbsp; {txt['moic']}: <span style="color:#2ca02c;">{moic:.2f}x</span></p>
     </div>
     """, unsafe_allow_html=True)
 
 st.markdown("---")
 
-# --- DCF SENSITIVITY HEATMAP (UI) ---
+# --- DCF SENSITIVITY HEATMAP (FIXED RANGES) ---
 st.subheader(txt["sens_hm"])
 
-wacc_range_dcf = np.linspace(max(0.01, wacc - 0.02), wacc + 0.02, 7)
-tg_range_dcf = np.linspace(max(0.0, tg - 0.01), tg + 0.01, 7)
+# Ranges adjusted so WACC is ALWAYS strictly greater than Terminal Growth to avoid division by zero
+wacc_range_dcf = np.linspace(max(0.06, wacc - 0.02), max(0.10, wacc + 0.02), 7)
+tg_range_dcf = np.linspace(max(0.01, tg - 0.01), min(0.05, tg + 0.01), 7)
 
 z_data_dcf = []
 for w in wacc_range_dcf:
@@ -295,9 +305,16 @@ for w in wacc_range_dcf:
         row_ev.append(ev_matrix * rate)
     z_data_dcf.append(row_ev)
 
-custom_colors = [[0.0, 'red'], [0.5, 'orange'], [1.0, 'green']]
-fig_heat_dcf = go.Figure(data=go.Heatmap(z=z_data_dcf, x=tg_range_dcf*100, y=wacc_range_dcf*100, colorscale=custom_colors, colorbar=dict(title=sym)))
-fig_heat_dcf.update_layout(xaxis_title="Terminal Growth %", yaxis_title="WACC %", template="plotly_dark", height=400)
+# Native smooth color scale 'RdYlGn'
+fig_heat_dcf = go.Figure(data=go.Heatmap(
+    z=z_data_dcf, 
+    x=np.round(tg_range_dcf*100, 2), 
+    y=np.round(wacc_range_dcf*100, 2), 
+    colorscale='RdYlGn', 
+    colorbar=dict(title=sym),
+    hovertemplate="Growth: %{x}%<br>WACC: %{y}%<br>EV: %{z:,.0f} " + sym + "<extra></extra>"
+))
+fig_heat_dcf.update_layout(xaxis_title="Terminal Growth %", yaxis_title="WACC %", template="plotly_dark", height=450)
 st.plotly_chart(fig_heat_dcf, use_container_width=True)
 
 st.markdown("---")
