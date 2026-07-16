@@ -22,12 +22,12 @@ t = {
         "banner_h": "Deal Archive & History", "banner_desc": "Review, manage, and export your previously logged financial analysis and structuring sessions.",
         "no_rec": "No transaction records found. Log a session from the Valuation or Structuring modules.",
         "date": "Log Date", "rev": "Target Revenue", "nm": "EBITDA Margin", "roe": "Return on Equity", "cr": "Current Ratio",
-        "ren_lbl": "Update Deal Name", "ren_btn": "✏️ Rename Log", "del_btn": "🗑️ Purge Record",
-        "ren_succ": "Deal log renamed successfully.", "del_succ": "Record purged from database.",
+        "ren_lbl": "Update Deal Name", "ren_btn": "✏️ Rename Log", "del_btn": "🗑️ Delete Record",
+        "ren_succ": "Deal log renamed successfully.", "del_succ": "Record deleted from database.",
         "stats_ttl": "Active Deal Logs", "stats_rev": "Cumulative Tracked Revenue",
-        "export_btn": "📥 Export Audit Trail (CSV)", "clear_btn": "🚨 Purge Entire Data Room",
+        "export_btn": "📥 Export Audit Trail (CSV)", "clear_btn": "🚨 Clear Entire Data Room",
         "clear_warn": "CRITICAL: Are you sure you want to permanently delete all deal logs? This action cannot be reversed.",
-        "clear_succ": "Data Room purged successfully.",
+        "clear_succ": "Data Room cleared successfully.",
         "guest_lock": "🔒 Guest Mode Active: History tracking and Data Room functions are disabled. Please authenticate with a corporate account to utilize this module."
     },
     "Français": {
@@ -35,12 +35,12 @@ t = {
         "banner_h": "Archive des Deals", "banner_desc": "Consultez, gérez et exportez vos sessions d'analyse et de structuration précédemment enregistrées.",
         "no_rec": "Aucun enregistrement trouvé. Sauvegardez une session depuis les modules de Valorisation.",
         "date": "Date d'enregistrement", "rev": "Revenus de la Cible", "nm": "Marge EBITDA", "roe": "Rentabilité des Capitaux", "cr": "Ratio de Liquidité",
-        "ren_lbl": "Renommer le Deal", "ren_btn": "✏️ Mettre à jour", "del_btn": "🗑️ Purger",
-        "ren_succ": "Deal renommé avec succès.", "del_succ": "Enregistrement supprimé de la base.",
+        "ren_lbl": "Renommer le Deal", "ren_btn": "✏️ Mettre à jour", "del_btn": "🗑️ Supprimer",
+        "ren_succ": "Deal renommé avec succès.", "del_succ": "Enregistrement supprimé.",
         "stats_ttl": "Deals Actifs", "stats_rev": "Revenus Cumulés Suivis",
-        "export_btn": "📥 Exporter l'Audit (CSV)", "clear_btn": "🚨 Purger la Data Room",
+        "export_btn": "📥 Exporter l'Audit (CSV)", "clear_btn": "🚨 Effacer la Data Room",
         "clear_warn": "CRITIQUE : Êtes-vous sûr de vouloir supprimer définitivement tout l'historique ? Irréversible.",
-        "clear_succ": "Data Room purgée avec succès.",
+        "clear_succ": "Data Room effacée avec succès.",
         "guest_lock": "🔒 Mode Invité Actif : L'historique est désactivé. Authentifiez-vous pour utiliser ce module."
     },
     "Español": {
@@ -48,12 +48,12 @@ t = {
         "banner_h": "Archivo de Acuerdos", "banner_desc": "Revise, gestione y exporte sus sesiones de análisis y estructuración.",
         "no_rec": "No se encontraron registros. Guarde una sesión desde los módulos de Valoración.",
         "date": "Fecha de Registro", "rev": "Ingresos del Objetivo", "nm": "Margen EBITDA", "roe": "ROE", "cr": "Ratio de Liquidez",
-        "ren_lbl": "Renombrar Acuerdo", "ren_btn": "✏️ Actualizar", "del_btn": "🗑️ Purgar Registro",
-        "ren_succ": "Registro renombrado exitosamente.", "del_succ": "Registro purgado de la base de datos.",
+        "ren_lbl": "Renombrar Acuerdo", "ren_btn": "✏️ Actualizar", "del_btn": "🗑️ Eliminar Registro",
+        "ren_succ": "Registro renombrado exitosamente.", "del_succ": "Registro eliminado.",
         "stats_ttl": "Registros Activos", "stats_rev": "Ingresos Acumulados",
-        "export_btn": "📥 Exportar Auditoría (CSV)", "clear_btn": "🚨 Purgar Data Room Completo",
+        "export_btn": "📥 Exportar Auditoría (CSV)", "clear_btn": "🚨 Borrar Data Room",
         "clear_warn": "CRÍTICO: ¿Está seguro de eliminar permanentemente todo su historial? Irreversible.",
-        "clear_succ": "Data Room purgado exitosamente.",
+        "clear_succ": "Data Room borrado exitosamente.",
         "guest_lock": "🔒 Modo Invitado: El historial está deshabilitado. Autentíquese para usar este módulo."
     },
     "العربية": {
@@ -61,8 +61,8 @@ t = {
         "banner_h": "أرشيف الصفقات", "banner_desc": "مراجعة وإدارة وتصدير جلسات التحليل والهيكلة المالية المحفوظة مسبقًا.",
         "no_rec": "لم يتم العثور على سجلات صفقات. احفظ جلسة من وحدات التقييم أو الهيكلة.",
         "date": "تاريخ التسجيل", "rev": "إيرادات الهدف", "nm": "هامش الأرباح (EBITDA)", "roe": "العائد على حقوق المساهمين", "cr": "نسبة السيولة",
-        "ren_lbl": "تحديث اسم الصفقة", "ren_btn": "✏️ إعادة تسمية", "del_btn": "🗑️ مسح السجل",
-        "ren_succ": "تمت إعادة تسمية السجل بنجاح.", "del_succ": "تم مسح السجل من قاعدة البيانات.",
+        "ren_lbl": "تحديث اسم الصفقة", "ren_btn": "✏️ إعادة تسمية", "del_btn": "🗑️ حذف السجل",
+        "ren_succ": "تمت إعادة تسمية السجل بنجاح.", "del_succ": "تم حذف السجل من قاعدة البيانات.",
         "stats_ttl": "سجلات الصفقات النشطة", "stats_rev": "الإيرادات التراكمية المتتبعة",
         "export_btn": "📥 تصدير سجل التدقيق (CSV)", "clear_btn": "🚨 مسح غرفة البيانات بالكامل",
         "clear_warn": "حرج: هل أنت متأكد من الحذف النهائي لجميع السجلات؟ لا يمكن التراجع.",
@@ -211,7 +211,7 @@ else:
     if st.session_state.get("show_clear_confirm", False):
         st.warning(txt["clear_warn"])
         col_yes, col_no = st.columns(2)
-        if col_yes.button("Yes, Purge Data Room", type="primary"):
+        if col_yes.button("Yes, Clear Data Room", type="primary"):
             if clear_all_history(st.session_state.user.id):
                 st.success(txt["clear_succ"])
                 st.session_state.show_clear_confirm = False
