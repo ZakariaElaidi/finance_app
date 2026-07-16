@@ -3,11 +3,10 @@ import json
 import pandas as pd
 from supabase import create_client, ClientOptions
 
-# --- SECURITY ---
+# --- SECURITY & STATE ---
 if "user" not in st.session_state or st.session_state.user is None:
     st.switch_page("app.py")
 
-# --- GLOBAL STATE INITIALIZATION ---
 lang = st.session_state.get("lang", "English")
 curr = st.session_state.get("currency", "MAD")
 rates = st.session_state.get("rates", {"MAD": 1.0, "USD": 0.10, "EUR": 0.09})
@@ -16,115 +15,117 @@ syms = st.session_state.get("sym", {"MAD": "MAD", "USD": "$", "EUR": "€"})
 rate = rates[curr]
 sym = syms[curr]
 
-# --- TRANSLATION DICTIONARY ---
+# --- INSTITUTIONAL TRANSLATION DICTIONARY ---
 t = {
     "English": {
-        "banner_h": "🗄️ Database & Archive", "banner_desc": "Review, manage, and export your previously saved financial analysis sessions.",
-        "no_rec": "No records found in database. Save an analysis from the Corporate Analysis tab first.",
-        "date": "Date Recorded:", "rev": "Revenue:", "nm": "Net Margin:", "roe": "ROE:", "cr": "Current Ratio:",
-        "ren_lbl": "Rename Session", "ren_btn": "✏️ Update Name", "del_btn": "🗑️ Delete",
-        "ren_succ": "Renamed successfully!", "del_succ": "Deleted!",
-        "stats_ttl": "Total Sessions", "stats_rev": "Total Analyzed Revenue",
-        "export_btn": "📥 Export All to CSV", "clear_btn": "🚨 Clear All History",
-        "clear_warn": "Are you sure you want to delete all your history? This cannot be undone.",
-        "clear_succ": "All history cleared.",
-        "guest_lock": "🔒 Guest mode does not support history tracking. Create a free account to save and manage your analysis sessions."
+        "header_tag": "DATA ROOM & AUDIT TRAIL",
+        "banner_h": "Deal Archive & History", "banner_desc": "Review, manage, and export your previously logged financial analysis and structuring sessions.",
+        "no_rec": "No transaction records found. Log a session from the Valuation or Structuring modules.",
+        "date": "Log Date", "rev": "Target Revenue", "nm": "EBITDA Margin", "roe": "Return on Equity", "cr": "Current Ratio",
+        "ren_lbl": "Update Deal Name", "ren_btn": "✏️ Rename Log", "del_btn": "🗑️ Purge Record",
+        "ren_succ": "Deal log renamed successfully.", "del_succ": "Record purged from database.",
+        "stats_ttl": "Active Deal Logs", "stats_rev": "Cumulative Tracked Revenue",
+        "export_btn": "📥 Export Audit Trail (CSV)", "clear_btn": "🚨 Purge Entire Data Room",
+        "clear_warn": "CRITICAL: Are you sure you want to permanently delete all deal logs? This action cannot be reversed.",
+        "clear_succ": "Data Room purged successfully.",
+        "guest_lock": "🔒 Guest Mode Active: History tracking and Data Room functions are disabled. Please authenticate with a corporate account to utilize this module."
     },
     "Français": {
-        "banner_h": "🗄️ Base de données & Archives", "banner_desc": "Consultez, gérez et exportez vos sessions d'analyse financière précédemment sauvegardées.",
-        "no_rec": "Aucun enregistrement trouvé. Sauvegardez d'abord une analyse depuis l'onglet Analyse d'Entreprise.",
-        "date": "Date d'enregistrement :", "rev": "Revenus :", "nm": "Marge Nette :", "roe": "ROE :", "cr": "Ratio de Liquidité :",
-        "ren_lbl": "Renommer la session", "ren_btn": "✏️ Mettre à jour", "del_btn": "🗑️ Supprimer",
-        "ren_succ": "Renommé avec succès !", "del_succ": "Supprimé !",
-        "stats_ttl": "Total des Sessions", "stats_rev": "Revenus Totaux Analysés",
-        "export_btn": "📥 Tout exporter en CSV", "clear_btn": "🚨 Effacer tout l'historique",
-        "clear_warn": "Êtes-vous sûr de vouloir supprimer tout votre historique ? Cette action est irréversible.",
-        "clear_succ": "Historique effacé.",
-        "guest_lock": "🔒 Le mode invité ne prend pas en charge l'historique. Créez un compte gratuit pour sauvegarder et gérer vos sessions."
+        "header_tag": "DATA ROOM & AUDIT",
+        "banner_h": "Archive des Deals", "banner_desc": "Consultez, gérez et exportez vos sessions d'analyse et de structuration précédemment enregistrées.",
+        "no_rec": "Aucun enregistrement trouvé. Sauvegardez une session depuis les modules de Valorisation.",
+        "date": "Date d'enregistrement", "rev": "Revenus de la Cible", "nm": "Marge EBITDA", "roe": "Rentabilité des Capitaux", "cr": "Ratio de Liquidité",
+        "ren_lbl": "Renommer le Deal", "ren_btn": "✏️ Mettre à jour", "del_btn": "🗑️ Purger",
+        "ren_succ": "Deal renommé avec succès.", "del_succ": "Enregistrement supprimé de la base.",
+        "stats_ttl": "Deals Actifs", "stats_rev": "Revenus Cumulés Suivis",
+        "export_btn": "📥 Exporter l'Audit (CSV)", "clear_btn": "🚨 Purger la Data Room",
+        "clear_warn": "CRITIQUE : Êtes-vous sûr de vouloir supprimer définitivement tout l'historique ? Irréversible.",
+        "clear_succ": "Data Room purgée avec succès.",
+        "guest_lock": "🔒 Mode Invité Actif : L'historique est désactivé. Authentifiez-vous pour utiliser ce module."
     },
     "Español": {
-        "banner_h": "🗄️ Base de Datos y Archivo", "banner_desc": "Revisa, gestiona y exporta tus sesiones de análisis financiero guardadas previamente.",
-        "no_rec": "No se encontraron registros. Guarda un análisis desde la pestaña de Análisis Corporativo primero.",
-        "date": "Fecha de registro:", "rev": "Ingresos:", "nm": "Margen Neto:", "roe": "ROE:", "cr": "Ratio de Liquidez:",
-        "ren_lbl": "Renombrar sesión", "ren_btn": "✏️ Actualizar nombre", "del_btn": "🗑️ Eliminar",
-        "ren_succ": "¡Renombrado exitosamente!", "del_succ": "¡Eliminado!",
-        "stats_ttl": "Sesiones Totales", "stats_rev": "Ingresos Totales Analizados",
-        "export_btn": "📥 Exportar todo a CSV", "clear_btn": "🚨 Borrar todo el historial",
-        "clear_warn": "¿Estás seguro de que deseas eliminar todo tu historial? Esto no se puede deshacer.",
-        "clear_succ": "Historial borrado.",
-        "guest_lock": "🔒 El modo invitado no soporta el historial. Crea una cuenta gratis para guardar y gestionar tus sesiones de análisis."
+        "header_tag": "DATA ROOM Y AUDITORÍA",
+        "banner_h": "Archivo de Acuerdos", "banner_desc": "Revise, gestione y exporte sus sesiones de análisis y estructuración.",
+        "no_rec": "No se encontraron registros. Guarde una sesión desde los módulos de Valoración.",
+        "date": "Fecha de Registro", "rev": "Ingresos del Objetivo", "nm": "Margen EBITDA", "roe": "ROE", "cr": "Ratio de Liquidez",
+        "ren_lbl": "Renombrar Acuerdo", "ren_btn": "✏️ Actualizar", "del_btn": "🗑️ Purgar Registro",
+        "ren_succ": "Registro renombrado exitosamente.", "del_succ": "Registro purgado de la base de datos.",
+        "stats_ttl": "Registros Activos", "stats_rev": "Ingresos Acumulados",
+        "export_btn": "📥 Exportar Auditoría (CSV)", "clear_btn": "🚨 Purgar Data Room Completo",
+        "clear_warn": "CRÍTICO: ¿Está seguro de eliminar permanentemente todo su historial? Irreversible.",
+        "clear_succ": "Data Room purgado exitosamente.",
+        "guest_lock": "🔒 Modo Invitado: El historial está deshabilitado. Autentíquese para usar este módulo."
     },
     "العربية": {
-        "banner_h": "🗄️ قاعدة البيانات والأرشيف", "banner_desc": "مراجعة وإدارة وتصدير جلسات التحليل المالي المحفوظة مسبقًا.",
-        "no_rec": "لم يتم العثور على سجلات. احفظ تحليلاً من علامة تبويب تحليل الشركات أولاً.",
-        "date": "تاريخ التسجيل:", "rev": "الإيرادات:", "nm": "هامش الربح الصافي:", "roe": "العائد على حقوق المساهمين:", "cr": "نسبة التداول:",
-        "ren_lbl": "إعادة تسمية الجلسة", "ren_btn": "✏️ تحديث الاسم", "del_btn": "🗑️ حذف",
-        "ren_succ": "تمت إعادة التسمية بنجاح!", "del_succ": "تم الحذف!",
-        "stats_ttl": "إجمالي الجلسات", "stats_rev": "إجمالي الإيرادات المحللة",
-        "export_btn": "📥 تصدير الكل إلى CSV", "clear_btn": "🚨 مسح كل السجل",
-        "clear_warn": "هل أنت متأكد أنك تريد حذف كل السجل الخاص بك؟ لا يمكن التراجع عن هذا الإجراء.",
-        "clear_succ": "تم مسح السجل.",
-        "guest_lock": "🔒 وضع الضيف لا يدعم حفظ السجلات. قم بإنشاء حساب مجاني لحفظ وإدارة جلسات التحليل الخاصة بك."
+        "header_tag": "غرفة البيانات وسجل التدقيق",
+        "banner_h": "أرشيف الصفقات", "banner_desc": "مراجعة وإدارة وتصدير جلسات التحليل والهيكلة المالية المحفوظة مسبقًا.",
+        "no_rec": "لم يتم العثور على سجلات صفقات. احفظ جلسة من وحدات التقييم أو الهيكلة.",
+        "date": "تاريخ التسجيل", "rev": "إيرادات الهدف", "nm": "هامش الأرباح (EBITDA)", "roe": "العائد على حقوق المساهمين", "cr": "نسبة السيولة",
+        "ren_lbl": "تحديث اسم الصفقة", "ren_btn": "✏️ إعادة تسمية", "del_btn": "🗑️ مسح السجل",
+        "ren_succ": "تمت إعادة تسمية السجل بنجاح.", "del_succ": "تم مسح السجل من قاعدة البيانات.",
+        "stats_ttl": "سجلات الصفقات النشطة", "stats_rev": "الإيرادات التراكمية المتتبعة",
+        "export_btn": "📥 تصدير سجل التدقيق (CSV)", "clear_btn": "🚨 مسح غرفة البيانات بالكامل",
+        "clear_warn": "حرج: هل أنت متأكد من الحذف النهائي لجميع السجلات؟ لا يمكن التراجع.",
+        "clear_succ": "تم مسح غرفة البيانات بنجاح.",
+        "guest_lock": "🔒 وضع الضيف نشط: السجل معطل. يرجى تسجيل الدخول بحساب معتمد لاستخدام هذه الوحدة."
     }
 }
 txt = t[lang]
 
-# --- UI STYLING & CSS HACKS ---
-rtl_css = ""
-if lang == "العربية":
-    rtl_css = """
-    .block-container { direction: rtl; text-align: right; }
-    [data-testid="stSidebar"], [data-testid="stSidebarNav"], [data-testid="collapsedControl"], [data-testid="stHeader"] { direction: ltr !important; text-align: left !important; }
-    """
+# --- FULL WIDTH CSS INJECTION (Amber/Orange Theme) ---
+rtl_css = """
+.block-container { direction: rtl; text-align: right; }
+[data-testid="stSidebar"], [data-testid="stSidebarNav"], [data-testid="collapsedControl"], [data-testid="stHeader"] { direction: ltr !important; text-align: left !important; }
+""" if lang == "العربية" else ""
 
 st.markdown(f"""
 <style>
-    /* Global Fade-in Animation */
-    @keyframes fadeIn {{
-        from {{ opacity: 0; transform: translateY(15px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
+    @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+    
+    .block-container {{ 
+        animation: fadeIn 0.5s ease-out; 
+        overflow-x: hidden; 
+        max-width: 100% !important; 
+        padding-top: 2rem !important; 
+        padding-bottom: 5rem !important; 
+        padding-left: 3rem !important; 
+        padding-right: 3rem !important; 
     }}
-    .block-container {{ animation: fadeIn 0.6s ease-out; }}
-
+    
+    .inst-header {{ background: linear-gradient(145deg, #0e1117, #161b22); border-left: 4px solid #ff7f0e; padding: 30px 40px; border-radius: 8px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }}
+    .inst-phase {{ color: #ff7f0e; font-size: 0.9rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; display: block; }}
+    .inst-title {{ color: #ffffff; font-size: 2.5rem; font-weight: 700; margin: 0; padding: 0; letter-spacing: -0.5px; }}
+    .inst-desc {{ color: #8b949e; font-size: 1.1rem; margin-top: 10px; }}
+    
+    .kpi-container {{ display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }}
+    .kpi-card {{ flex: 1; min-width: 200px; background: rgba(30, 34, 43, 0.5); border: 1px solid rgba(255,255,255,0.05); padding: 20px 25px; border-radius: 8px; border-top: 4px solid #ff7f0e; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }}
+    .kpi-val {{ font-size: 2.2rem; font-weight: 700; color: #ffffff; margin: 0; }}
+    .kpi-lbl {{ font-size: 0.9rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin: 0; margin-top: 5px; }}
+    
+    .tear-sheet {{ background: rgba(0,0,0,0.2); border-radius: 6px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }}
+    .ts-label {{ color: #8b949e; font-size: 0.85rem; text-transform: uppercase; margin: 0; }}
+    .ts-val {{ color: #ffffff; font-size: 1.2rem; font-weight: 600; margin: 0 0 10px 0; }}
+    
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
     
-    /* Archive Banner Styling with Fixed Image Visibility */
-    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #8B4513; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
-    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.6) 50%, rgba(139,69,19,0.3) 100%); }}
-    .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
-    
-    /* Stats Box Styling */
-    .stat-box {{ background-color: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; border-top: 3px solid #8B4513; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.3s; }}
-    .stat-box:hover {{ transform: translateY(-3px); }}
-    
     {rtl_css}
-    
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {{
-        .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
-        .banner h1, .full-width-banner h1 {{ font-size: 1.6rem !important; }}
-        .banner p, .full-width-banner p {{ font-size: 0.9rem !important; }}
-        [data-testid="column"] {{ width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; margin-bottom: 15px !important; }}
-    }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- BANNER ---
+# --- HEADER SECTION ---
 st.markdown(f"""
-<div class="full-width-banner">
-    <div class="banner-overlay"></div>
-    <div class="banner-content" {'dir="rtl"' if lang=="العربية" else ''}>
-        <h1 style="color: white; margin: 0; font-size: 2.5rem; letter-spacing: 1px;">{txt['banner_h']}</h1>
-        <p style="color:#e0e0e0; font-size:1.1rem; margin-top: 8px;">{txt['banner_desc']}</p>
-    </div>
+<div class="inst-header" {'dir="rtl"' if lang=="العربية" else ''}>
+    <span class="inst-phase">{txt['header_tag']}</span>
+    <h1 class="inst-title">{txt['banner_h']}</h1>
+    <p class="inst-desc">{txt['banner_desc']}</p>
 </div>
 """, unsafe_allow_html=True)
 
 # --- GUEST MODE LOCK ---
 if hasattr(st.session_state.user, 'email') and st.session_state.user.email == 'guest@portfolio.com':
-    st.warning(txt["guest_lock"])
-    st.stop() # Stops execution here so guest doesn't query the database
+    st.error(txt["guest_lock"])
+    st.stop()
 
 # --- SUPABASE INIT & FUNCTIONS ---
 try:
@@ -173,7 +174,6 @@ else:
         data = json.loads(item['work_data'])
         total_rev_mad += data.get('Revenue', 0)
         
-        # Prepare data for export
         flat_data = {
             "Session ID": item['id'],
             "Created At": item['created_at'][:10],
@@ -184,14 +184,13 @@ else:
         
     converted_total_rev = total_rev_mad * rate
 
-    # Display Stats
-    col_stat1, col_stat2 = st.columns(2)
-    with col_stat1:
-        st.markdown(f"<div class='stat-box'><h4>{txt['stats_ttl']}</h4><h2>{total_sessions}</h2></div>", unsafe_allow_html=True)
-    with col_stat2:
-        st.markdown(f"<div class='stat-box'><h4>{txt['stats_rev']}</h4><h2 style='color:#1f77b4;'>{converted_total_rev:,.0f} {sym}</h2></div>", unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Display KPI Stats
+    st.markdown(f"""
+    <div class="kpi-container" {'dir="rtl"' if lang=="العربية" else ''}>
+        <div class="kpi-card"><p class="kpi-val">{total_sessions}</p><p class="kpi-lbl">{txt['stats_ttl']}</p></div>
+        <div class="kpi-card" style="border-top-color: #1f77b4;"><p class="kpi-val">{converted_total_rev:,.0f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['stats_rev']}</p></div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Action Buttons (Export & Clear All)
     col_exp, col_clr = st.columns(2)
@@ -201,7 +200,7 @@ else:
         st.download_button(
             label=txt["export_btn"],
             data=csv,
-            file_name="financial_history_export.csv",
+            file_name="Audit_Trail_Export.csv",
             mime="text/csv",
             use_container_width=True
         )
@@ -212,7 +211,7 @@ else:
     if st.session_state.get("show_clear_confirm", False):
         st.warning(txt["clear_warn"])
         col_yes, col_no = st.columns(2)
-        if col_yes.button("Yes, Clear All", type="primary"):
+        if col_yes.button("Yes, Purge Data Room", type="primary"):
             if clear_all_history(st.session_state.user.id):
                 st.success(txt["clear_succ"])
                 st.session_state.show_clear_confirm = False
@@ -223,7 +222,7 @@ else:
             
     st.markdown("---")
 
-    # Display History Items
+    # Display History Items (Tear-Sheet Format)
     for item in hist:
         session_id = item['id']
         date_str = item['created_at'][:10]
@@ -233,18 +232,36 @@ else:
         saved_rev_mad = data.get('Revenue', 0)
         converted_rev = saved_rev_mad * rate
         
-        with st.expander(f"📊 {session_name}"):
-            st.write(f"**{txt['date']}** {data.get('Date', 'N/A')}")
-            st.write(f"**{txt['rev']}** {converted_rev:,.2f} {sym}")
-            st.write(f"**{txt['nm']}** {data.get('Net Margin', 0)}%")
-            st.write(f"**{txt['roe']}** {data.get('ROE', 0)}%")
+        with st.expander(f"📁 {session_name}"):
+            # Tear-Sheet HTML implementation
+            st.markdown(f"""
+            <div class="tear-sheet" {'dir="rtl"' if lang=="العربية" else ''}>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 120px;">
+                        <p class="ts-label">{txt['date']}</p>
+                        <p class="ts-val" style="color: #8b949e;">{data.get('Date', 'N/A')}</p>
+                    </div>
+                    <div style="flex: 1; min-width: 120px;">
+                        <p class="ts-label">{txt['rev']}</p>
+                        <p class="ts-val" style="color: #ff7f0e;">{converted_rev:,.2f} {sym}</p>
+                    </div>
+                    <div style="flex: 1; min-width: 120px;">
+                        <p class="ts-label">{txt['nm']}</p>
+                        <p class="ts-val" style="color: #2ea043;">{data.get('Net Margin', 0)}%</p>
+                    </div>
+                    <div style="flex: 1; min-width: 120px;">
+                        <p class="ts-label">{txt['roe']}</p>
+                        <p class="ts-val" style="color: #1f77b4;">{data.get('ROE', 0)}%</p>
+                    </div>
+                    <div style="flex: 1; min-width: 120px;">
+                        <p class="ts-label">{txt['cr']}</p>
+                        <p class="ts-val">{data.get('Current Ratio', 'N/A')}{'x' if 'Current Ratio' in data else ''}</p>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             
-            if 'Current Ratio' in data:
-                st.write(f"**{txt['cr']}** {data.get('Current Ratio', 0)}x")
-            
-            st.markdown("---")
             col_ren, col_del = st.columns([3, 1])
-            
             with col_ren:
                 new_name = st.text_input(txt["ren_lbl"], value=session_name, key=f"ren_input_{session_id}", label_visibility="collapsed")
                 if st.button(txt["ren_btn"], key=f"btn_ren_{session_id}"):
