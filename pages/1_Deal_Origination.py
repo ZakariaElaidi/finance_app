@@ -26,7 +26,7 @@ sym = syms[curr]
 t = {
     "English": {
         "pipeline_phase": "PHASE 1: DEAL ORIGINATION & MARKET SCREENING",
-        "banner_h": "🏗️ BTP Sector Market Screener", "banner_desc": "Identify undervalued targets within the Moroccan BTP sector based on live public comps.",
+        "banner_h": "BTP Sector Market Screener", "banner_desc": "Identify undervalued targets within the Moroccan BTP sector based on live public comps.",
         "target_title": "🎯 Deal Origination Sandbox", "proj_name": "Target Code Name", "nm": "Target Net Margin (%)", "roe": "Target ROE (%)",
         "gearing": "Target Gearing (D/E %)", "pe": "Entry Multiple (P/E)", "help_gearing": "BTP average is ~80%.",
         "info_update": "💡 Analytics feed directly from Live Market Trading Data.", "data_title": "📊 Public Comps Table (Live Feed)",
@@ -37,7 +37,7 @@ t = {
     },
     "Français": {
         "pipeline_phase": "PHASE 1: ORIGINATION DE DEALS & SCREENING",
-        "banner_h": "🏗️ Screener du Secteur BTP", "banner_desc": "Identifiez des cibles sous-évaluées sur la base de comparables boursiers en direct.",
+        "banner_h": "Screener du Secteur BTP", "banner_desc": "Identifiez des cibles sous-évaluées sur la base de comparables boursiers en direct.",
         "target_title": "🎯 Sandbox d'Origination", "proj_name": "Nom de Code de la Cible", "nm": "Marge Nette Cible (%)", "roe": "ROE Cible (%)",
         "gearing": "Gearing Cible (D/CP %)", "pe": "Multiple d'Entrée (P/E)", "help_gearing": "La moyenne du BTP est d'environ 80%.",
         "info_update": "💡 Flux d'analyse basé sur les données de trading en direct.", "data_title": "📊 Table des Comparables Publics",
@@ -48,7 +48,7 @@ t = {
     },
     "Español": {
         "pipeline_phase": "FASE 1: ORIGINACIÓN DE ACUERDOS",
-        "banner_h": "🏗️ Filtro del Mercado del Sector BTP", "banner_desc": "Identifica objetivos infravalorados basados en comparables públicos en vivo.",
+        "banner_h": "Filtro del Mercado del Sector BTP", "banner_desc": "Identifica objetivos infravalorados basados en comparables públicos en vivo.",
         "target_title": "🎯 Entorno de Originación", "proj_name": "Nombre en Clave del Objetivo", "nm": "Margen Neto Objetivo (%)", "roe": "ROE Objetivo (%)",
         "gearing": "Gearing Objetivo (D/C %)", "pe": "Múltiplo de Entrada (P/E)", "help_gearing": "El promedio de BTP es ~80%.",
         "info_update": "💡 Análisis basado directamente en datos de mercado en vivo.", "data_title": "📊 Tabla de Comparables Públicos",
@@ -59,7 +59,7 @@ t = {
     },
     "العربية": {
         "pipeline_phase": "المرحلة الأولى: اكتشاف الصفقات وتحليل السوق",
-        "banner_h": "🏗️ شاشة تحليل قطاع البناء", "banner_desc": "تحديد الشركات المقيمة بأقل من قيمتها الحقيقية بناءً على مقارنات السوق الحية.",
+        "banner_h": "شاشة تحليل قطاع البناء", "banner_desc": "تحديد الشركات المقيمة بأقل من قيمتها الحقيقية بناءً على مقارنات السوق الحية.",
         "target_title": "🎯 بيئة اكتشاف الصفقات", "proj_name": "الاسم الرمزي للهدف", "nm": "هامش الربح المستهدف (%)", "roe": "العائد المستهدف (%)",
         "gearing": "الرافعة المالية المستهدفة (%)", "pe": "مضاعف الدخول (P/E)", "help_gearing": "متوسط القطاع حوالي 80%.",
         "info_update": "💡 تستمد التحليلات بياناتها مباشرة من السوق الحي.", "data_title": "📊 جدول المقارنات العامة (بيانات حية)",
@@ -91,37 +91,33 @@ st.markdown(f"""
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
     
-    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #1f77b4; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
-    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.4) 50%, rgba(31,119,180,0.3) 100%); }}
-    .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
+    /* Minimalist Header Styling replacing the image banner */
+    .minimal-header {{ background: linear-gradient(135deg, rgba(22,26,34,0.8), rgba(31,119,180,0.15)); border-left: 5px solid #1f77b4; padding: 25px 30px; border-radius: 8px; margin-bottom: 30px; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }}
+    .minimal-header h1 {{ color: white; margin: 0; font-size: 2.2rem; letter-spacing: 0.5px; font-weight: 700; }}
+    .minimal-header p {{ color: #a0aab5; font-size: 1.1rem; margin-top: 8px; margin-bottom: 0; }}
     
-    /* Pipeline Header Styling */
-    .pipeline-header {{ background: linear-gradient(90deg, rgba(31,119,180,0.1) 0%, rgba(22,26,34,0) 100%); border-left: 4px solid #1f77b4; padding: 10px 20px; border-radius: 5px; margin-bottom: 20px; color: #1f77b4; font-weight: bold; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase; }}
+    /* Pipeline Indicator Styling */
+    .pipeline-indicator {{ display: inline-block; background-color: rgba(31,119,180,0.2); border: 1px solid #1f77b4; color: #1f77b4; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }}
     
     {rtl_css}
     
     @media (max-width: 768px) {{
         .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
         [data-testid="stDataFrame"] {{ overflow-x: auto !important; max-width: 100% !important; }}
-        .banner h1, .full-width-banner h1 {{ font-size: 1.6rem !important; }}
-        .banner p, .full-width-banner p {{ font-size: 0.9rem !important; }}
+        .minimal-header h1 {{ font-size: 1.6rem !important; }}
+        .minimal-header p {{ font-size: 0.9rem !important; }}
         .js-plotly-plot, .plotly, .plot-container {{ max-width: 100% !important; }}
         [data-testid="column"] {{ width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; margin-bottom: 15px !important; }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- PIPELINE HEADER ---
-st.markdown(f"<div class='pipeline-header'>{txt['pipeline_phase']}</div>", unsafe_allow_html=True)
-
-# --- BANNER ---
+# --- MINIMALIST HEADER WITH PIPELINE INDICATOR ---
 st.markdown(f"""
-<div class="full-width-banner">
-    <div class="banner-overlay"></div>
-    <div class="banner-content" {'dir="rtl"' if lang=="العربية" else ''}>
-        <h1 style="color: white; margin: 0; font-size: 2.5rem; letter-spacing: 1px;">{txt['banner_h']}</h1>
-        <p style="color:#e0e0e0; font-size:1.1rem; margin-top: 8px;">{txt['banner_desc']}</p>
-    </div>
+<div class="minimal-header" {'dir="rtl"' if lang=="العربية" else ''}>
+    <div class="pipeline-indicator">{txt['pipeline_phase']}</div>
+    <h1>{txt['banner_h']}</h1>
+    <p>{txt['banner_desc']}</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -153,7 +149,7 @@ def fetch_live_market_data_pro():
     }
 
     def fetch_price(name, data):
-        # LAYER 1: MarketWatch HTML (Professional site, highly reliable, no strict AWS block)
+        # LAYER 1: MarketWatch HTML
         try:
             url_mw = f"https://www.marketwatch.com/investing/stock/{data['mw']}?countrycode=ma"
             res = requests.get(url_mw, headers=headers, timeout=5)
@@ -166,7 +162,7 @@ def fetch_live_market_data_pro():
                         return name, val, "🟢 LIVE (MW)"
         except: pass
 
-        # LAYER 2: Yahoo Finance HTML (Bypasses their API blocks)
+        # LAYER 2: Yahoo Finance HTML
         try:
             url_yf = f"https://finance.yahoo.com/quote/{data['yf']}"
             res = requests.get(url_yf, headers=headers, timeout=5)
@@ -179,7 +175,7 @@ def fetch_live_market_data_pro():
                         return name, val, "🟢 LIVE (YF Html)"
         except: pass
 
-        # LAYER 3: Google Finance via Anonymous Proxy (Last Resort)
+        # LAYER 3: Google Finance via Proxy
         try:
             gf_url = f"https://www.google.com/finance/quote/{data['mw'].upper()}:CMA"
             proxy_url = f"https://api.allorigins.win/get?url={urllib.parse.quote(gf_url)}"
@@ -199,7 +195,6 @@ def fetch_live_market_data_pro():
 
     live_prices = {}
     
-    # Run all requests blazingly fast in parallel
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         futures = [executor.submit(fetch_price, name, data) for name, data in fallbacks.items()]
         for future in concurrent.futures.as_completed(futures):
@@ -207,7 +202,6 @@ def fetch_live_market_data_pro():
             if price is not None:
                 live_prices[name] = {"Price_MAD": price, "Data_Status": status}
 
-    # Compile Final Data
     final_data = []
     for name, metrics in fallbacks.items():
         actual_price = metrics["Price_MAD"]
@@ -232,7 +226,6 @@ def fetch_live_market_data_pro():
 with st.spinner("⚡ Connecting to Global Markets..."):
     df_live = fetch_live_market_data_pro().copy()
     df_live["Type"] = txt["market_peer"]
-    # Apply currency rate
     df_live["Price_Converted"] = df_live["Price_MAD"] * rate
 
 # --- TARGET INPUTS IN MAIN PAGE ---
@@ -265,7 +258,7 @@ df_combined = pd.concat([target_row, df_live], ignore_index=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# --- RAW DATA TABLE (WITH TRANSPARENCY COLUMN) ---
+# --- RAW DATA TABLE ---
 st.subheader(txt["data_title"])
 
 def highlight_target(row):
