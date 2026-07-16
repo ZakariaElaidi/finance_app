@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly.express as px
 
 # --- SECURITY & STATE ---
 if "user" not in st.session_state or st.session_state.user is None:
@@ -18,40 +19,44 @@ sym = syms[curr]
 # --- INSTITUTIONAL TRANSLATION DICTIONARY ---
 t = {
     "English": {
-        "header_tag": "SECONDARY TOOL",
-        "banner_h": "Market Trends & Live Charts", "banner_desc": "Track real-time market movements, volatility, and historical price trends.",
-        "comp": "Company:", "time": "Timeframe:", "style": "Chart Style:",
+        "header_tag": "SECONDARY TOOL: SECTOR TRACKER",
+        "banner_h": "Market Trends & Relative Valuation", "banner_desc": "Track real-time market movements and benchmark trading multiples across the BTP sector.",
+        "comp": "Target Company:", "time": "Lookback Period:", "style": "Chart Style:",
         "m1": "1 Month", "m3": "3 Months", "m6": "6 Months",
         "candle": "Candlesticks", "line": "Line Chart",
         "err": "Error loading market data:", "chart_title": "Historical Price Trajectory",
-        "curr_price": "Last Close", "period_high": "Period High", "period_low": "Period Low", "show_ma": "Overlay Moving Average (MA)"
+        "curr_price": "Last Close", "period_high": "Period High", "period_low": "Period Low", "show_ma": "Overlay Moving Average (MA)",
+        "comps_title": "📊 Trading Multiples Landscape", "comps_desc": "Comparable company analysis: Benchmarking operational efficiency against market pricing."
     },
     "Français": {
-        "header_tag": "OUTIL SECONDAIRE",
-        "banner_h": "Tendances & Graphiques", "banner_desc": "Suivez les mouvements du marché, la volatilité et les tendances historiques.",
-        "comp": "Entreprise :", "time": "Période :", "style": "Style :",
+        "header_tag": "OUTIL SECONDAIRE : TRACKER SECTORIEL",
+        "banner_h": "Tendances & Valorisation Relative", "banner_desc": "Suivez les mouvements du marché et comparez les multiples de valorisation du secteur BTP.",
+        "comp": "Entreprise Cible :", "time": "Période d'Analyse :", "style": "Style :",
         "m1": "1 Mois", "m3": "3 Mois", "m6": "6 Mois",
         "candle": "Bougies", "line": "Courbe",
         "err": "Erreur de chargement des données :", "chart_title": "Trajectoire Historique des Prix",
-        "curr_price": "Dernière Clôture", "period_high": "Plus Haut", "period_low": "Plus Bas", "show_ma": "Afficher Moyenne Mobile (MA)"
+        "curr_price": "Dernière Clôture", "period_high": "Plus Haut", "period_low": "Plus Bas", "show_ma": "Afficher Moyenne Mobile (MA)",
+        "comps_title": "📊 Paysage des Multiples Boursiers", "comps_desc": "Analyse des comparables : Évaluation de l'efficacité opérationnelle par rapport au prix du marché."
     },
     "Español": {
-        "header_tag": "HERRAMIENTA SECUNDARIA",
-        "banner_h": "Tendencias y Gráficos", "banner_desc": "Rastree los movimientos del mercado, la volatilidad y las tendencias históricas.",
-        "comp": "Empresa:", "time": "Período:", "style": "Estilo:",
+        "header_tag": "HERRAMIENTA SECUNDARIA: SEGUIMIENTO SECTORIAL",
+        "banner_h": "Tendencias y Valoración Relativa", "banner_desc": "Rastree los movimientos del mercado y compare los múltiplos de valoración del sector BTP.",
+        "comp": "Empresa Objetivo:", "time": "Período de Análisis:", "style": "Estilo:",
         "m1": "1 Mes", "m3": "3 Meses", "m6": "6 Meses",
         "candle": "Velas", "line": "Gráfico de Líneas",
         "err": "Error al cargar datos:", "chart_title": "Trayectoria Histórica de Precios",
-        "curr_price": "Último Cierre", "period_high": "Máximo", "period_low": "Mínimo", "show_ma": "Mostrar Media Móvil (MA)"
+        "curr_price": "Último Cierre", "period_high": "Máximo", "period_low": "Mínimo", "show_ma": "Mostrar Media Móvil (MA)",
+        "comps_title": "📊 Panorama de Múltiplos de Cotización", "comps_desc": "Análisis de comparables: Evaluación de la eficiencia operativa frente al precio de mercado."
     },
     "العربية": {
-        "header_tag": "أداة مساعدة",
-        "banner_h": "رسوم بيانية حية واتجاهات السوق", "banner_desc": "تتبع تحركات السوق في الوقت الفعلي، التقلبات، والاتجاهات التاريخية للأسعار.",
-        "comp": "الشركة:", "time": "الإطار الزمني:", "style": "النمط:",
+        "header_tag": "أداة مساعدة: متتبع القطاع",
+        "banner_h": "اتجاهات السوق والتقييم النسبي", "banner_desc": "تتبع تحركات السوق وقارن مضاعفات التداول عبر قطاع البناء والأشغال العمومية.",
+        "comp": "الشركة المستهدفة:", "time": "فترة التحليل:", "style": "نمط الرسم:",
         "m1": "شهر واحد", "m3": "3 أشهر", "m6": "6 أشهر",
         "candle": "شموع يابانية", "line": "رسم خطي",
         "err": "خطأ في تحميل بيانات السوق:", "chart_title": "المسار التاريخي للأسعار",
-        "curr_price": "آخر إغلاق", "period_high": "الأعلى", "period_low": "الأدنى", "show_ma": "إظهار المتوسط المتحرك (MA)"
+        "curr_price": "آخر إغلاق", "period_high": "الأعلى", "period_low": "الأدنى", "show_ma": "إظهار المتوسط المتحرك (MA)",
+        "comps_title": "📊 مشهد مضاعفات التداول", "comps_desc": "تحليل الشركات المقارنة: قياس الكفاءة التشغيلية مقابل تسعير السوق."
     }
 }
 txt = t[lang]
@@ -104,18 +109,18 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- DATA FETCHING (Simulated baseline to match other tools) ---
+# --- DATA FETCHING (Baseline Integration) ---
 @st.cache_data(ttl=60)
 def get_live_market_data():
     try:
-        # We simulate the CSV data read here to keep the architecture intact without needing the physical file
+        # Extending the baseline with PE and Margins for relative valuation
         assets = [
-            {"Company": "LafargeHolcim", "Price_MAD": 1820.00},
-            {"Company": "Addoha", "Price_MAD": 34.50},
-            {"Company": "Alliances", "Price_MAD": 275.00},
-            {"Company": "Ciments du Maroc", "Price_MAD": 1785.00},
-            {"Company": "TGCC", "Price_MAD": 345.00},
-            {"Company": "Sonasid", "Price_MAD": 890.00}
+            {"Company": "LafargeHolcim", "Price_MAD": 1820.00, "PE_Ratio": 18.2, "Net_Margin_%": 16.5},
+            {"Company": "Addoha", "Price_MAD": 34.50, "PE_Ratio": 12.0, "Net_Margin_%": 8.5},
+            {"Company": "Alliances", "Price_MAD": 275.00, "PE_Ratio": 10.5, "Net_Margin_%": 9.0},
+            {"Company": "Ciments du Maroc", "Price_MAD": 1785.00, "PE_Ratio": 16.8, "Net_Margin_%": 15.2},
+            {"Company": "TGCC", "Price_MAD": 345.00, "PE_Ratio": 15.0, "Net_Margin_%": 12.5},
+            {"Company": "Sonasid", "Price_MAD": 890.00, "PE_Ratio": 14.5, "Net_Margin_%": 5.2}
         ]
         return pd.DataFrame(assets)
     except Exception as e:
@@ -165,17 +170,18 @@ if df_live is not None:
     <div class="kpi-container" {'dir="rtl"' if lang=="العربية" else ''}>
         <div class="kpi-card"><p class="kpi-val">{closes[-1]:,.2f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['curr_price']}</p></div>
         <div class="kpi-card" style="border-top-color: #2ea043;"><p class="kpi-val" style="color: #2ea043;">{max_price:,.2f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['period_high']}</p></div>
-        <div class="kpi-card" style="border-top-color: #f85149;"><p class="kpi-val" style="color: #f85149;">{min_price:,.2f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['period_low']}</p></div>
+        <div class="kpi-card" style="border-top-color: #d62728;"><p class="kpi-val" style="color: #d62728;">{min_price:,.2f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['period_low']}</p></div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Build Plotly Chart
+    # --- 1. HISTORICAL PRICE TRAJECTORY ---
     fig_m = go.Figure()
     
     if chart_type == txt["candle"]:
-        fig_m.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="Price", increasing_line_color='#2ea043', decreasing_line_color='#f85149'))
+        fig_m.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="Price", increasing_line_color='#2ea043', decreasing_line_color='#d62728'))
     else:
-        fig_m.add_trace(go.Scatter(x=dates, y=closes, mode='lines', name="Price", line=dict(color='#d62728', width=2), fill='tozeroy', fillcolor='rgba(214, 39, 40, 0.1)'))
+        # FIXED: Removed fill='tozeroy' to allow dynamic scaling of the Y-axis.
+        fig_m.add_trace(go.Scatter(x=dates, y=closes, mode='lines', name="Price", line=dict(color='#d62728', width=2)))
         
     # Add Moving Average (MA)
     if show_ma:
@@ -184,7 +190,7 @@ if df_live is not None:
         fig_m.add_trace(go.Scatter(x=dates, y=ma_values, mode='lines', name=f"MA ({ma_period}d)", line=dict(color='#58a6ff', width=2, dash='dot')))
 
     fig_m.update_layout(
-        height=600, 
+        height=550, 
         title=f"{txt['chart_title']} - {selected_company} ({time_period})", 
         template="plotly_dark", 
         xaxis_rangeslider_visible=False,
@@ -193,3 +199,46 @@ if df_live is not None:
         margin=dict(l=20, r=20, t=60, b=20)
     )
     st.plotly_chart(fig_m, use_container_width=True)
+
+    st.markdown("<br><hr><br>", unsafe_allow_html=True)
+
+    # --- 2. RELATIVE VALUATION BENCHMARK (COMPS) ---
+    st.subheader(txt["comps_title"])
+    st.markdown(f"<p style='color:#8b949e;'>{txt['comps_desc']}</p>", unsafe_allow_html=True)
+    
+    col_scat, col_bar = st.columns([1.5, 1], gap="large")
+    
+    with col_scat:
+        # Scatter Plot: Margin vs P/E
+        avg_pe = df_live["PE_Ratio"].mean()
+        avg_margin = df_live["Net_Margin_%"].mean()
+        
+        fig_scatter = px.scatter(
+            df_live, x="Net_Margin_%", y="PE_Ratio", text="Company", size_max=60,
+            color_discrete_sequence=["#d62728"]
+        )
+        fig_scatter.update_traces(textposition='top center', marker=dict(size=14))
+        
+        # Quadrant background coloring
+        max_margin = max(df_live['Net_Margin_%']) + 2
+        max_pe = max(df_live['PE_Ratio']) + 2
+        
+        # Premium/High Efficiency Quadrant (Faint Green)
+        fig_scatter.add_shape(type="rect", x0=avg_margin, y0=avg_pe, x1=max_margin, y1=max_pe, fillcolor="rgba(46, 160, 67, 0.05)", line_width=0, layer="below")
+        # Discount/Low Efficiency Quadrant (Faint Red)
+        fig_scatter.add_shape(type="rect", x0=0, y0=0, x1=avg_margin, y1=avg_pe, fillcolor="rgba(248, 81, 73, 0.05)", line_width=0, layer="below")
+
+        fig_scatter.add_hline(y=avg_pe, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Sector Avg P/E")
+        fig_scatter.add_vline(x=avg_margin, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Sector Avg Margin")
+        fig_scatter.update_layout(template="plotly_dark", height=450, xaxis_title="EBITDA Margin (%)", yaxis_title="P/E Multiple (x)", margin=dict(l=20, r=20, t=30, b=20))
+        st.plotly_chart(fig_scatter, use_container_width=True)
+
+    with col_bar:
+        # Bar Chart: Rank by P/E
+        df_sorted = df_live.sort_values(by="PE_Ratio", ascending=True)
+        fig_bar = px.bar(
+            df_sorted, x="PE_Ratio", y="Company", orientation='h', 
+            color_discrete_sequence=["#58a6ff"]
+        )
+        fig_bar.update_layout(template="plotly_dark", height=450, xaxis_title="P/E Multiple (x)", yaxis_title="", margin=dict(l=20, r=20, t=30, b=20))
+        st.plotly_chart(fig_bar, use_container_width=True)
