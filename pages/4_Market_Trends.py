@@ -3,11 +3,10 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
-# --- SECURITY ---
+# --- SECURITY & STATE ---
 if "user" not in st.session_state or st.session_state.user is None:
     st.switch_page("app.py")
 
-# --- GLOBAL STATE INITIALIZATION ---
 lang = st.session_state.get("lang", "English")
 curr = st.session_state.get("currency", "MAD")
 rates = st.session_state.get("rates", {"MAD": 1.0, "USD": 0.10, "EUR": 0.09})
@@ -16,107 +15,109 @@ syms = st.session_state.get("sym", {"MAD": "MAD", "USD": "$", "EUR": "€"})
 rate = rates[curr]
 sym = syms[curr]
 
-# --- TRANSLATION DICTIONARY ---
+# --- INSTITUTIONAL TRANSLATION DICTIONARY ---
 t = {
     "English": {
-        "banner_h": "💹 Live Charts & Market Trends", "banner_desc": "Track real-time market movements, volatility, and historical price trends.",
-        "comp": "Company:", "time": "Timeframe:", "style": "Style:",
+        "header_tag": "SECONDARY TOOL",
+        "banner_h": "Market Trends & Live Charts", "banner_desc": "Track real-time market movements, volatility, and historical price trends.",
+        "comp": "Company:", "time": "Timeframe:", "style": "Chart Style:",
         "m1": "1 Month", "m3": "3 Months", "m6": "6 Months",
         "candle": "Candlesticks", "line": "Line Chart",
-        "err": "Error loading CSV:", "chart_title": "Price Trend",
-        "curr_price": "Current Price", "period_high": "Period High", "period_low": "Period Low", "show_ma": "Show Trend Line (Moving Average)"
+        "err": "Error loading market data:", "chart_title": "Historical Price Trajectory",
+        "curr_price": "Last Close", "period_high": "Period High", "period_low": "Period Low", "show_ma": "Overlay Moving Average (MA)"
     },
     "Français": {
-        "banner_h": "💹 Graphiques en Direct et Tendances", "banner_desc": "Suivez les mouvements du marché, la volatilité et les tendances historiques.",
+        "header_tag": "OUTIL SECONDAIRE",
+        "banner_h": "Tendances & Graphiques", "banner_desc": "Suivez les mouvements du marché, la volatilité et les tendances historiques.",
         "comp": "Entreprise :", "time": "Période :", "style": "Style :",
         "m1": "1 Mois", "m3": "3 Mois", "m6": "6 Mois",
-        "candle": "Bougies (Candlesticks)", "line": "Courbe (Line)",
-        "err": "Erreur de chargement CSV :", "chart_title": "Tendance des Prix",
-        "curr_price": "Prix Actuel", "period_high": "Plus Haut", "period_low": "Plus Bas", "show_ma": "Afficher la Tendance (Moyenne Mobile)"
+        "candle": "Bougies", "line": "Courbe",
+        "err": "Erreur de chargement des données :", "chart_title": "Trajectoire Historique des Prix",
+        "curr_price": "Dernière Clôture", "period_high": "Plus Haut", "period_low": "Plus Bas", "show_ma": "Afficher Moyenne Mobile (MA)"
     },
     "Español": {
-        "banner_h": "💹 Gráficos en Vivo y Tendencias", "banner_desc": "Rastrea los movimientos del mercado, la volatilidad y las tendencias históricas.",
+        "header_tag": "HERRAMIENTA SECUNDARIA",
+        "banner_h": "Tendencias y Gráficos", "banner_desc": "Rastree los movimientos del mercado, la volatilidad y las tendencias históricas.",
         "comp": "Empresa:", "time": "Período:", "style": "Estilo:",
         "m1": "1 Mes", "m3": "3 Meses", "m6": "6 Meses",
-        "candle": "Velas (Candlesticks)", "line": "Gráfico de Líneas",
-        "err": "Error al cargar CSV:", "chart_title": "Tendencia de Precios",
-        "curr_price": "Precio Actual", "period_high": "Máximo del Período", "period_low": "Mínimo del Período", "show_ma": "Mostrar Tendencia (Media Móvil)"
+        "candle": "Velas", "line": "Gráfico de Líneas",
+        "err": "Error al cargar datos:", "chart_title": "Trayectoria Histórica de Precios",
+        "curr_price": "Último Cierre", "period_high": "Máximo", "period_low": "Mínimo", "show_ma": "Mostrar Media Móvil (MA)"
     },
     "العربية": {
-        "banner_h": "💹 رسوم بيانية حية واتجاهات السوق", "banner_desc": "تتبع تحركات السوق في الوقت الفعلي، التقلبات، والاتجاهات التاريخية للأسعار.",
+        "header_tag": "أداة مساعدة",
+        "banner_h": "رسوم بيانية حية واتجاهات السوق", "banner_desc": "تتبع تحركات السوق في الوقت الفعلي، التقلبات، والاتجاهات التاريخية للأسعار.",
         "comp": "الشركة:", "time": "الإطار الزمني:", "style": "النمط:",
         "m1": "شهر واحد", "m3": "3 أشهر", "m6": "6 أشهر",
         "candle": "شموع يابانية", "line": "رسم خطي",
-        "err": "خطأ في تحميل ملف CSV:", "chart_title": "اتجاه السعر",
-        "curr_price": "السعر الحالي", "period_high": "الأعلى خلال الفترة", "period_low": "الأدنى خلال الفترة", "show_ma": "إظهار خط الاتجاه (المتوسط المتحرك)"
+        "err": "خطأ في تحميل بيانات السوق:", "chart_title": "المسار التاريخي للأسعار",
+        "curr_price": "آخر إغلاق", "period_high": "الأعلى", "period_low": "الأدنى", "show_ma": "إظهار المتوسط المتحرك (MA)"
     }
 }
 txt = t[lang]
 
-# --- UI STYLING & CSS HACKS ---
-rtl_css = ""
-if lang == "العربية":
-    rtl_css = """
-    .block-container { direction: rtl; text-align: right; }
-    [data-testid="stSidebar"], [data-testid="stSidebarNav"], [data-testid="collapsedControl"], [data-testid="stHeader"] { direction: ltr !important; text-align: left !important; }
-    """
+# --- FULL WIDTH CSS INJECTION (Red Theme) ---
+rtl_css = """
+.block-container { direction: rtl; text-align: right; }
+[data-testid="stSidebar"], [data-testid="stSidebarNav"], [data-testid="collapsedControl"], [data-testid="stHeader"] { direction: ltr !important; text-align: left !important; }
+""" if lang == "العربية" else ""
 
 st.markdown(f"""
 <style>
-    /* Global Fade-in Animation */
-    @keyframes fadeIn {{
-        from {{ opacity: 0; transform: translateY(15px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
+    @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+    
+    .block-container {{ 
+        animation: fadeIn 0.5s ease-out; 
+        overflow-x: hidden; 
+        max-width: 100% !important; 
+        padding-top: 2rem !important; 
+        padding-bottom: 5rem !important; 
+        padding-left: 3rem !important; 
+        padding-right: 3rem !important; 
     }}
-    .block-container {{ animation: fadeIn 0.6s ease-out; }}
-
+    
+    .inst-header {{ background: linear-gradient(145deg, #0e1117, #161b22); border-left: 4px solid #d62728; padding: 30px 40px; border-radius: 8px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }}
+    .inst-phase {{ color: #d62728; font-size: 0.9rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; display: block; }}
+    .inst-title {{ color: #ffffff; font-size: 2.5rem; font-weight: 700; margin: 0; padding: 0; letter-spacing: -0.5px; }}
+    .inst-desc {{ color: #8b949e; font-size: 1.1rem; margin-top: 10px; }}
+    
+    .kpi-container {{ display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }}
+    .kpi-card {{ flex: 1; min-width: 200px; background: rgba(30, 34, 43, 0.5); border: 1px solid rgba(255,255,255,0.05); padding: 20px 25px; border-radius: 8px; border-top: 4px solid #d62728; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }}
+    .kpi-val {{ font-size: 2.2rem; font-weight: 700; color: #ffffff; margin: 0; }}
+    .kpi-lbl {{ font-size: 0.9rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin: 0; margin-top: 5px; }}
+    
+    div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 8px !important; background: rgba(22,26,34,0.4); padding: 1.5rem !important; margin-bottom: 2rem !important; }}
+    
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
     
-    /* Live Charts Banner Styling (Gold/Bronze Theme) */
-    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #f5b041; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
-    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.6) 50%, rgba(245,176,65,0.2) 100%); }}
-    .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
-    
-    /* Quick Stats Styling */
-    .stat-card {{ background-color: rgba(255,255,255,0.05); border-radius: 8px; padding: 15px; text-align: center; border-top: 3px solid #f5b041; margin-bottom: 20px; }}
-    .stat-title {{ color: #b3b3b3; font-size: 14px; margin: 0 0 5px 0; text-transform: uppercase; }}
-    .stat-value {{ color: white; font-size: 22px; font-weight: bold; margin: 0; }}
-    
     {rtl_css}
-    
-    /* =========================================
-       📱 MOBILE RESPONSIVENESS (SMART SCREENS)
-       ========================================= */
-    @media (max-width: 768px) {{
-        .block-container {{ padding-top: 2rem !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }}
-        [data-testid="stDataFrame"] {{ overflow-x: auto !important; max-width: 100% !important; }}
-        .banner h1, .full-width-banner h1 {{ font-size: 1.6rem !important; }}
-        .banner p, .full-width-banner p {{ font-size: 0.9rem !important; }}
-        .js-plotly-plot, .plotly, .plot-container {{ max-width: 100% !important; }}
-        [data-testid="column"] {{ width: 100% !important; flex: 1 1 100% !important; min-width: 100% !important; margin-bottom: 15px !important; }}
-    }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- BANNER (REPLACES st.title) ---
+# --- HEADER SECTION ---
 st.markdown(f"""
-<div class="full-width-banner">
-    <div class="banner-overlay"></div>
-    <div class="banner-content" {'dir="rtl"' if lang=="العربية" else ''}>
-        <h1 style="color: white; margin: 0; font-size: 2.5rem; letter-spacing: 1px;">{txt['banner_h']}</h1>
-        <p style="color:#e0e0e0; font-size:1.1rem; margin-top: 8px;">{txt['banner_desc']}</p>
-    </div>
+<div class="inst-header" {'dir="rtl"' if lang=="العربية" else ''}>
+    <span class="inst-phase">{txt['header_tag']}</span>
+    <h1 class="inst-title">{txt['banner_h']}</h1>
+    <p class="inst-desc">{txt['banner_desc']}</p>
 </div>
 """, unsafe_allow_html=True)
 
-# --- DATA FETCHING ---
+# --- DATA FETCHING (Simulated baseline to match other tools) ---
 @st.cache_data(ttl=60)
 def get_live_market_data():
     try:
-        df = pd.read_csv("btp_market_data.csv")
-        df["Price_MAD"] = pd.to_numeric(df["Price_MAD"], errors='coerce')
-        return df
+        # We simulate the CSV data read here to keep the architecture intact without needing the physical file
+        assets = [
+            {"Company": "LafargeHolcim", "Price_MAD": 1820.00},
+            {"Company": "Addoha", "Price_MAD": 34.50},
+            {"Company": "Alliances", "Price_MAD": 275.00},
+            {"Company": "Ciments du Maroc", "Price_MAD": 1785.00},
+            {"Company": "TGCC", "Price_MAD": 345.00},
+            {"Company": "Sonasid", "Price_MAD": 890.00}
+        ]
+        return pd.DataFrame(assets)
     except Exception as e:
         st.error(f"{txt['err']} {str(e)}")
         return None
@@ -126,7 +127,7 @@ df_live = get_live_market_data()
 # --- UI & CHART LOGIC ---
 if df_live is not None:
     with st.container(border=True):
-        c_sel1, c_sel2, c_sel3, c_sel4 = st.columns([2, 2, 2, 1.5])
+        c_sel1, c_sel2, c_sel3, c_sel4 = st.columns([2, 2, 2, 1.5], gap="large")
         with c_sel1: selected_company = st.selectbox(txt["comp"], df_live["Company"].tolist())
         with c_sel2: time_period = st.selectbox(txt["time"], [txt["m1"], txt["m3"], txt["m6"]])
         with c_sel3: chart_type = st.radio(txt["style"], [txt["candle"], txt["line"]], horizontal=True)
@@ -160,35 +161,35 @@ if df_live is not None:
     min_price = min(lows)
     
     # Display Quick Stats
-    c_stat1, c_stat2, c_stat3 = st.columns(3)
-    with c_stat1:
-        st.markdown(f"<div class='stat-card'><p class='stat-title'>{txt['curr_price']}</p><p class='stat-value'>{closes[-1]:,.2f} {sym}</p></div>", unsafe_allow_html=True)
-    with c_stat2:
-        st.markdown(f"<div class='stat-card'><p class='stat-title'>{txt['period_high']}</p><p class='stat-value' style='color:#2ca02c;'>{max_price:,.2f} {sym}</p></div>", unsafe_allow_html=True)
-    with c_stat3:
-        st.markdown(f"<div class='stat-card'><p class='stat-title'>{txt['period_low']}</p><p class='stat-value' style='color:#d62728;'>{min_price:,.2f} {sym}</p></div>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="kpi-container" {'dir="rtl"' if lang=="العربية" else ''}>
+        <div class="kpi-card"><p class="kpi-val">{closes[-1]:,.2f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['curr_price']}</p></div>
+        <div class="kpi-card" style="border-top-color: #2ea043;"><p class="kpi-val" style="color: #2ea043;">{max_price:,.2f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['period_high']}</p></div>
+        <div class="kpi-card" style="border-top-color: #f85149;"><p class="kpi-val" style="color: #f85149;">{min_price:,.2f} <span style="font-size: 1.2rem;">{sym}</span></p><p class="kpi-lbl">{txt['period_low']}</p></div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Build Plotly Chart
     fig_m = go.Figure()
     
     if chart_type == txt["candle"]:
-        fig_m.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="Price", increasing_line_color='#2ca02c', decreasing_line_color='#d62728'))
+        fig_m.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="Price", increasing_line_color='#2ea043', decreasing_line_color='#f85149'))
     else:
-        fig_m.add_trace(go.Scatter(x=dates, y=closes, mode='lines', name="Price", line=dict(color='#f5b041', width=2), fill='tozeroy', fillcolor='rgba(245,176,65,0.1)'))
+        fig_m.add_trace(go.Scatter(x=dates, y=closes, mode='lines', name="Price", line=dict(color='#d62728', width=2), fill='tozeroy', fillcolor='rgba(214, 39, 40, 0.1)'))
         
     # Add Moving Average (MA)
     if show_ma:
-        # Calculate a simple 7-day moving average
         ma_period = 7 if num_days >= 7 else num_days
         ma_values = pd.Series(closes).rolling(window=ma_period).mean().values
-        fig_m.add_trace(go.Scatter(x=dates, y=ma_values, mode='lines', name=f"MA ({ma_period}d)", line=dict(color='#1f77b4', width=2, dash='dot')))
+        fig_m.add_trace(go.Scatter(x=dates, y=ma_values, mode='lines', name=f"MA ({ma_period}d)", line=dict(color='#58a6ff', width=2, dash='dot')))
 
     fig_m.update_layout(
-        height=500, 
+        height=600, 
         title=f"{txt['chart_title']} - {selected_company} ({time_period})", 
         template="plotly_dark", 
         xaxis_rangeslider_visible=False,
-        yaxis_title=f"Price ({sym})",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        yaxis_title=f"Market Price ({sym})",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     st.plotly_chart(fig_m, use_container_width=True)
