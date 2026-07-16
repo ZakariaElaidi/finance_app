@@ -39,7 +39,7 @@ t = {
         "mc_btn": "🎲 Run Monte Carlo Simulation (10k Iterations)", "mc_run": "Running 10,000 simulations...",
         "mc_chart": "Enterprise Value Probability Distribution", "freq": "Frequency", "ci": "75% Confidence Interval",
         "lbo_title": "💰 LBO Structuring Engine",
-        "entry_m": "Entry Multiple (x)", "exit_m": "Exit Multiple (x)", "debt_f": "Debt Funding %",
+        "entry_m": "Entry Multiple (x)", "exit_m": "Exit Multiple (x)", "debt_f": "Debt Funding %", "int_rate": "Blended Interest (%)",
         "pe_metrics": "Private Equity Returns (5-Year)", "irr": "IRR", "moic": "MoIC",
         "sens_hm": "📊 EV Sensitivity (WACC vs Terminal Growth)", "dl_val_xlsx": "📥 Export Structuring Model (Excel)",
         "sb_tools": "🛠️ Structuring Tools", "fx_title": "🌍 FX Rates (Base MAD)", "calc_title": "🧮 Quick CAGR Calc",
@@ -78,7 +78,7 @@ t = {
         "mc_btn": "🎲 Lancer Simulation Monte Carlo", "mc_run": "Exécution de 10 000 simulations...",
         "mc_chart": "Distribution de Probabilité VE", "freq": "Fréquence", "ci": "Intervalle de Confiance 75%",
         "lbo_title": "💰 Moteur de Structuration LBO",
-        "entry_m": "Multiple d'Entrée (x)", "exit_m": "Multiple de Sortie (x)", "debt_f": "Financement Dette %",
+        "entry_m": "Multiple d'Entrée (x)", "exit_m": "Multiple de Sortie (x)", "debt_f": "Financement Dette %", "int_rate": "Taux d'Intérêt (%)",
         "pe_metrics": "Rendements PE (Horizon 5 ans)", "irr": "TRI (IRR)", "moic": "Multiple (MoIC)",
         "sens_hm": "📊 Sensibilité VE (WACC vs Croissance)", "dl_val_xlsx": "📥 Exporter Modèle de Structuration",
         "sb_tools": "🛠️ Outils de Structuration", "fx_title": "🌍 Taux de Change", "calc_title": "🧮 Calculateur CAGR",
@@ -117,7 +117,7 @@ t = {
         "mc_btn": "🎲 Ejecutar Simulación Monte Carlo", "mc_run": "Ejecutando 10,000 simulaciones...",
         "mc_chart": "Distribución Valor Empresarial", "freq": "Frecuencia", "ci": "Intervalo Confianza 75%",
         "lbo_title": "💰 Motor de Estructuración LBO",
-        "entry_m": "Múltiplo Entrada (x)", "exit_m": "Múltiplo Salida (x)", "debt_f": "Financiamiento Deuda %",
+        "entry_m": "Múltiplo Entrada (x)", "exit_m": "Múltiplo Salida (x)", "debt_f": "Financiamiento Deuda %", "int_rate": "Tasa de Interés (%)",
         "pe_metrics": "Retornos PE (5 años)", "irr": "TIR (IRR)", "moic": "Múltiplo (MoIC)",
         "sens_hm": "📊 Sensibilidad EV", "dl_val_xlsx": "📥 Exportar Modelo Estructuración",
         "sb_tools": "🛠️ Herramientas", "fx_title": "🌍 Tipos de Cambio", "calc_title": "🧮 Calculadora CAGR",
@@ -156,7 +156,7 @@ t = {
         "mc_btn": "🎲 تشغيل محاكاة مونت كارلو", "mc_run": "تشغيل 10,000 محاكاة...",
         "mc_chart": "التوزيع الاحتمالي للقيمة المؤسسية", "freq": "التردد", "ci": "فترة ثقة 75%",
         "lbo_title": "💰 محرك هيكلة LBO",
-        "entry_m": "مضاعف الدخول (x)", "exit_m": "مضاعف التخارج (x)", "debt_f": "نسبة تمويل الديون %",
+        "entry_m": "مضاعف الدخول (x)", "exit_m": "مضاعف التخارج (x)", "debt_f": "نسبة تمويل الديون %", "int_rate": "معدل الفائدة المدمج (%)",
         "pe_metrics": "عوائد الملكية الخاصة (5 سنوات)", "irr": "معدل العائد الداخلي", "moic": "مضاعف رأس المال",
         "sens_hm": "📊 تحليل حساسية القيمة", "dl_val_xlsx": "📥 تصدير نموذج الهيكلة",
         "sb_tools": "🛠️ أدوات الهيكلة", "fx_title": "🌍 أسعار الصرف", "calc_title": "🧮 حاسبة النمو",
@@ -350,7 +350,6 @@ with col_dcf:
                     s_ev = sum([cf / ((1 + wacc)**(i+1)) for i, cf in enumerate(s_cfs)]) + (s_tv / ((1 + wacc)**5))
                     sim_evs.append(s_ev * rate)
                 
-                # Plotly Histogram formatted to purple theme
                 fig_mc = go.Figure(data=[go.Histogram(x=sim_evs, nbinsx=50, marker_color='#9467bd')])
                 fig_mc.update_layout(title=txt["mc_chart"], template="plotly_dark", xaxis_title=f"EV ({sym})", yaxis_title=txt["freq"], height=350, margin=dict(l=0, r=0, t=40, b=0))
                 st.plotly_chart(fig_mc, use_container_width=True)
@@ -364,16 +363,28 @@ with col_lbo:
         c_l1, c_l2 = st.columns(2, gap="medium")
         with c_l1: entry_mult = st.number_input(txt["entry_m"], 3.0, 15.0, 6.0, 0.5)
         with c_l2: exit_mult = st.number_input(txt["exit_m"], 3.0, 15.0, 6.0, 0.5)
-        debt_pct = st.slider(txt["debt_f"], 0.0, 90.0, 60.0, 5.0) / 100
+        
+        c_l3, c_l4 = st.columns(2, gap="medium")
+        with c_l3: debt_pct = st.slider(txt["debt_f"], 0.0, 90.0, 60.0, 5.0) / 100
+        with c_l4: int_rate = st.slider(txt["int_rate"], 1.0, 20.0, 8.0, 0.5) / 100
 
-        # LBO Math (Upgraded Rigor)
+        # LBO Math (Upgraded Rigor with Dynamic Amortization Loop)
         entry_ev = base_ebitda * entry_mult
         debt_quantum = entry_ev * debt_pct
         sponsor_equity = entry_ev - debt_quantum
         
-        # Assume cumulative FCF is used to pay down debt over 5 years (simplified cash sweep)
-        cum_cash_flow = sum(cfs)
-        remaining_debt = max(0, debt_quantum - (cum_cash_flow * 0.75)) # Assume 75% FCF allocated to debt service
+        current_debt = debt_quantum
+        for cf in cfs:
+            interest_expense = current_debt * int_rate
+            cads = cf - interest_expense # Cash Available for Debt Service
+            if cads > 0:
+                principal_paydown = cads * 1.0 # 100% cash sweep assumption
+                current_debt = max(0, current_debt - principal_paydown)
+            else:
+                # Debt capitalizes (PIK) if FCF cannot cover interest
+                current_debt += abs(cads)
+                
+        remaining_debt = current_debt
         
         exit_ebitda = base_ebitda * ((1 + proj_growth)**5)
         exit_ev = exit_ebitda * exit_mult
@@ -395,7 +406,7 @@ with col_lbo:
         random.seed(lbo_seed)
         
         if irr >= 20.0:
-            l_color, l_bg = "#9467bd", "148, 103, 189" # Changed to purple for success to match theme
+            l_color, l_bg = "#9467bd", "148, 103, 189" 
             l_text = random.choice([txt['lbo_good_1'], txt['lbo_good_2'], txt['lbo_good_3']])
         else:
             l_color, l_bg = "#d62728", "214, 39, 40"
@@ -431,7 +442,7 @@ fig_heat_dcf = go.Figure(data=go.Heatmap(
     z=z_data_dcf, 
     x=np.round(tg_range_dcf*100, 2), 
     y=np.round(wacc_range_dcf*100, 2), 
-    colorscale='Purples', # Switched to Purple theme
+    colorscale='Purples', 
     colorbar=dict(title=sym),
     hovertemplate="Growth: %{x}%<br>WACC: %{y}%<br>EV: %{z:,.0f} " + sym + "<extra></extra>"
 ))
@@ -501,7 +512,6 @@ with pd.ExcelWriter(output_val, engine='xlsxwriter') as writer:
             worksheet_hm.write(row_idx, col_idx, val, cell_format)
             
     worksheet_hm.set_column(0, 0, 18)
-    # Using purple color scale for the excel export to match
     worksheet_hm.conditional_format(1, 1, len(wacc_range_dcf), len(tg_range_dcf), {
         'type': '3_color_scale',
         'min_color': '#f2e6ff',
