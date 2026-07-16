@@ -24,8 +24,8 @@ sym = syms[curr]
 t = {
     "English": {
         "phase": "PHASE 1: DEAL ORIGINATION",
-        "title": "M&A Target Screening Terminal",
-        "desc": "Identify and benchmark undervalued corporate targets using live market data.",
+        "title": "M&A Deal Origination Engine",
+        "desc": "Scan the Casablanca Stock Exchange. Benchmark public comps. Identify arbitrage opportunities.",
         "kpi1": "Sector Avg P/E", "kpi2": "Sector Avg Margin", "kpi3": "Sector Avg Gearing", "kpi4": "Tracked Assets",
         "target_cfg": "⚙️ Target Standalone Assumptions",
         "t_name": "Target Code Name", "t_margin": "EBITDA Margin (%)", "t_roe": "Target ROE (%)", "t_gear": "Gearing (D/E %)", "t_pe": "Entry Multiple (x)",
@@ -35,8 +35,8 @@ t = {
     },
     "Français": {
         "phase": "PHASE 1: ORIGINATION DE DEALS",
-        "title": "Terminal de Screening M&A",
-        "desc": "Identifiez et analysez les cibles sous-évaluées via des données de marché en direct.",
+        "title": "Moteur d'Origination M&A",
+        "desc": "Analysez la Bourse de Casablanca. Comparez les pairs. Identifiez les opportunités d'arbitrage.",
         "kpi1": "P/E Moyen", "kpi2": "Marge Moyenne", "kpi3": "Gearing Moyen", "kpi4": "Actifs Suivis",
         "target_cfg": "⚙️ Hypothèses de la Cible",
         "t_name": "Nom de Code", "t_margin": "Marge EBITDA (%)", "t_roe": "ROE Cible (%)", "t_gear": "Gearing (D/CP %)", "t_pe": "Multiple d'Entrée (x)",
@@ -46,8 +46,8 @@ t = {
     },
     "Español": {
         "phase": "FASE 1: ORIGINACIÓN DE ACUERDOS",
-        "title": "Terminal de Screening M&A",
-        "desc": "Identifique y evalúe objetivos infravalorados utilizando datos en vivo.",
+        "title": "Motor de Originación M&A",
+        "desc": "Analice la Bolsa de Casablanca. Compare pares públicos. Identifique oportunidades de arbitraje.",
         "kpi1": "P/E Promedio", "kpi2": "Margen Promedio", "kpi3": "Gearing Promedio", "kpi4": "Activos Seguidos",
         "target_cfg": "⚙️ Supuestos del Objetivo",
         "t_name": "Nombre en Clave", "t_margin": "Margen EBITDA (%)", "t_roe": "ROE Objetivo (%)", "t_gear": "Gearing (D/C %)", "t_pe": "Múltiplo de Entrada (x)",
@@ -57,8 +57,8 @@ t = {
     },
     "العربية": {
         "phase": "المرحلة الأولى: اكتشاف الصفقات",
-        "title": "منصة فحص أهداف الاندماج والاستحواذ",
-        "desc": "تحديد وتقييم الشركات المستهدفة باستخدام بيانات السوق الحية.",
+        "title": "محرك اكتشاف صفقات الاندماج والاستحواذ",
+        "desc": "مسح بورصة الدار البيضاء. مقارنة الأقران العامة. تحديد فرص المراجحة.",
         "kpi1": "متوسط مكرر الربحية", "kpi2": "متوسط الهامش", "kpi3": "متوسط الرافعة المالية", "kpi4": "الأصول المتتبعة",
         "target_cfg": "⚙️ افتراضات الشركة المستهدفة",
         "t_name": "الاسم الرمزي", "t_margin": "هامش الأرباح (%)", "t_roe": "العائد على الحقوق (%)", "t_gear": "الرافعة المالية (%)", "t_pe": "مضاعف الدخول (x)",
@@ -79,7 +79,6 @@ st.markdown(f"""
 <style>
     @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
     
-    /* OVERRIDING MAX-WIDTH TO FILL EMPTY SPACE */
     .block-container {{ 
         animation: fadeIn 0.5s ease-out; 
         overflow-x: hidden; 
@@ -124,7 +123,6 @@ with col_btn:
 # --- MULTI-LAYERED MOROCCAN SCRAPING ENGINE ---
 @st.cache_data(ttl=300, show_spinner=False)
 def fetch_real_data():
-    # Baseline updated to highly realistic mid-2026 MASI values
     assets = {
         "LafargeHolcim": {"ticker": "LHM", "base_p": 1820.00, "pe": 18.2, "margin": 16.5, "roe": 22.0, "gear": 45.0},
         "Addoha": {"ticker": "ADH", "base_p": 34.50, "pe": 12.0, "margin": 8.5, "roe": 14.0, "gear": 120.0},
@@ -135,13 +133,12 @@ def fetch_real_data():
     }
     
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml",
         "Accept-Language": "en-US,en;q=0.9"
     }
 
     def scrape_price(name, data):
-        # Method 1: Google Finance via CORS Proxy
         try:
             gf_url = f"https://www.google.com/finance/quote/{data['ticker']}:CMA"
             proxy_url = f"https://api.allorigins.win/get?url={urllib.parse.quote(gf_url)}"
@@ -155,20 +152,6 @@ def fetch_real_data():
                     val = float(clean_price)
                     if val > 0: return name, val, "🟢 Live (GF Proxy)"
         except: pass
-
-        # Method 2: LeBoursier.ma Scraping (Moroccan Local Site)
-        try:
-            url_lb = "https://www.leboursier.ma/api/valeurs" # Mock endpoint structure for Moroccan local
-            res = requests.get("https://www.leboursier.ma", headers=headers, timeout=5)
-            if res.status_code == 200:
-                soup = BeautifulSoup(res.text, 'html.parser')
-                # Attempting to find standard ticker rows
-                row = soup.find(string=data['ticker'])
-                if row:
-                    price_val = row.find_next("td").text.replace(",", "").replace(" ", "").strip()
-                    return name, float(price_val), "🟢 Live (LB)"
-        except: pass
-
         return name, data["base_p"], "🟡 Market Close (Verified Baseline)"
 
     live_prices = {}
@@ -182,7 +165,6 @@ def fetch_real_data():
     for name, metrics in assets.items():
         price = live_prices.get(name, {}).get("Price_MAD", metrics["base_p"])
         status = live_prices.get(name, {}).get("Status", "🟡 Market Close (Verified Baseline)")
-        
         final_data.append({
             "Company": name, "Price_MAD": price, "Status": status,
             "PE_Ratio": metrics["pe"], "Net_Margin_%": metrics["margin"], "ROE_%": metrics["roe"], "Gearing_%": metrics["gear"]
@@ -301,6 +283,16 @@ with tab3:
         color_discrete_map={txt["t_type"]: "#1f77b4", txt["m_type"]: "#8b949e"} 
     )
     fig_scatter.update_traces(textposition='top center', marker=dict(size=14))
+    
+    # Adding subtle heat colors for quadrants
+    max_gear = max(df_combined['Gearing_%']) + 10
+    max_roe = max(df_combined['ROE_%']) + 5
+    
+    # Risky/Low Return Quadrant (Faint Red)
+    fig_scatter.add_shape(type="rect", x0=avg_gear, y0=0, x1=max_gear, y1=avg_roe, fillcolor="rgba(248, 81, 73, 0.05)", line_width=0, layer="below")
+    # Safe/High Return Quadrant (Faint Green)
+    fig_scatter.add_shape(type="rect", x0=0, y0=avg_roe, x1=avg_gear, y1=max_roe, fillcolor="rgba(46, 160, 67, 0.05)", line_width=0, layer="below")
+    
     fig_scatter.add_hline(y=avg_roe, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Avg ROE")
     fig_scatter.add_vline(x=avg_gear, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Avg Debt")
     fig_scatter.update_layout(template="plotly_dark", height=500, title="Risk (Gearing) vs Reward (ROE)")
@@ -318,10 +310,13 @@ with tab4:
     fig_radar = go.Figure()
     fig_radar.add_trace(go.Scatterpolar(r=t_vals, theta=cats, fill='toself', name=txt["t_type"], line_color='#1f77b4'))
     fig_radar.add_trace(go.Scatterpolar(r=m_vals, theta=cats, fill='toself', name=txt["m_type"], line_color='#8b949e')) 
+    
+    # Fixed the squished circle by overriding layout margins
     fig_radar.update_layout(
-        polar=dict(radialaxis=dict(visible=False)), 
+        polar=dict(radialaxis=dict(visible=False, range=[0, max(max(t_vals), max(m_vals)) * 1.1])), 
         template="plotly_dark", 
-        height=500,
+        height=550,
+        margin=dict(l=80, r=80, t=60, b=60),
         title="Strategic Fit Analysis"
     )
     st.plotly_chart(fig_radar, use_container_width=True)
