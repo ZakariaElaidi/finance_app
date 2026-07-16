@@ -2,10 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import numpy as np
-from datetime import datetime
 import yfinance as yf
-import random
 
 # --- SECURITY & STATE ---
 if "user" not in st.session_state or st.session_state.user is None:
@@ -24,8 +21,8 @@ t = {
     "English": {
         "phase": "PHASE 1: DEAL ORIGINATION",
         "title": "M&A Target Screening Terminal",
-        "desc": "Identify and benchmark undervalued corporate targets using live market data algorithms.",
-        "kpi1": "Sector Avg P/E", "kpi2": "Market Volatility", "kpi3": "Tracked Assets", "kpi4": "Active Signals",
+        "desc": "Identify and benchmark undervalued corporate targets using live market data.",
+        "kpi1": "Sector Avg P/E", "kpi2": "Sector Avg Margin", "kpi3": "Sector Avg Gearing", "kpi4": "Tracked Assets",
         "target_cfg": "⚙️ Target Standalone Assumptions",
         "t_name": "Target Code Name", "t_margin": "EBITDA Margin (%)", "t_roe": "Target ROE (%)", "t_gear": "Gearing (D/E %)", "t_pe": "Entry Multiple (x)",
         "score_title": "Deal Feasibility Score",
@@ -35,8 +32,8 @@ t = {
     "Français": {
         "phase": "PHASE 1: ORIGINATION DE DEALS",
         "title": "Terminal de Screening M&A",
-        "desc": "Identifiez et analysez les cibles sous-évaluées via des algorithmes de marché en direct.",
-        "kpi1": "P/E Moyen", "kpi2": "Volatilité Marché", "kpi3": "Actifs Suivis", "kpi4": "Signaux Actifs",
+        "desc": "Identifiez et analysez les cibles sous-évaluées via des données de marché en direct.",
+        "kpi1": "P/E Moyen", "kpi2": "Marge Moyenne", "kpi3": "Gearing Moyen", "kpi4": "Actifs Suivis",
         "target_cfg": "⚙️ Hypothèses de la Cible",
         "t_name": "Nom de Code", "t_margin": "Marge EBITDA (%)", "t_roe": "ROE Cible (%)", "t_gear": "Gearing (D/CP %)", "t_pe": "Multiple d'Entrée (x)",
         "score_title": "Score de Faisabilité",
@@ -46,8 +43,8 @@ t = {
     "Español": {
         "phase": "FASE 1: ORIGINACIÓN DE ACUERDOS",
         "title": "Terminal de Screening M&A",
-        "desc": "Identifique y evalúe objetivos infravalorados utilizando algoritmos de datos en vivo.",
-        "kpi1": "P/E Promedio", "kpi2": "Volatilidad Mercado", "kpi3": "Activos Seguidos", "kpi4": "Señales Activas",
+        "desc": "Identifique y evalúe objetivos infravalorados utilizando datos en vivo.",
+        "kpi1": "P/E Promedio", "kpi2": "Margen Promedio", "kpi3": "Gearing Promedio", "kpi4": "Activos Seguidos",
         "target_cfg": "⚙️ Supuestos del Objetivo",
         "t_name": "Nombre en Clave", "t_margin": "Margen EBITDA (%)", "t_roe": "ROE Objetivo (%)", "t_gear": "Gearing (D/C %)", "t_pe": "Múltiplo de Entrada (x)",
         "score_title": "Puntuación de Viabilidad",
@@ -57,8 +54,8 @@ t = {
     "العربية": {
         "phase": "المرحلة الأولى: اكتشاف الصفقات",
         "title": "منصة فحص أهداف الاندماج والاستحواذ",
-        "desc": "تحديد وتقييم الشركات المستهدفة باستخدام خوارزميات بيانات السوق الحية.",
-        "kpi1": "متوسط مكرر الربحية", "kpi2": "تقلبات السوق", "kpi3": "الأصول المتتبعة", "kpi4": "الإشارات النشطة",
+        "desc": "تحديد وتقييم الشركات المستهدفة باستخدام بيانات السوق الحية.",
+        "kpi1": "متوسط مكرر الربحية", "kpi2": "متوسط الهامش", "kpi3": "متوسط الرافعة المالية", "kpi4": "الأصول المتتبعة",
         "target_cfg": "⚙️ افتراضات الشركة المستهدفة",
         "t_name": "الاسم الرمزي", "t_margin": "هامش الأرباح (%)", "t_roe": "العائد على الحقوق (%)", "t_gear": "الرافعة المالية (%)", "t_pe": "مضاعف الدخول (x)",
         "score_title": "مؤشر جدوى الصفقة",
@@ -68,7 +65,7 @@ t = {
 }
 txt = t[lang]
 
-# --- ADVANCED CSS INJECTION ---
+# --- ADVANCED CSS INJECTION (Spacing Improvements) ---
 rtl_css = """
 .block-container { direction: rtl; text-align: right; }
 [data-testid="stSidebar"], [data-testid="stSidebarNav"], [data-testid="collapsedControl"], [data-testid="stHeader"] { direction: ltr !important; text-align: left !important; }
@@ -77,22 +74,22 @@ rtl_css = """
 st.markdown(f"""
 <style>
     @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}
-    .block-container {{ animation: fadeIn 0.5s ease-out; overflow-x: hidden; max-width: 1400px; }}
+    .block-container {{ animation: fadeIn 0.5s ease-out; overflow-x: hidden; max-width: 1400px; padding-top: 2rem; padding-bottom: 5rem; }}
     
-    /* Institutional Header */
-    .inst-header {{ background: linear-gradient(145deg, #0e1117, #161b22); border-left: 4px solid #1f77b4; padding: 20px 30px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }}
-    .inst-phase {{ color: #1f77b4; font-size: 0.85rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; display: block; }}
-    .inst-title {{ color: #ffffff; font-size: 2.2rem; font-weight: 700; margin: 0; padding: 0; letter-spacing: -0.5px; }}
-    .inst-desc {{ color: #8b949e; font-size: 1rem; margin-top: 8px; }}
+    /* Institutional Header - More Spacing */
+    .inst-header {{ background: linear-gradient(145deg, #0e1117, #161b22); border-left: 4px solid #1f77b4; padding: 30px 40px; border-radius: 8px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }}
+    .inst-phase {{ color: #1f77b4; font-size: 0.9rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; display: block; }}
+    .inst-title {{ color: #ffffff; font-size: 2.5rem; font-weight: 700; margin: 0; padding: 0; letter-spacing: -0.5px; }}
+    .inst-desc {{ color: #8b949e; font-size: 1.1rem; margin-top: 10px; }}
     
-    /* KPI Strip */
-    .kpi-container {{ display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }}
-    .kpi-card {{ flex: 1; min-width: 150px; background: rgba(30, 34, 43, 0.5); border: 1px solid rgba(255,255,255,0.05); padding: 15px 20px; border-radius: 8px; border-top: 3px solid #3fb950; }}
-    .kpi-val {{ font-size: 1.8rem; font-weight: 700; color: #ffffff; margin: 0; }}
-    .kpi-lbl {{ font-size: 0.8rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin: 0; }}
+    /* KPI Strip - Increased Gap */
+    .kpi-container {{ display: flex; gap: 20px; margin-bottom: 40px; flex-wrap: wrap; }}
+    .kpi-card {{ flex: 1; min-width: 200px; background: rgba(30, 34, 43, 0.5); border: 1px solid rgba(255,255,255,0.05); padding: 20px 25px; border-radius: 8px; border-top: 4px solid #1f77b4; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }}
+    .kpi-val {{ font-size: 2.2rem; font-weight: 700; color: #ffffff; margin: 0; }}
+    .kpi-lbl {{ font-size: 0.9rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin: 0; margin-top: 5px; }}
     
-    /* Input Container Override */
-    div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 8px !important; background: rgba(22,26,34,0.4); }}
+    /* Input Container Padding */
+    div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 8px !important; background: rgba(22,26,34,0.4); padding: 1.5rem !important; margin-bottom: 2rem !important; }}
     
     {rtl_css}
 </style>
@@ -113,38 +110,32 @@ with col_btn:
         st.cache_data.clear()
         st.rerun()
 
-# --- HYBRID DATA ENGINE (YFINANCE + QUANTITATIVE SIMULATION) ---
-@st.cache_data(ttl=60, show_spinner=False)
-def fetch_institutional_data():
+# --- REAL YFINANCE DATA ENGINE ---
+@st.cache_data(ttl=300, show_spinner=False)
+def fetch_real_data():
+    # Note: Moroccan tickers on Yahoo Finance often end in .CM
     assets = {
         "LafargeHolcim": {"ticker": "LHM.CM", "base_p": 1780, "pe": 18.2, "margin": 16.5, "roe": 22.0, "gear": 45.0},
         "Addoha": {"ticker": "ADH.CM", "base_p": 33, "pe": 12.0, "margin": 8.5, "roe": 14.0, "gear": 120.0},
         "Alliances": {"ticker": "ADI.CM", "base_p": 260, "pe": 10.5, "margin": 9.0, "roe": 15.5, "gear": 135.0},
         "Ciments du Maroc": {"ticker": "CMA.CM", "base_p": 1750, "pe": 16.8, "margin": 15.2, "roe": 20.1, "gear": 40.0},
         "TGCC": {"ticker": "TGC.CM", "base_p": 330, "pe": 15.0, "margin": 12.5, "roe": 18.5, "gear": 85.0},
-        "Sonasid": {"ticker": "SND.CM", "base_p": 870, "pe": 14.5, "margin": 5.2, "roe": 8.5, "gear": 20.0},
-        "Jet Contractors": {"ticker": "JET.CM", "base_p": 500, "pe": 18.0, "margin": 6.0, "roe": 12.0, "gear": 110.0}
+        "Sonasid": {"ticker": "SND.CM", "base_p": 870, "pe": 14.5, "margin": 5.2, "roe": 8.5, "gear": 20.0}
     }
     
     final_data = []
     for name, data in assets.items():
-        price = None
-        status = ""
-        # 1. Attempt yfinance API
+        price = data["base_p"] # Default to base if API fails
+        status = "🔴 Fallback"
+        
         try:
             ticker = yf.Ticker(data["ticker"])
             history = ticker.history(period="1d")
             if not history.empty:
                 price = float(history['Close'].iloc[-1])
-                status = "🟢 API (yfinance)"
-        except: pass
-        
-        # 2. Advanced Quantitative Simulation (If API blocked)
-        if price is None or price <= 0:
-            # Simulate Geometric Brownian Motion (GBM) tick based on base price
-            volatility = random.uniform(-0.015, 0.015) # 1.5% daily fluctuation
-            price = data["base_p"] * (1 + volatility)
-            status = "🟡 Quant Sim (GBM)"
+                status = "🟢 Live (yfinance)"
+        except Exception:
+            pass # Silently fallback
             
         final_data.append({
             "Company": name, "Price_MAD": price, "Status": status,
@@ -152,72 +143,105 @@ def fetch_institutional_data():
         })
     return pd.DataFrame(final_data)
 
-with st.spinner("Executing Market Algorithms..."):
-    df_live = fetch_institutional_data().copy()
+with st.spinner("Fetching Real Market Data..."):
+    df_live = fetch_real_data().copy()
     df_live["Type"] = txt["m_type"]
     df_live["Price_Converted"] = df_live["Price_MAD"] * rate
 
 # --- TOP KPI STRIP ---
 avg_pe = df_live["PE_Ratio"].mean()
 avg_roe = df_live["ROE_%"].mean()
+avg_margin = df_live["Net_Margin_%"].mean()
+avg_gear = df_live["Gearing_%"].mean()
+
 st.markdown(f"""
 <div class="kpi-container" {'dir="rtl"' if lang=="العربية" else ''}>
     <div class="kpi-card"><p class="kpi-val">{avg_pe:.1f}x</p><p class="kpi-lbl">{txt['kpi1']}</p></div>
-    <div class="kpi-card" style="border-color: #f85149;"><p class="kpi-val">1.2%</p><p class="kpi-lbl">{txt['kpi2']}</p></div>
-    <div class="kpi-card" style="border-color: #58a6ff;"><p class="kpi-val">{len(df_live)}</p><p class="kpi-lbl">{txt['kpi3']}</p></div>
-    <div class="kpi-card" style="border-color: #a371f7;"><p class="kpi-val">3</p><p class="kpi-lbl">{txt['kpi4']}</p></div>
+    <div class="kpi-card" style="border-top-color: #2ea043;"><p class="kpi-val">{avg_margin:.1f}%</p><p class="kpi-lbl">{txt['kpi2']}</p></div>
+    <div class="kpi-card" style="border-top-color: #f85149;"><p class="kpi-val">{avg_gear:.1f}%</p><p class="kpi-lbl">{txt['kpi3']}</p></div>
+    <div class="kpi-card" style="border-top-color: #a371f7;"><p class="kpi-val">{len(df_live)}</p><p class="kpi-lbl">{txt['kpi4']}</p></div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- TARGET CONFIGURATION & GAUGE SCORE ---
-col_cfg, col_gauge = st.columns([2.5, 1], gap="medium")
+# --- TARGET CONFIGURATION & DYNAMIC SCORE ---
+st.markdown(f"#### {txt['target_cfg']}")
+# Using a container for logical grouping, but relying on columns for horizontal layout
+with st.container(border=True):
+    col_inputs, col_score = st.columns([2.5, 1], gap="large")
 
-with col_cfg:
-    st.markdown(f"#### {txt['target_cfg']}")
-    with st.container(border=True):
+    with col_inputs:
+        # Added spacing between rows of inputs
         r1c1, r1c2, r1c3 = st.columns(3)
         t_name = r1c1.text_input(txt["t_name"], "Project Titan")
         t_margin = r1c2.number_input(txt["t_margin"], value=15.0, step=0.5)
         t_roe = r1c3.number_input(txt["t_roe"], value=18.0, step=0.5)
         
+        st.markdown("<br>", unsafe_allow_html=True) # Explicit vertical space
+        
         r2c1, r2c2, r2c3 = st.columns(3)
         t_gear = r2c1.number_input(txt["t_gear"], value=55.0, step=5.0)
         t_pe = r2c2.number_input(txt["t_pe"], value=12.5, step=0.5)
         
-        # Calculate proprietary deal score based on inputs vs market
+    with col_score:
+        # --- FIXED DYNAMIC SCORE LOGIC ---
+        # Base score is 50. Adjust based on how Target compares to Averages
         score = 50
-        if t_pe < avg_pe: score += 15 # Cheaper than market
-        if t_roe > avg_roe: score += 20 # Better return than market
-        if t_gear < 80: score += 15 # Healthy debt
         
-with col_gauge:
-    fig_gauge = go.Figure(go.Indicator(
-        mode = "gauge+number", value = score, title = {'text': txt["score_title"], 'font': {'size': 14, 'color': '#8b949e'}},
-        gauge = {
-            'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "white"},
-            'bar': {'color': "#1f77b4"},
-            'steps': [
-                {'range': [0, 40], 'color': "rgba(248, 81, 73, 0.3)"},
-                {'range': [40, 70], 'color': "rgba(245, 176, 65, 0.3)"},
-                {'range': [70, 100], 'color': "rgba(63, 185, 80, 0.3)"}],
-        }
-    ))
-    fig_gauge.update_layout(height=220, margin=dict(l=20, r=20, t=30, b=10), template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)")
-    st.plotly_chart(fig_gauge, use_container_width=True)
+        # P/E: Lower is better (Cheaper entry)
+        if t_pe < avg_pe:
+            score += min(20, (avg_pe - t_pe) * 2) 
+        else:
+            score -= min(20, (t_pe - avg_pe) * 2)
 
-# Combine Data
+        # ROE: Higher is better (More profitable)
+        if t_roe > avg_roe:
+            score += min(20, (t_roe - avg_roe) * 1.5)
+        else:
+            score -= min(20, (avg_roe - t_roe) * 1.5)
+            
+        # Margin: Higher is better
+        if t_margin > avg_margin:
+            score += min(10, (t_margin - avg_margin))
+            
+        # Gearing: Lower is safer (Less debt risk)
+        if t_gear < avg_gear:
+             score += min(15, (avg_gear - t_gear) * 0.2)
+        else:
+             score -= min(15, (t_gear - avg_gear) * 0.2)
+
+        # Cap score between 0 and 100
+        score = max(0, min(100, score))
+        
+        fig_gauge = go.Figure(go.Indicator(
+            mode = "gauge+number", 
+            value = round(score), 
+            title = {'text': txt["score_title"], 'font': {'size': 16, 'color': '#8b949e'}},
+            gauge = {
+                'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "white"},
+                'bar': {'color': "#1f77b4" if score > 50 else "#f85149"},
+                'steps': [
+                    {'range': [0, 40], 'color': "rgba(248, 81, 73, 0.2)"},
+                    {'range': [40, 70], 'color': "rgba(245, 176, 65, 0.2)"},
+                    {'range': [70, 100], 'color': "rgba(46, 160, 67, 0.2)"}],
+            }
+        ))
+        fig_gauge.update_layout(height=250, margin=dict(l=20, r=20, t=40, b=10), template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_gauge, use_container_width=True)
+
+# Combine Target Data with Live Data
 target_row = pd.DataFrame([{
-    "Company": t_name, "Price_Converted": 0, "Status": "🎯 Model Input",
+    "Company": t_name, "Price_Converted": 0, "Status": "🎯 Target Input",
     "PE_Ratio": t_pe, "Net_Margin_%": t_margin, "ROE_%": t_roe, "Gearing_%": t_gear, "Type": txt["t_type"]
 }])
 df_combined = pd.concat([target_row, df_live], ignore_index=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("<br><br>", unsafe_allow_html=True) # Explicit vertical space before tabs
 
-# --- ADVANCED TABBED ANALYTICS ---
+# --- ADVANCED TABBED ANALYTICS (Spaced Out) ---
 tab1, tab2, tab3, tab4 = st.tabs([txt["tab1"], txt["tab2"], txt["tab3"], txt["tab4"]])
 
 with tab1:
+    st.markdown("<br>", unsafe_allow_html=True)
     def highlight_target(row):
         if row['Type'] == txt["t_type"]: return ['background-color: rgba(31, 119, 180, 0.3)'] * len(row)
         return [''] * len(row)
@@ -229,43 +253,53 @@ with tab1:
         display_table.style.apply(highlight_target, axis=1).format({
             txt["col_price"]: "{:,.2f}", "PE_Ratio": "{:.2f}x", "Net_Margin_%": "{:.2f}%", "ROE_%": "{:.2f}%", "Gearing_%": "{:.2f}%"
         }),
-        use_container_width=True, hide_index=True, height=300
+        use_container_width=True, hide_index=True, height=350
     )
 
 with tab2:
-    col_c1, col_c2 = st.columns(2)
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_c1, col_c2 = st.columns(2, gap="large")
     c_map = {t_name: "#1f77b4"}
     for p in df_live["Company"]: c_map[p] = "#30363d"
     
     with col_c1:
-        fig_pe = px.bar(df_combined, x="Company", y="PE_Ratio", color="Company", color_discrete_map=c_map, title="P/E Multiples")
-        fig_pe.update_layout(template="plotly_dark", showlegend=False, margin=dict(l=0, r=0, t=40, b=0))
+        fig_pe = px.bar(df_combined, x="Company", y="PE_Ratio", color="Company", color_discrete_map=c_map, title="P/E Multiples Overview")
+        fig_pe.update_layout(template="plotly_dark", showlegend=False, height=400)
         st.plotly_chart(fig_pe, use_container_width=True)
     with col_c2:
-        fig_m = px.bar(df_combined, x="Company", y="Net_Margin_%", color="Company", color_discrete_map=c_map, title="EBITDA Margins (%)")
-        fig_m.update_layout(template="plotly_dark", showlegend=False, margin=dict(l=0, r=0, t=40, b=0))
+        fig_m = px.bar(df_combined, x="Company", y="Net_Margin_%", color="Company", color_discrete_map=c_map, title="EBITDA Margins (%) Overview")
+        fig_m.update_layout(template="plotly_dark", showlegend=False, height=400)
         st.plotly_chart(fig_m, use_container_width=True)
 
 with tab3:
+    st.markdown("<br>", unsafe_allow_html=True)
     fig_scatter = px.scatter(
         df_combined, x="Gearing_%", y="ROE_%", color="Type", text="Company", size_max=60,
         color_discrete_map={txt["t_type"]: "#1f77b4", txt["m_type"]: "#8b949e"} 
     )
     fig_scatter.update_traces(textposition='top center', marker=dict(size=14))
-    fig_scatter.add_hline(y=avg_roe, line_dash="dash", line_color="gray", opacity=0.5)
-    fig_scatter.add_vline(x=df_live["Gearing_%"].mean(), line_dash="dash", line_color="gray", opacity=0.5)
-    fig_scatter.update_layout(template="plotly_dark", height=400, margin=dict(l=0, r=0, t=20, b=0))
+    fig_scatter.add_hline(y=avg_roe, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Avg ROE")
+    fig_scatter.add_vline(x=avg_gear, line_dash="dash", line_color="gray", opacity=0.5, annotation_text="Avg Debt")
+    fig_scatter.update_layout(template="plotly_dark", height=500, title="Risk (Gearing) vs Reward (ROE)")
     st.plotly_chart(fig_scatter, use_container_width=True)
 
 with tab4:
+    st.markdown("<br>", unsafe_allow_html=True)
     cats = ['Margin', 'ROE', 'P/E Efficiency', 'Debt Safety']
+    # Inverse logic for Radar chart so "Bigger is Better"
     t_health = max(0, 150 - t_gear) 
-    m_health = max(0, 150 - df_live["Gearing_%"].mean())
-    t_vals = [t_margin, t_roe, (20-t_pe)*2, t_health]
-    m_vals = [df_live["Net_Margin_%"].mean(), df_live["ROE_%"].mean(), (20-avg_pe)*2, m_health]
+    m_health = max(0, 150 - avg_gear)
+    
+    t_vals = [t_margin, t_roe, max(0, (25-t_pe)*2), t_health]
+    m_vals = [avg_margin, avg_roe, max(0, (25-avg_pe)*2), m_health]
     
     fig_radar = go.Figure()
     fig_radar.add_trace(go.Scatterpolar(r=t_vals, theta=cats, fill='toself', name=txt["t_type"], line_color='#1f77b4'))
     fig_radar.add_trace(go.Scatterpolar(r=m_vals, theta=cats, fill='toself', name=txt["m_type"], line_color='#8b949e')) 
-    fig_radar.update_layout(polar=dict(radialaxis=dict(visible=False)), template="plotly_dark", height=400, margin=dict(l=40, r=40, t=40, b=40))
+    fig_radar.update_layout(
+        polar=dict(radialaxis=dict(visible=False)), 
+        template="plotly_dark", 
+        height=500,
+        title="Strategic Fit Analysis"
+    )
     st.plotly_chart(fig_radar, use_container_width=True)
