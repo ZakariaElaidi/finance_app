@@ -517,17 +517,17 @@ else:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#1f77b4; margin-top:0;'>{txt['p1_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p1_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b1", use_container_width=True): st.switch_page("pages/2_BTP_Benchmark.py")
+            if st.button(txt['launch'], key="b1", use_container_width=True): st.switch_page("pages/1_Deal_Origination.py")
     with c2:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#2ca02c; margin-top:0;'>{txt['p2_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p2_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b2", use_container_width=True): st.switch_page("pages/1_Corporate_Analysis.py")
+           if st.button(txt['launch'], key="b2", use_container_width=True): st.switch_page("pages/2_Valuation_Advisory.py")
     with c3:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#9467bd; margin-top:0;'>{txt['p3_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p3_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b3", use_container_width=True): st.switch_page("pages/3_MA_Valuation.py")
+          if st.button(txt['launch'], key="b3", use_container_width=True): st.switch_page("pages/3_Buyout_Structuring.py")
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"### {txt['nav_tools']}")
@@ -539,7 +539,7 @@ else:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#d62728; margin-top:0;'>{txt['lc_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['lc_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b4", use_container_width=True): st.switch_page("pages/4_Live_Charts.py")
+            if st.button(txt['launch'], key="b4", use_container_width=True): st.switch_page("pages/4_Market_Trends.py")
     with c5:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#ff7f0e; margin-top:0;'>{txt['mh_title']}</h4>", unsafe_allow_html=True)
@@ -549,7 +549,7 @@ else:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#17becf; margin-top:0;'>{txt['ac_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['ac_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b6", use_container_width=True): st.switch_page("pages/5_About_Creator.py")
+            if st.button(txt['launch'], key="b6", use_container_width=True): st.switch_page("pages/5_Creator_Profile.py")
 
     # --- CTA BANNER FOR RECRUITERS ---
     st.markdown(f"""
