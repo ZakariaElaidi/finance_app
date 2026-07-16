@@ -494,7 +494,7 @@ else:
                     """, unsafe_allow_html=True)
             with c_hist2:
                 st.markdown("<br>", unsafe_allow_html=True)
-                if st.button(txt['view_hist'], use_container_width=True): st.switch_page("pages/6_My_History.py")
+                if st.button(txt['view_hist'], use_container_width=True): st.switch_page("pages/6_Session_History.py")
             st.markdown("<br>", unsafe_allow_html=True)
 
     # --- DAILY QUOTE ---
@@ -522,12 +522,12 @@ else:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#2ca02c; margin-top:0;'>{txt['p2_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p2_desc']}</p>", unsafe_allow_html=True)
-           if st.button(txt['launch'], key="b2", use_container_width=True): st.switch_page("pages/2_Valuation_Advisory.py")
+            if st.button(txt['launch'], key="b2", use_container_width=True): st.switch_page("pages/2_Valuation_Advisory.py")
     with c3:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#9467bd; margin-top:0;'>{txt['p3_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p3_desc']}</p>", unsafe_allow_html=True)
-          if st.button(txt['launch'], key="b3", use_container_width=True): st.switch_page("pages/3_Buyout_Structuring.py")
+            if st.button(txt['launch'], key="b3", use_container_width=True): st.switch_page("pages/3_Buyout_Structuring.py")
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"### {txt['nav_tools']}")
@@ -544,7 +544,7 @@ else:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#ff7f0e; margin-top:0;'>{txt['mh_title']}</h4>", unsafe_allow_html=True)
             st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['mh_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b5", use_container_width=True): st.switch_page("pages/6_My_History.py")
+            if st.button(txt['launch'], key="b5", use_container_width=True): st.switch_page("pages/6_Session_History.py")
     with c6:
         with st.container(border=True):
             st.markdown(f"<h4 style='color:#17becf; margin-top:0;'>{txt['ac_title']}</h4>", unsafe_allow_html=True)
