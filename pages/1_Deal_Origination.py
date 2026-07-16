@@ -25,44 +25,48 @@ sym = syms[curr]
 # --- TRANSLATION DICTIONARY ---
 t = {
     "English": {
-        "banner_h": "🏗️ BTP Sector Benchmark", "banner_desc": "Compare your target company against Casablanca Stock Exchange peers.",
-        "target_title": "🎯 Configure Target Data", "proj_name": "Project Name", "nm": "Net Margin (%)", "roe": "ROE (%)",
-        "gearing": "Gearing (Debt/Equity %)", "pe": "Implied P/E Ratio", "help_gearing": "BTP average is ~80%.",
-        "info_update": "💡 Charts and tables update automatically with LIVE Market Data.", "data_title": "📊 Live Market Data Overview",
-        "p1_title": "⚖️ 1. Peer Comparison: Profitability & Returns", "select_peers": "Select Competitors to Compare:",
-        "p2_title": "⚠️ 2. BTP Risk/Reward Matrix", "p2_desc": "Compares Profitability (ROE) vs Financial Risk (Gearing).",
-        "p3_title": "🕸️ 3. 360° Sector Profile", "p3_desc": "Radar chart comparing your target against the market average.",
-        "col_price": f"Price ({sym})", "your_target": "Your Target", "market_peer": "Market Peer"
+        "pipeline_phase": "PHASE 1: DEAL ORIGINATION & MARKET SCREENING",
+        "banner_h": "🏗️ BTP Sector Market Screener", "banner_desc": "Identify undervalued targets within the Moroccan BTP sector based on live public comps.",
+        "target_title": "🎯 Deal Origination Sandbox", "proj_name": "Target Code Name", "nm": "Target Net Margin (%)", "roe": "Target ROE (%)",
+        "gearing": "Target Gearing (D/E %)", "pe": "Entry Multiple (P/E)", "help_gearing": "BTP average is ~80%.",
+        "info_update": "💡 Analytics feed directly from Live Market Trading Data.", "data_title": "📊 Public Comps Table (Live Feed)",
+        "p1_title": "⚖️ 1. Peer Comparison: Standalone Value", "select_peers": "Select Market Peers to Benchmark:",
+        "p2_title": "⚠️ 2. Sector Risk/Reward Positioning", "p2_desc": "Evaluate target's cost of capital profile against market profitability.",
+        "p3_title": "🕸️ 3. Strategic Fit Radar", "p3_desc": "Compare specific operational metrics against the broader sector.",
+        "col_price": f"Share Price ({sym})", "your_target": "Identified Target", "market_peer": "Public Peer"
     },
     "Français": {
-        "banner_h": "🏗️ Benchmark du Secteur BTP", "banner_desc": "Comparez votre entreprise cible avec ses pairs de la Bourse de Casablanca.",
-        "target_title": "🎯 Configurer les Données Cibles", "proj_name": "Nom du Projet", "nm": "Marge Nette (%)", "roe": "ROE (%)",
-        "gearing": "Gearing (Dette/Capitaux Propres %)", "pe": "Ratio P/E Implicite", "help_gearing": "La moyenne du BTP est d'environ 80%.",
-        "info_update": "💡 Les graphiques se mettent à jour automatiquement (Données en temps réel).", "data_title": "📊 Données du Marché en Direct",
-        "p1_title": "⚖️ 1. Comparaison: Rentabilité & Rendements", "select_peers": "Sélectionnez les concurrents à comparer :",
-        "p2_title": "⚠️ 2. Matrice Risque/Rendement BTP", "p2_desc": "Compare la Rentabilité (ROE) au Risque Financier (Gearing).",
-        "p3_title": "🕸️ 3. Profil Sectoriel à 360°", "p3_desc": "Graphique radar comparant votre cible à la moyenne du marché.",
-        "col_price": f"Prix ({sym})", "your_target": "Votre Cible", "market_peer": "Pair du Marché"
+        "pipeline_phase": "PHASE 1: ORIGINATION DE DEALS & SCREENING",
+        "banner_h": "🏗️ Screener du Secteur BTP", "banner_desc": "Identifiez des cibles sous-évaluées sur la base de comparables boursiers en direct.",
+        "target_title": "🎯 Sandbox d'Origination", "proj_name": "Nom de Code de la Cible", "nm": "Marge Nette Cible (%)", "roe": "ROE Cible (%)",
+        "gearing": "Gearing Cible (D/CP %)", "pe": "Multiple d'Entrée (P/E)", "help_gearing": "La moyenne du BTP est d'environ 80%.",
+        "info_update": "💡 Flux d'analyse basé sur les données de trading en direct.", "data_title": "📊 Table des Comparables Publics",
+        "p1_title": "⚖️ 1. Comparaison: Valeur Intrinsèque", "select_peers": "Sélectionnez les pairs pour le benchmark:",
+        "p2_title": "⚠️ 2. Positionnement Risque/Rendement Sectoriel", "p2_desc": "Évaluez le profil du coût du capital par rapport à la rentabilité.",
+        "p3_title": "🕸️ 3. Radar d'Adéquation Stratégique", "p3_desc": "Comparez les métriques opérationnelles spécifiques avec le secteur.",
+        "col_price": f"Prix de l'action ({sym})", "your_target": "Cible Identifiée", "market_peer": "Pair Public"
     },
     "Español": {
-        "banner_h": "🏗️ Benchmark del Sector BTP", "banner_desc": "Compara tu empresa objetivo con sus pares de la Bolsa de Casablanca.",
-        "target_title": "🎯 Configurar Datos Objetivo", "proj_name": "Nombre del Proyecto", "nm": "Margen Neto (%)", "roe": "ROE (%)",
-        "gearing": "Gearing (Deuda/Capital %)", "pe": "Ratio P/E Implícito", "help_gearing": "El promedio de BTP es ~80%.",
-        "info_update": "💡 Los gráficos se actualizan automáticamente (Datos en tiempo real).", "data_title": "📊 Resumen de Datos del Mercado",
-        "p1_title": "⚖️ 1. Comparación: Rentabilidad y Retornos", "select_peers": "Selecciona competidores para comparar:",
-        "p2_title": "⚠️ 2. Matriz de Riesgo/Recompensa BTP", "p2_desc": "Compara Rentabilidad (ROE) vs Riesgo Financiero (Gearing).",
-        "p3_title": "🕸️ 3. Perfil Sectorial 360°", "p3_desc": "Gráfico de radar que compara tu objetivo con el promedio del mercado.",
-        "col_price": f"Precio ({sym})", "your_target": "Tu Objetivo", "market_peer": "Par del Mercado"
+        "pipeline_phase": "FASE 1: ORIGINACIÓN DE ACUERDOS",
+        "banner_h": "🏗️ Filtro del Mercado del Sector BTP", "banner_desc": "Identifica objetivos infravalorados basados en comparables públicos en vivo.",
+        "target_title": "🎯 Entorno de Originación", "proj_name": "Nombre en Clave del Objetivo", "nm": "Margen Neto Objetivo (%)", "roe": "ROE Objetivo (%)",
+        "gearing": "Gearing Objetivo (D/C %)", "pe": "Múltiplo de Entrada (P/E)", "help_gearing": "El promedio de BTP es ~80%.",
+        "info_update": "💡 Análisis basado directamente en datos de mercado en vivo.", "data_title": "📊 Tabla de Comparables Públicos",
+        "p1_title": "⚖️ 1. Comparación: Valor Independiente", "select_peers": "Selecciona Pares para el Benchmark:",
+        "p2_title": "⚠️ 2. Posicionamiento de Riesgo/Recompensa", "p2_desc": "Evalúa el perfil de costo de capital frente a la rentabilidad del mercado.",
+        "p3_title": "🕸️ 3. Radar de Ajuste Estratégico", "p3_desc": "Compara métricas operativas específicas contra el sector en general.",
+        "col_price": f"Precio de la Acción ({sym})", "your_target": "Objetivo Identificado", "market_peer": "Par Público"
     },
     "العربية": {
-        "banner_h": "🏗️ مقارنة أداء قطاع البناء", "banner_desc": "قارن شركتك المستهدفة مع نظيراتها في بورصة الدار البيضاء.",
-        "target_title": "🎯 إعداد بيانات الشركة المستهدفة", "proj_name": "اسم المشروع", "nm": "هامش الربح الصافي (%)", "roe": "العائد على حقوق المساهمين (%)",
-        "gearing": "الرافعة المالية (الديون/حقوق الملكية %)", "pe": "مكرر الربحية الضمني", "help_gearing": "متوسط القطاع حوالي 80%.",
-        "info_update": "💡 يتم تحديث الرسوم البيانية تلقائيًا (بيانات حية).", "data_title": "📊 بيانات السوق الحية",
-        "p1_title": "⚖️ 1. مقارنة الأقران: الربحية والعوائد", "select_peers": "اختر المنافسين للمقارنة:",
-        "p2_title": "⚠️ 2. مصفوفة المخاطر والمكافآت", "p2_desc": "يقارن الربحية مقابل المخاطر المالية (الرافعة المالية).",
-        "p3_title": "🕸️ 3. ملف تعريف القطاع 360 درجة", "p3_desc": "رسم بياني راداري يقارن شركتك مع متوسط السوق.",
-        "col_price": f"السعر ({sym})", "your_target": "شركتك المستهدفة", "market_peer": "منافس في السوق"
+        "pipeline_phase": "المرحلة الأولى: اكتشاف الصفقات وتحليل السوق",
+        "banner_h": "🏗️ شاشة تحليل قطاع البناء", "banner_desc": "تحديد الشركات المقيمة بأقل من قيمتها الحقيقية بناءً على مقارنات السوق الحية.",
+        "target_title": "🎯 بيئة اكتشاف الصفقات", "proj_name": "الاسم الرمزي للهدف", "nm": "هامش الربح المستهدف (%)", "roe": "العائد المستهدف (%)",
+        "gearing": "الرافعة المالية المستهدفة (%)", "pe": "مضاعف الدخول (P/E)", "help_gearing": "متوسط القطاع حوالي 80%.",
+        "info_update": "💡 تستمد التحليلات بياناتها مباشرة من السوق الحي.", "data_title": "📊 جدول المقارنات العامة (بيانات حية)",
+        "p1_title": "⚖️ 1. مقارنة الأقران: القيمة المستقلة", "select_peers": "اختر المنافسين للمقارنة المرجعية:",
+        "p2_title": "⚠️ 2. مصفوفة المخاطر والعوائد", "p2_desc": "تقييم ملف تكلفة رأس المال مقابل ربحية السوق.",
+        "p3_title": "🕸️ 3. رادار الملاءمة الاستراتيجية", "p3_desc": "قارن مقاييس تشغيلية محددة مع القطاع بأكمله.",
+        "col_price": f"سعر السهم ({sym})", "your_target": "الشركة المستهدفة", "market_peer": "منافس عام"
     }
 }
 txt = t[lang]
@@ -87,9 +91,12 @@ st.markdown(f"""
     [data-testid="stSidebarNav"] li:first-child a span {{ display: none !important; }}
     [data-testid="stSidebarNav"] li:first-child a::after {{ content: "🏠 Home"; font-size: 15px; margin-left: 0px; }}
     
-    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #2ca02c; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
-    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.4) 50%, rgba(44,160,44,0.3) 100%); }}
+    .full-width-banner {{ position: relative; width: 100%; height: 250px; background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; margin-bottom: 25px; border-radius: 10px; border-left: 5px solid #1f77b4; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }}
+    .banner-overlay {{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(14,17,23,0.95) 0%, rgba(14,17,23,0.4) 50%, rgba(31,119,180,0.3) 100%); }}
     .banner-content {{ position: absolute; top: 50%; left: 30px; transform: translateY(-50%); z-index: 2; }}
+    
+    /* Pipeline Header Styling */
+    .pipeline-header {{ background: linear-gradient(90deg, rgba(31,119,180,0.1) 0%, rgba(22,26,34,0) 100%); border-left: 4px solid #1f77b4; padding: 10px 20px; border-radius: 5px; margin-bottom: 20px; color: #1f77b4; font-weight: bold; letter-spacing: 1px; font-size: 0.9rem; text-transform: uppercase; }}
     
     {rtl_css}
     
@@ -103,6 +110,9 @@ st.markdown(f"""
     }}
 </style>
 """, unsafe_allow_html=True)
+
+# --- PIPELINE HEADER ---
+st.markdown(f"<div class='pipeline-header'>{txt['pipeline_phase']}</div>", unsafe_allow_html=True)
 
 # --- BANNER ---
 st.markdown(f"""
@@ -118,7 +128,7 @@ st.markdown(f"""
 # --- MANUAL CACHE CLEAR BUTTON ---
 col_clear1, col_clear2 = st.columns([4, 1])
 with col_clear2:
-    if st.button("🔄 Force Data Refresh", use_container_width=True):
+    if st.button("🔄 Refresh Comps Data", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
 
@@ -219,7 +229,7 @@ def fetch_live_market_data_pro():
 
     return pd.DataFrame(final_data)
 
-with st.spinner("⚡ Connecting to Global Markets (MarketWatch Engine)..."):
+with st.spinner("⚡ Connecting to Global Markets..."):
     df_live = fetch_live_market_data_pro().copy()
     df_live["Type"] = txt["market_peer"]
     # Apply currency rate
@@ -259,7 +269,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 st.subheader(txt["data_title"])
 
 def highlight_target(row):
-    if row['Type'] == txt["your_target"]: return ['background-color: rgba(245, 176, 65, 0.15)'] * len(row)
+    if row['Type'] == txt["your_target"]: return ['background-color: rgba(31, 119, 180, 0.25)'] * len(row)
     return [''] * len(row)
 
 display_table = df_combined[["Company", "Type", "Data_Status", "Price_Converted", "PE_Ratio", "Net_Margin_%", "ROE_%", "Gearing_%"]].rename(
@@ -286,8 +296,8 @@ peers = st.multiselect(txt["select_peers"], df_live["Company"].tolist(), default
 
 if peers:
     display_df = df_combined[(df_combined["Company"].isin(peers)) | (df_combined["Company"] == target_name)].copy()
-    color_map = {target_name: "#f5b041"}
-    for peer in peers: color_map[peer] = "#2ca02c" 
+    color_map = {target_name: "#1f77b4"}
+    for peer in peers: color_map[peer] = "#a0aab5" 
 
     col_bar1, col_bar2 = st.columns(2)
     with col_bar1:
@@ -311,7 +321,7 @@ with col_matrix:
     
     fig_scatter = px.scatter(
         df_combined, x="Gearing_%", y="ROE_%", color="Type", text="Company", size_max=60,
-        color_discrete_map={txt["your_target"]: "#f5b041", txt["market_peer"]: "#2ca02c"} 
+        color_discrete_map={txt["your_target"]: "#1f77b4", txt["market_peer"]: "#a0aab5"} 
     )
     fig_scatter.update_traces(textposition='top center', marker=dict(size=12, line=dict(width=2, color='DarkSlateGrey')))
     
@@ -336,8 +346,8 @@ with col_radar:
     market_vals = [df_live["Net_Margin_%"].mean(), df_live["ROE_%"].mean(), df_live["PE_Ratio"].mean(), market_health]
     
     fig_radar = go.Figure()
-    fig_radar.add_trace(go.Scatterpolar(r=target_vals, theta=categories, fill='toself', name=txt["your_target"], line_color='#f5b041'))
-    fig_radar.add_trace(go.Scatterpolar(r=market_vals, theta=categories, fill='toself', name=txt["market_peer"], line_color='#2ca02c')) 
+    fig_radar.add_trace(go.Scatterpolar(r=target_vals, theta=categories, fill='toself', name=txt["your_target"], line_color='#1f77b4'))
+    fig_radar.add_trace(go.Scatterpolar(r=market_vals, theta=categories, fill='toself', name=txt["market_peer"], line_color='#a0aab5')) 
     
     fig_radar.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, max(max(target_vals), max(market_vals)) + 5])),
