@@ -30,10 +30,14 @@ t = {
         "cse": "Casablanca Stock Exchange", "subtitle": "BTP Sector Equity Research & Financial Analytics Hub", "badge": "🇲🇦 Moroccan Market Focus",
         "dev_by": "👨‍💻 Engineered by",
         "tracked": "Tracked Companies", "avg_pe": "Sector Average P/E", "prem_stock": "Premium Stock", "value_stock": "Value Stock (Lowest P/E)", "entities": "Entities",
-        "nav": "🚀 Quick Navigation Modules",
-        "ca_title": "📉 Corporate Analysis", "ca_desc": "Upload Excel models, run variance analysis, and generate investment teasers.",
-        "bb_title": "⚖️ Sector Benchmark", "bb_desc": "Compare target operational margins, liquidity, and ROE against Moroccan peers.",
-        "ma_title": "💼 M&A Deal Room", "ma_desc": "Execute LBO Quick-Models, Advanced CAPM, and Monte Carlo DCF simulations.",
+        
+        # --- NEW PIPELINE TEXTS ---
+        "nav": "🔄 The M&A Transaction Pipeline",
+        "p1_title": "1️⃣ Deal Origination", "p1_desc": "Screen live market data to identify undervalued targets within the Moroccan sector.",
+        "p2_title": "2️⃣ Valuation & Advisory", "p2_desc": "Analyze historical financials, run variance reports, and execute standard DCF valuations.",
+        "p3_title": "3️⃣ Buyout Structuring", "p3_desc": "Structure LBO scenarios, assess debt capacity, and run Monte Carlo risk simulations.",
+        "nav_tools": "🛠️ Additional Tools & Archive",
+        
         "lc_title": "💹 Live Charts", "lc_desc": "Track real-time market trends, volatility, and historical pricing data.",
         "mh_title": "🗄️ My History", "mh_desc": "Access, manage, and download your previously saved analysis sessions.",
         "ac_title": "👤 About Creator", "ac_desc": "Professional profile, academic background, and networking links.",
@@ -59,10 +63,14 @@ t = {
         "cse": "Bourse de Casablanca", "subtitle": "Plateforme d'Analyse Financière et Recherche BTP", "badge": "🇲🇦 Focus Marché Marocain",
         "dev_by": "👨‍💻 Conçu par",
         "tracked": "Entreprises Suivies", "avg_pe": "P/E Moyen", "prem_stock": "Action Premium", "value_stock": "Action de Valeur (P/E bas)", "entities": "Entités",
-        "nav": "🚀 Modules de Navigation Rapide",
-        "ca_title": "📉 Analyse d'Entreprise", "ca_desc": "Importez des modèles Excel, analysez les écarts et générez des teasers.",
-        "bb_title": "⚖️ Benchmark Sectoriel", "bb_desc": "Comparez les marges, la liquidité et le ROE avec les concurrents marocains.",
-        "ma_title": "💼 Salle des Marchés M&A", "ma_desc": "Exécutez des modèles LBO, le MEDAF et des simulations Monte Carlo.",
+        
+        # --- NEW PIPELINE TEXTS ---
+        "nav": "🔄 Pipeline des Transactions M&A",
+        "p1_title": "1️⃣ Origination de Deals", "p1_desc": "Analysez le marché en direct pour identifier des cibles sous-évaluées dans le secteur.",
+        "p2_title": "2️⃣ Valorisation & Conseil", "p2_desc": "Analysez l'historique, les écarts financiers et exécutez des valorisations DCF.",
+        "p3_title": "3️⃣ Structuration LBO", "p3_desc": "Structurez des scénarios LBO, évaluez la capacité d'endettement et lancez Monte Carlo.",
+        "nav_tools": "🛠️ Outils Additionnels & Archives",
+        
         "lc_title": "💹 Graphiques en Direct", "lc_desc": "Suivez les tendances du marché, la volatilité et l'historique des prix.",
         "mh_title": "🗄️ Mon Historique", "mh_desc": "Accédez, gérez et téléchargez vos sessions d'analyse précédentes.",
         "ac_title": "👤 À propos du Créateur", "ac_desc": "Profil professionnel, parcours académique et liens de networking.",
@@ -88,10 +96,14 @@ t = {
         "cse": "Bolsa de Casablanca", "subtitle": "Centro de Análisis Financiero de Renta Variable BTP", "badge": "🇲🇦 Enfoque Mercado Marroquí",
         "dev_by": "👨‍💻 Desarrollado por",
         "tracked": "Empresas Seguidas", "avg_pe": "P/E Promedio", "prem_stock": "Acción Premium", "value_stock": "Acción de Valor (P/E bajo)", "entities": "Entidades",
-        "nav": "🚀 Módulos de Navegación Rápida",
-        "ca_title": "📉 Análisis Corporativo", "ca_desc": "Sube modelos Excel, analiza variaciones y genera informes de inversión.",
-        "bb_title": "⚖️ Benchmark Sectorial", "bb_desc": "Compara márgenes, liquidez y ROE contra competidores marroquíes.",
-        "ma_title": "💼 Sala de Fusiones (M&A)", "ma_desc": "Ejecuta modelos LBO, CAPM y simulaciones Monte Carlo DCF.",
+        
+        # --- NEW PIPELINE TEXTS ---
+        "nav": "🔄 Pipeline de Transacciones M&A",
+        "p1_title": "1️⃣ Originación de Acuerdos", "p1_desc": "Filtra datos del mercado en vivo para identificar objetivos infravalorados en el sector.",
+        "p2_title": "2️⃣ Valoración y Asesoría", "p2_desc": "Analiza finanzas históricas, ejecuta informes de variaciones y valoraciones DCF.",
+        "p3_title": "3️⃣ Estructuración LBO", "p3_desc": "Estructura escenarios LBO, evalúa capacidad de deuda y simulaciones Monte Carlo.",
+        "nav_tools": "🛠️ Herramientas Adicionales y Archivo",
+        
         "lc_title": "💹 Gráficos en Vivo", "lc_desc": "Rastrea tendencias del mercado en tiempo real y datos históricos.",
         "mh_title": "🗄️ Mi Historial", "mh_desc": "Accede, gestiona y descarga tus sesiones de análisis guardadas.",
         "ac_title": "👤 Sobre el Creador", "ac_desc": "Perfil profesional, formación académica y enlaces de networking.",
@@ -117,12 +129,16 @@ t = {
         "cse": "بورصة الدار البيضاء", "subtitle": "منصة التحليل المالي وأبحاث أسهم قطاع البناء والأشغال العمومية", "badge": "🇲🇦 تركيز على السوق المغربي",
         "dev_by": "👨‍💻 تم التطوير بواسطة",
         "tracked": "الشركات المتابعة", "avg_pe": "متوسط مكرر الربحية", "prem_stock": "السهم الأغلى", "value_stock": "أفضل قيمة (أقل P/E)", "entities": "شركات",
-        "nav": "🚀 وحدات التنقل السريع",
-        "ca_title": "📉 تحليل الشركات", "ca_desc": "رفع نماذج الإكسل، تحليل التغيرات، واستخراج تقارير الاستثمار.",
-        "bb_title": "⚖️ مقارنة القطاع", "bb_desc": "مقارنة هوامش التشغيل والسيولة والعائد على حقوق المساهمين مع المنافسين.",
-        "ma_title": "💼 غرفة صفقات الاندماج والاستحواذ", "ma_desc": "تنفيذ نماذج LBO السريعة، وCAPM المتقدمة، ومحاكاة مونت كارلو.",
+        
+        # --- NEW PIPELINE TEXTS ---
+        "nav": "🔄 مسار صفقات الاندماج والاستحواذ",
+        "p1_title": "1️⃣ اكتشاف الصفقات", "p1_desc": "فرز بيانات السوق الحية لتحديد الشركات المقيمة بأقل من قيمتها الحقيقية.",
+        "p2_title": "2️⃣ التقييم والاستشارات", "p2_desc": "تحليل البيانات المالية التاريخية، وتقييم التدفقات النقدية المخصومة (DCF).",
+        "p3_title": "3️⃣ هيكلة الاستحواذ", "p3_desc": "هيكلة سيناريوهات LBO، تقييم قدرة الديون، ومحاكاة مخاطر مونت كارلو.",
+        "nav_tools": "🛠️ أدوات إضافية وأرشيف",
+        
         "lc_title": "💹 رسوم بيانية حية", "lc_desc": "تتبع اتجاهات السوق في الوقت الفعلي والبيانات التاريخية للأسعار.",
-        "mh_title": "🗄️ السجل الخاص بي", "mh_desc": "الوصول وإدارة وتنزيل جلسات التحليل المحفوظة مسبقًا.",
+        "mh_title": "🗄️ السجل الخاص بي", "mh_desc": "الوصول وإدارة وتنزيل جلسات التحليل المالي المحفوظة مسبقًا.",
         "ac_title": "👤 عن المطور", "ac_desc": "الملف المهني والخلفية الأكاديمية وروابط التواصل.",
         "launch": "تشغيل الوحدة",
         "recent_act": "⏱️ الجلسات الأخيرة", "view_hist": "عرض السجل الكامل", "no_recent": "لم يتم العثور على جلسات أخيرة.",
@@ -319,7 +335,7 @@ if st.session_state.user is None:
         st.markdown(f"## 📊 {txt['cse']}")
         st.markdown(f"<p style='color: #b3b3b3; font-size: 1.1rem; margin-bottom: 5px;'>{txt['subtitle']}</p>", unsafe_allow_html=True)
         
-        # --- NEW: Premium Developer Badge ---
+        # --- Premium Developer Badge ---
         st.markdown(f"""
         <div style='display: inline-block; margin-top: 15px; margin-bottom: 20px; padding: 8px 18px; background: linear-gradient(90deg, rgba(22,26,34,0.8) 0%, rgba(245,176,65,0.15) 100%); border-left: 4px solid #f5b041; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);'>
             <span style='color: #a0aab5; font-size: 0.95rem; font-weight: 500; letter-spacing: 0.5px;'>{txt['dev_by']} </span>
@@ -455,7 +471,6 @@ else:
         st.markdown(f"#### {txt['chart_title']}")
         df_dash['Converted_Price'] = df_dash['Price_MAD'] * rate
         fig_mini = px.bar(df_dash, x="Company", y="Converted_Price", color="Converted_Price", color_continuous_scale="Viridis")
-        # Added xaxis_tickangle to keep text readable and fixed margin to prevent scroll
         fig_mini.update_layout(template="plotly_dark", height=300, margin=dict(l=0, r=0, t=10, b=0), coloraxis_showscale=False, xaxis_title="", yaxis_title=f"Price ({symbol})", xaxis_tickangle=-45)
         st.plotly_chart(fig_mini, use_container_width=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -492,29 +507,33 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # --- NAVIGATION MODULES ---
+    # --- NEW: THE PIPELINE NAVIGATION ---
     st.markdown(f"### {txt['nav']}")
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # ROW 1
+    # ROW 1 (The M&A Pipeline)
     c1, c2, c3 = st.columns(3)
     with c1:
         with st.container(border=True):
-            st.markdown(f"<h4 style='color:#1f77b4; margin-top:0;'>{txt['ca_title']}</h4>", unsafe_allow_html=True)
-            st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['ca_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b1", use_container_width=True): st.switch_page("pages/1_Corporate_Analysis.py")
+            st.markdown(f"<h4 style='color:#1f77b4; margin-top:0;'>{txt['p1_title']}</h4>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p1_desc']}</p>", unsafe_allow_html=True)
+            if st.button(txt['launch'], key="b1", use_container_width=True): st.switch_page("pages/2_BTP_Benchmark.py")
     with c2:
         with st.container(border=True):
-            st.markdown(f"<h4 style='color:#2ca02c; margin-top:0;'>{txt['bb_title']}</h4>", unsafe_allow_html=True)
-            st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['bb_desc']}</p>", unsafe_allow_html=True)
-            if st.button(txt['launch'], key="b2", use_container_width=True): st.switch_page("pages/2_BTP_Benchmark.py")
+            st.markdown(f"<h4 style='color:#2ca02c; margin-top:0;'>{txt['p2_title']}</h4>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p2_desc']}</p>", unsafe_allow_html=True)
+            if st.button(txt['launch'], key="b2", use_container_width=True): st.switch_page("pages/1_Corporate_Analysis.py")
     with c3:
         with st.container(border=True):
-            st.markdown(f"<h4 style='color:#9467bd; margin-top:0;'>{txt['ma_title']}</h4>", unsafe_allow_html=True)
-            st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['ma_desc']}</p>", unsafe_allow_html=True)
+            st.markdown(f"<h4 style='color:#9467bd; margin-top:0;'>{txt['p3_title']}</h4>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color:#b3b3b3; font-size:0.85rem; height:45px;'>{txt['p3_desc']}</p>", unsafe_allow_html=True)
             if st.button(txt['launch'], key="b3", use_container_width=True): st.switch_page("pages/3_MA_Valuation.py")
     
-    # ROW 2
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown(f"### {txt['nav_tools']}")
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # ROW 2 (Tools & Archive)
     c4, c5, c6 = st.columns(3)
     with c4:
         with st.container(border=True):
