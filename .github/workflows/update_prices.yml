@@ -1,0 +1,26 @@
+name: Update market prices
+
+on:
+  schedule:
+    - cron: "0 16 * * 1-5"   # weekdays 16:00 UTC, after the Casablanca close
+  workflow_dispatch: {}       # manual "Run workflow" button
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pandas numpy requests beautifulsoup4 yfinance
+      - run: python scripts/update_prices.py
+      - name: Commit updated CSVs
+        run: |
+          git config user.name "price-bot"
+          git config user.email "price-bot@users.noreply.github.com"
+          git add price_history.csv btp_market_data.csv
+          git diff --staged --quiet || (git commit -m "Daily price update" && git push)
