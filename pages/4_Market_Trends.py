@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+import concurrent.futures
+
+from market_data import TICKERS, get_last_price, get_history, simulate_history
 
 # --- SECURITY & STATE ---
 if "user" not in st.session_state or st.session_state.user is None:
@@ -59,7 +62,21 @@ t = {
         "comps_title": "📊 مشهد مضاعفات التداول", "comps_desc": "تحليل الشركات المقارنة: قياس الكفاءة التشغيلية مقابل تسعير السوق."
     }
 }
-txt = t[lang]
+extra = {
+    "English": {"src_live": "🟢 Live market data", "src_stored": "🟡 Last stored close", "src_snapshot": "🟠 Manual CSV price", "src_none": "🔴 No price available",
+                "sim_warn": "No real price history available for this stock yet. The chart below is SIMULATED around the last known price and is not market data.",
+                "no_price": "No price available for this company."},
+    "Français": {"src_live": "🟢 Données de marché en direct", "src_stored": "🟡 Dernière clôture enregistrée", "src_snapshot": "🟠 Prix CSV manuel", "src_none": "🔴 Aucun prix disponible",
+                 "sim_warn": "Aucun historique de prix réel disponible pour ce titre. Le graphique ci-dessous est SIMULÉ autour du dernier prix connu et ne représente pas des données de marché.",
+                 "no_price": "Aucun prix disponible pour cette entreprise."},
+    "Español": {"src_live": "🟢 Datos de mercado en vivo", "src_stored": "🟡 Último cierre almacenado", "src_snapshot": "🟠 Precio CSV manual", "src_none": "🔴 Sin precio disponible",
+                "sim_warn": "No hay historial de precios real para esta acción. El gráfico es SIMULADO alrededor del último precio conocido y no son datos de mercado.",
+                "no_price": "No hay precio disponible para esta empresa."},
+    "العربية": {"src_live": "🟢 بيانات السوق المباشرة", "src_stored": "🟡 آخر إغلاق مخزن", "src_snapshot": "🟠 سعر CSV يدوي", "src_none": "🔴 لا يوجد سعر",
+                "sim_warn": "لا يتوفر سجل أسعار حقيقي لهذا السهم. الرسم أدناه محاكاة حول آخر سعر معروف وليس بيانات سوق.",
+                "no_price": "لا يوجد سعر لهذه الشركة."},
+}
+txt = {**t[lang], **extra[lang]}
 
 # --- FULL WIDTH CSS INJECTION (Red Theme) ---
 rtl_css = """
@@ -110,22 +127,32 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # --- DATA FETCHING (Baseline Integration) ---
-@st.cache_data(ttl=60)
+# Fundamentals are static estimates. Prices come from market_data.py (live -> stored CSV -> manual CSV).
+FUNDAMENTALS = {
+    "LafargeHolcim": {"PE_Ratio": 18.2, "Net_Margin_%": 16.5},
+    "Addoha": {"PE_Ratio": 12.0, "Net_Margin_%": 8.5},
+    "Alliances": {"PE_Ratio": 10.5, "Net_Margin_%": 9.0},
+    "Ciments du Maroc": {"PE_Ratio": 16.8, "Net_Margin_%": 15.2},
+    "TGCC": {"PE_Ratio": 15.0, "Net_Margin_%": 12.5},
+    "Sonasid": {"PE_Ratio": 14.5, "Net_Margin_%": 5.2},
+}
+
+@st.cache_data(ttl=300, show_spinner=False)
 def get_live_market_data():
     try:
-        # Extending the baseline with PE and Margins for relative valuation
-        assets = [
-            {"Company": "LafargeHolcim", "Price_MAD": 1820.00, "PE_Ratio": 18.2, "Net_Margin_%": 16.5},
-            {"Company": "Addoha", "Price_MAD": 34.50, "PE_Ratio": 12.0, "Net_Margin_%": 8.5},
-            {"Company": "Alliances", "Price_MAD": 275.00, "PE_Ratio": 10.5, "Net_Margin_%": 9.0},
-            {"Company": "Ciments du Maroc", "Price_MAD": 1785.00, "PE_Ratio": 16.8, "Net_Margin_%": 15.2},
-            {"Company": "TGCC", "Price_MAD": 345.00, "PE_Ratio": 15.0, "Net_Margin_%": 12.5},
-            {"Company": "Sonasid", "Price_MAD": 890.00, "PE_Ratio": 14.5, "Net_Margin_%": 5.2}
-        ]
-        return pd.DataFrame(assets)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:
+            quotes = dict(zip(TICKERS, ex.map(get_last_price, TICKERS)))
+        rows = []
+        for name, (price, source) in quotes.items():
+            rows.append({"Company": name, "Price_MAD": price, "Source": source, **FUNDAMENTALS[name]})
+        return pd.DataFrame(rows)
     except Exception as e:
         st.error(f"{txt['err']} {str(e)}")
         return None
+
+@st.cache_data(ttl=300, show_spinner=False)
+def load_history(company: str, days: int):
+    return get_history(company, days)
 
 df_live = get_live_market_data()
 
@@ -146,25 +173,33 @@ if df_live is not None:
     days_map = {txt["m1"]: 30, txt["m3"]: 90, txt["m6"]: 180}
     num_days = days_map[time_period]
     
-    # Get base price and apply currency rate
-    base_price_mad = df_live[df_live["Company"] == selected_company]["Price_MAD"].values[0]
-    base_price = base_price_mad * rate 
-    
-    dates = pd.date_range(end=pd.Timestamp.today().normalize(), periods=num_days)
-    
-    # Simulate market volatility based on the converted base price
-    np.random.seed(42 + len(selected_company) + num_days)
-    vol = base_price * 0.05
-    changes = np.random.normal(0, vol, size=num_days)
-    closes = base_price - np.cumsum(changes[::-1])[::-1] 
-    opens = closes - np.random.normal(0, vol, size=num_days)
-    highs = np.maximum(opens, closes) + np.abs(np.random.normal(0, vol*1.2, size=num_days))
-    lows = np.minimum(opens, closes) - np.abs(np.random.normal(0, vol*1.2, size=num_days))
-    
+    # Real daily OHLC (live, else stored in price_history.csv). Simulated only as a labelled last resort.
+    sel_row = df_live[df_live["Company"] == selected_company].iloc[0]
+    hist, hist_source = load_history(selected_company, num_days)
+
+    if hist is None:
+        base_mad = sel_row["Price_MAD"]
+        if pd.isna(base_mad):
+            st.error(txt["no_price"])
+            st.stop()
+        hist = simulate_history(float(base_mad), num_days, selected_company)
+        st.warning(txt["sim_warn"])
+        st.caption(txt["src_snapshot"] if sel_row["Source"] == "snapshot" else txt.get("src_" + sel_row["Source"], ""))
+    else:
+        st.caption(txt["src_live"] if hist_source == "live" else txt["src_stored"])
+
+    # Currency conversion applies to prices only
+    dates = hist["Date"]
+    opens = (hist["Open"] * rate).values
+    highs = (hist["High"] * rate).values
+    lows = (hist["Low"] * rate).values
+    closes = (hist["Close"] * rate).values
+    num_days = len(hist)
+
     # Calculate Quick Stats
-    max_price = max(highs)
-    min_price = min(lows)
-    
+    max_price = highs.max()
+    min_price = lows.min()
+
     # Display Quick Stats
     st.markdown(f"""
     <div class="kpi-container" {'dir="rtl"' if lang=="العربية" else ''}>
