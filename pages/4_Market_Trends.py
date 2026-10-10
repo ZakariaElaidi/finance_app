@@ -63,16 +63,16 @@ t = {
     }
 }
 extra = {
-    "English": {"src_live": "🟢 Live market data", "src_stored": "🟡 Last stored close", "src_snapshot": "🟠 Manual CSV price", "src_none": "🔴 No price available",
+    "English": {"src_live": "🟢 Live market data", "src_stored": "🟢 Daily market close (updated by scheduled job)", "src_stale": "🟡 Stale stored close (is the daily job running?)", "src_snapshot": "🟠 Manual CSV price", "src_none": "🔴 No price available",
                 "sim_warn": "No real price history available for this stock yet. The chart below is SIMULATED around the last known price and is not market data.",
                 "no_price": "No price available for this company."},
-    "Français": {"src_live": "🟢 Données de marché en direct", "src_stored": "🟡 Dernière clôture enregistrée", "src_snapshot": "🟠 Prix CSV manuel", "src_none": "🔴 Aucun prix disponible",
+    "Français": {"src_live": "🟢 Données de marché en direct", "src_stored": "🟢 Clôture quotidienne (mise à jour automatique)", "src_stale": "🟡 Clôture enregistrée obsolète", "src_snapshot": "🟠 Prix CSV manuel", "src_none": "🔴 Aucun prix disponible",
                  "sim_warn": "Aucun historique de prix réel disponible pour ce titre. Le graphique ci-dessous est SIMULÉ autour du dernier prix connu et ne représente pas des données de marché.",
                  "no_price": "Aucun prix disponible pour cette entreprise."},
-    "Español": {"src_live": "🟢 Datos de mercado en vivo", "src_stored": "🟡 Último cierre almacenado", "src_snapshot": "🟠 Precio CSV manual", "src_none": "🔴 Sin precio disponible",
+    "Español": {"src_live": "🟢 Datos de mercado en vivo", "src_stored": "🟢 Cierre diario (actualización automática)", "src_stale": "🟡 Cierre almacenado desactualizado", "src_snapshot": "🟠 Precio CSV manual", "src_none": "🔴 Sin precio disponible",
                 "sim_warn": "No hay historial de precios real para esta acción. El gráfico es SIMULADO alrededor del último precio conocido y no son datos de mercado.",
                 "no_price": "No hay precio disponible para esta empresa."},
-    "العربية": {"src_live": "🟢 بيانات السوق المباشرة", "src_stored": "🟡 آخر إغلاق مخزن", "src_snapshot": "🟠 سعر CSV يدوي", "src_none": "🔴 لا يوجد سعر",
+    "العربية": {"src_live": "🟢 بيانات السوق المباشرة", "src_stored": "🟢 الإغلاق اليومي (تحديث تلقائي)", "src_stale": "🟡 إغلاق مخزن قديم", "src_snapshot": "🟠 سعر CSV يدوي", "src_none": "🔴 لا يوجد سعر",
                 "sim_warn": "لا يتوفر سجل أسعار حقيقي لهذا السهم. الرسم أدناه محاكاة حول آخر سعر معروف وليس بيانات سوق.",
                 "no_price": "لا يوجد سعر لهذه الشركة."},
 }
@@ -184,9 +184,9 @@ if df_live is not None:
             st.stop()
         hist = simulate_history(float(base_mad), num_days, selected_company)
         st.warning(txt["sim_warn"])
-        st.caption(txt["src_snapshot"] if sel_row["Source"] == "snapshot" else txt.get("src_" + sel_row["Source"], ""))
+        st.caption(txt.get("src_" + str(sel_row["Source"]), ""))
     else:
-        st.caption(txt["src_live"] if hist_source == "live" else txt["src_stored"])
+        st.caption(txt.get("src_" + hist_source, ""))
 
     # Currency conversion applies to prices only
     dates = hist["Date"]

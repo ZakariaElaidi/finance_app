@@ -8,6 +8,8 @@ import urllib.parse
 from bs4 import BeautifulSoup
 import concurrent.futures
 
+from market_data import get_last_price
+
 # --- SECURITY & STATE ---
 if "user" not in st.session_state or st.session_state.user is None:
     st.switch_page("app.py")
@@ -132,26 +134,21 @@ def fetch_real_data():
         "Sonasid": {"ticker": "SND", "base_p": 890.00, "pe": 14.5, "margin": 5.2, "roe": 8.5, "gear": 20.0}
     }
     
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml",
-        "Accept-Language": "en-US,en;q=0.9"
+    # Prices come from market_data.py: stored daily close -> live fetch -> stale -> manual CSV.
+    source_labels = {
+        "stored": "🟢 Daily market close",
+        "live": "🟢 Live market data",
+        "stale": "🟡 Stale stored close",
+        "snapshot": "🟠 Manual CSV price",
     }
 
     def scrape_price(name, data):
         try:
-            gf_url = f"https://www.google.com/finance/quote/{data['ticker']}:CMA"
-            proxy_url = f"https://api.allorigins.win/get?url={urllib.parse.quote(gf_url)}"
-            res = requests.get(proxy_url, timeout=5)
-            if res.status_code == 200:
-                html = res.json().get('contents', '')
-                soup = BeautifulSoup(html, 'html.parser')
-                price_div = soup.find("div", class_="YMlKec fxKbKc")
-                if price_div:
-                    clean_price = price_div.text.replace("MAD", "").replace(",", "").replace(" ", "").replace("\xa0", "").strip()
-                    val = float(clean_price)
-                    if val > 0: return name, val, "🟢 Live (GF Proxy)"
-        except: pass
+            price, source = get_last_price(name)
+            if price and price > 0:
+                return name, price, source_labels.get(source, source)
+        except Exception:
+            pass
         return name, data["base_p"], "🟡 Market Close (Verified Baseline)"
 
     live_prices = {}
